@@ -1,0 +1,60 @@
+.header {
+    display: flex;
+    width: 100%;
+    z-index: 1000;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    align-items: center;
+
+    background-color: black;
+    color: white;
+}
+
+.logo-text {
+    display: flex;
+    padding-left: 40px;
+    color: white;
+    text-align: left;
+    font-family: "BASKVILL";
+    font-size: 3.50rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+
+    user-select: none;
+}
+
+.logo-text-highlight {
+    color: #C22727;
+    font-family: "BASKVILL";
+    font-size: 3.75rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.header-divider {
+    border-right: 2px solid white;
+    padding-left: 20px;
+    margin-left: auto;
+    height: 40px;
+}
+
+.admin-info {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    user-select: none;
+
+    & img {
+        padding-left: 20px;
+        width: 50px;
+        height: 50px;
+
+        -webkit-user-drag: none;
+        cursor: pointer;
+    }
+}
