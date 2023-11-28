@@ -17,11 +17,10 @@
 
 .sidebar-element {
     display: flex;
-    flex-direction: row;
     font-size: 30px;
-    padding-left: 50px;
-    padding-top: 25px;
-    padding-bottom: 25px;
+    padding-left: 75px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     align-items: center;
 
     user-select: none;
