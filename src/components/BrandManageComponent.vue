@@ -9,7 +9,7 @@ const exampleBrands = [
 <template>
   <div class="container">
     <div class="button-block">
-      <button>브랜드 등록</button>
+      <button class="createBtn">브랜드 등록</button>
     </div>
     <div class="table-block">
       <table>
@@ -24,6 +24,10 @@ const exampleBrands = [
           <tr v-for="brand in exampleBrands" :key="brand.brandId">
             <td>{{ brand.brandId }}</td>
             <td>{{ brand.name }}</td>
+            <td>
+                <button class="updateBtn">수정</button>
+                <button class="deleteBtn">삭제</button>
+            </td>
           </tr>
         </tbody>
       </table>

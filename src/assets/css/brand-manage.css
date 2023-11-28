@@ -9,23 +9,63 @@
 .button-block {
     display: flex;
     justify-content: flex-end;
+    padding-bottom: 10px;
+}
 
-    & button {
-        width: 150px;
-        height: 60px;
-        font-size: 25px;
-        color: white;
-        background-color: black;
-        cursor: pointer;
-    }
+button {
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.createBtn {
+    width: 150px;
+    height: 60px;
+    font-size: 25px;
+    background-color: black;
+}
+
+.updateBtn {
+    width: 50px;
+    height: 30px;
+    font-size: 12px;
+    background-color: black;
+}
+
+.deleteBtn {
+    width: 50px;
+    height: 30px;
+    font-size: 12px;
+    background-color: #C22727;
+    margin-left: 20px;
 }
 
 .table-block {
+    width: 100%;
+
     & table {
-        
+        width: 100%;
         & thead {
+            font-size: 25px;
+            font-weight: bold;
             border-top: black 2px solid;
             border-bottom: black 1px solid;
+            & tr {
+                & th {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                }
+            }
+        }
+        & tbody {
+            & tr {
+                border-bottom:  1px solid #C6C6C6;
+                & td {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: center;
+                }
+            }
         }
     }
 }
