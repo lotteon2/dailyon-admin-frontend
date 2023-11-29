@@ -58,3 +58,33 @@ table {
     font-family: "BASKVILL";
     src: url("@/assets/font/BASKVILL.ttf") format("truetype");
 }
+
+@font-face {
+    font-family: "The Jamsil 1 Thin";
+    src: url("@/assets/font/The Jamsil 1 Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "The Jamsil 2 Light";
+    src: url("@/assets/font/The Jamsil 2 Light.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "The Jamsil 3 Regular";
+    src: url("@/assets/font/The Jamsil 3 Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "The Jamsil 4 Medium";
+    src: url("@/assets/font/The Jamsil 4 Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "The Jamsil 5 Bold";
+    src: url("@/assets/font/The Jamsil 5 Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "The Jamsil 6 ExtraBold";
+    src: url("@/assets/font/The Jamsil 6 ExtraBold.ttf") format("truetype");
+}

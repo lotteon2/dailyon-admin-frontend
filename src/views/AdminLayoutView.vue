@@ -8,9 +8,13 @@ import ProductManageComponent from "@/components/ProductManageComponent.vue"
 import RaffleManageComponent from "@/components/RaffleManageComponent.vue"
 import ProductSizeManageComponent from "@/components/ProductSizeManageComponent.vue"
 import SideBarComponent from "@/components/SideBarComponent.vue"
+import HeaderComponent from "@/components/HeaderComponent.vue"
 </script>
 
 <template>
+  <header>
+    <HeaderComponent />
+  </header>
   <div class="container">
     <SideBarComponent />
     <DashBoardComponent v-if="$route.name === 'dashboard' || $route.name === 'main'" />
