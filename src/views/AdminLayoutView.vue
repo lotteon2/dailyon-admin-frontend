@@ -1,36 +1,30 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import BannerManageComponent from "@/components/BannerManageComponent.vue"
+import BrandManageComponent from "@/components/BrandManageComponent.vue"
+import CategoryManageComponent from "@/components/CategoryManageComponent.vue"
+import CouponManagerComponent from "@/components/CouponManagerComponent.vue"
+import DashBoardComponent from "@/components/DashBoardComponent.vue"
+import ProductManageComponent from "@/components/ProductManageComponent.vue"
+import RaffleManageComponent from "@/components/RaffleManageComponent.vue"
+import ProductSizeManageComponent from "@/components/ProductSizeManageComponent.vue"
+import SideBarComponent from "@/components/SideBarComponent.vue"
+import HeaderComponent from "@/components/HeaderComponent.vue"
+</script>
 
 <template>
+  <header>
+    <HeaderComponent />
+  </header>
   <div class="container">
-    <div class="sidebar">
-      <div class="sidebar-elements">
-        <div class="sidebar-element">
-          <img src="@/assets/images/Dashboard_White.png" alt="dashboard" />대시보드
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Product_White.png" alt="product" />상품 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Category_White.png" alt="brand" />브랜드 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Banner_White.png" alt="banner" />배너 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Coupon_White.png" alt="coupon" />쿠폰 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Raffle_White.png" alt="raffle" />응모 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Category_White.png" alt="category" />카테고리 관리
-        </div>
-        <div class="sidebar-element">
-          <img src="@/assets/images/Category_White.png" alt="product-size" />치수 관리
-        </div>
-      </div>
-    </div>
-    <h1>COMPONENTS</h1>
+    <SideBarComponent />
+    <DashBoardComponent v-if="$route.name === 'dashboard' || $route.name === 'main'" />
+    <ProductManageComponent v-if="$route.name === 'manage-product'" />
+    <BrandManageComponent v-if="$route.name === 'manage-brand'" />
+    <BannerManageComponent v-if="$route.name === 'manage-banner'" />
+    <CouponManagerComponent v-if="$route.name === 'manage-coupon'" />
+    <RaffleManageComponent v-if="$route.name === 'manage-raffle'" />
+    <CategoryManageComponent v-if="$route.name === 'manage-category'" />
+    <ProductSizeManageComponent v-if="$route.name === 'manage-product-size'" />
   </div>
 </template>
 

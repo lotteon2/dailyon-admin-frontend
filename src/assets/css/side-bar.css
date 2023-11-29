@@ -1,0 +1,38 @@
+.sidebar {
+    height: 100vh;
+    width: 20%;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: black;
+    color: white;
+}
+
+.sidebar-elements {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-element {
+    display: flex;
+    font-size: 30px;
+    padding-left: 75px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    align-items: center;
+
+    user-select: none;
+    cursor: pointer;
+
+    font-family: "The Jamsil 2 Light";
+
+    text-decoration: none;
+    color: inherit;
+
+    & img {
+        -webkit-user-drag: none;
+        padding-right: 20px;
+    }
+}
