@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import type { AxiosError, AxiosResponse } from "axios"
+import { createBrand } from "@/apis/brand/BrandClient"
+import type { CreateBrandRequest } from "@/apis/brand/dto/BrandRequest"
+import type { CreateBrandResponse, ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
 
 const props = defineProps({
   showModal: {
@@ -11,18 +15,25 @@ const emits = defineEmits(["create-brand", "close-create-modal"])
 
 const brandName = ref("")
 
-const createBrand = () => {
-  /* TODO create api의 response에 id 반환하기
-   axios.put해서 200이라면 id와 editedBrandName.value emit해서 해당 목록 update
-   */
-  emits("create-brand", {
-    id: 999,
-    name: brandName.value
-  })
-  closeModal()
+const executeCreate = () => {
+  createBrand({ name: brandName.value } as CreateBrandRequest)
+    .then((axiosResponse: AxiosResponse) => {
+      const response = { brandId: axiosResponse.data.brandId } as CreateBrandResponse
+      emits("create-brand", {
+        id: response.brandId,
+        name: brandName.value
+      } as ReadBrandResponse)
+      alert("등록 성공")
+      closeModal()
+    })
+    .catch((error: AxiosError) => {
+      console.log(error)
+      alert(error.response!.data!.message)
+    })
 }
 
 const closeModal = () => {
+  brandName.value = ""
   emits("close-create-modal")
 }
 </script>
@@ -45,7 +56,7 @@ const closeModal = () => {
         />
       </div>
       <div class="modal-button">
-        <button class="checkBtn" @click="createBrand">등록</button>
+        <button class="checkBtn" @click="executeCreate">등록</button>
       </div>
     </div>
   </div>
