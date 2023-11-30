@@ -16,7 +16,7 @@ const router = createRouter({
         {
           path: "/manage-brand",
           name: "manage-brand",
-          component: () => import("@/components/BrandManageComponent.vue")
+          component: () => import("@/components/brand/BrandManageComponent.vue")
         },
         {
           path: "/manage-category",

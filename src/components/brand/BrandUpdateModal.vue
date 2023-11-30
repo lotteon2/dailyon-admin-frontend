@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import type { AxiosError } from "axios"
+import { updateBrand } from "@/apis/brand/BrandClient"
+import type { UpdateBrandRequest } from "@/apis/brand/dto/BrandRequest"
+import type { ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
 
 const props = defineProps({
   brandId: {
@@ -10,6 +14,9 @@ const props = defineProps({
   },
   showModal: {
     type: Boolean
+  },
+  index: {
+    type: Number
   }
 })
 
@@ -17,18 +24,22 @@ const emits = defineEmits(["update-brand", "close-update-modal"])
 
 const editedBrandName = ref("")
 
-const updateBrand = () => {
-  /* TODO
-   axios.put해서 200이라면 id와 editedBrandName.value emit해서 해당 목록 update
-   */
-  emits("update-brand", {
-    id: props.brandId,
+const executeUpdate = () => {
+  updateBrand(props.brandId!, {
     name: editedBrandName.value
-  })
-  closeModal()
+  } as UpdateBrandRequest)
+    .then(() => {
+      emits("update-brand", { index: props.index, name: editedBrandName.value })
+      alert("수정 성공")
+      closeModal()
+    })
+    .catch((error: any) => {
+      alert(error.response.data.message)
+    })
 }
 
 const closeModal = () => {
+  editedBrandName.value = ""
   emits("close-update-modal")
 }
 </script>
@@ -51,7 +62,7 @@ const closeModal = () => {
         />
       </div>
       <div class="modal-button">
-        <button class="checkBtn" @click="updateBrand">수정</button>
+        <button class="checkBtn" @click="executeUpdate">수정</button>
       </div>
     </div>
   </div>
