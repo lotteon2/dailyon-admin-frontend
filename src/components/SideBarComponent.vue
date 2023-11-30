@@ -3,30 +3,54 @@
 <template>
   <div class="sidebar">
     <div class="sidebar-elements">
-      <RouterLink to="/dashboard" class="sidebar-element">
-        <img src="@/assets/images/Dashboard_White.png" alt="dashboard" />대시보드
-      </RouterLink>
-      <RouterLink to="/manage-product" class="sidebar-element">
-        <img src="@/assets/images/Product_White.png" alt="product" />상품 관리
-      </RouterLink>
-      <RouterLink to="/manage-banner" class="sidebar-element">
-        <img src="@/assets/images/Banner_White.png" alt="banner" />배너 관리
-      </RouterLink>
-      <RouterLink to="/manage-coupon" class="sidebar-element">
-        <img src="@/assets/images/Coupon_White.png" alt="coupon" />쿠폰 관리
-      </RouterLink>
-      <RouterLink to="/manage-raffle" class="sidebar-element">
-        <img src="@/assets/images/Raffle_White.png" alt="raffle" />응모 관리
-      </RouterLink>
-      <RouterLink to="/manage-brand" class="sidebar-element">
-        <img src="@/assets/images/Category_White.png" alt="brand" />브랜드 관리
-      </RouterLink>
-      <RouterLink to="/manage-category" class="sidebar-element">
-        <img src="@/assets/images/Category_White.png" alt="category" />카테고리 관리
-      </RouterLink>
-      <RouterLink to="/manage-product-size" class="sidebar-element">
-        <img src="@/assets/images/Category_White.png" alt="product-size" />치수 관리
-      </RouterLink>
+      <div class="sidebar-element">
+        <RouterLink to="/dashboard" class="sidebar-content">
+          <img src="@/assets/images/Dashboard_White.png" alt="dashboard" />
+          <p>대시보드</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-product" class="sidebar-content">
+          <img src="@/assets/images/Product_White.png" alt="product" />
+          <p>상품 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-banner" class="sidebar-content">
+          <img src="@/assets/images/Banner_White.png" alt="banner" />
+          <p>배너 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-coupon" class="sidebar-content">
+          <img src="@/assets/images/Coupon_White.png" alt="coupon" />
+          <p>쿠폰 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-raffle" class="sidebar-content">
+          <img src="@/assets/images/Raffle_White.png" alt="raffle" />
+          <p>응모 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-brand" class="sidebar-content">
+          <img src="@/assets/images/Category_White.png" alt="brand" />
+          <p>브랜드 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-category" class="sidebar-content">
+          <img src="@/assets/images/Category_White.png" alt="category" />
+          <p>카테고리 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-product-size" class="sidebar-content">
+          <img src="@/assets/images/Category_White.png" alt="product-size" />
+          <p>치수 관리</p>
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
