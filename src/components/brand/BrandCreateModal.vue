@@ -26,9 +26,8 @@ const executeCreate = () => {
       alert("등록 성공")
       closeModal()
     })
-    .catch((error: AxiosError) => {
-      console.log(error)
-      alert(error.response!.data!.message)
+    .catch((error: any) => {
+      alert(error.response.data.message)
     })
 }
 

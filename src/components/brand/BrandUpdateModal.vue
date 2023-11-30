@@ -25,7 +25,7 @@ const emits = defineEmits(["update-brand", "close-update-modal"])
 const editedBrandName = ref("")
 
 const executeUpdate = () => {
-  updateBrand(props.brandId, {
+  updateBrand(props.brandId!, {
     name: editedBrandName.value
   } as UpdateBrandRequest)
     .then(() => {
@@ -33,8 +33,8 @@ const executeUpdate = () => {
       alert("수정 성공")
       closeModal()
     })
-    .catch((error: AxiosError) => {
-      alert(error.response!.data!.message)
+    .catch((error: any) => {
+      alert(error.response.data.message)
     })
 }
 

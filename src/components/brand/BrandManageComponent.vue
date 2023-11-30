@@ -12,8 +12,8 @@ const initData = async () => {
     .then((response: AxiosResponse) => {
       brands.value = response.data.brandResponses
     })
-    .catch((error: AxiosError) => {
-      alert(error.response!.data!.message)
+    .catch((error: any) => {
+      alert(error.response.data.message)
     })
 }
 
