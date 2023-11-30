@@ -7,7 +7,7 @@ import type { AxiosError, AxiosResponse } from "axios"
 import { deleteBrand, getAllBrands } from "@/apis/brand/BrandClient"
 import type { ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
 
-const initData = async () => {
+const initData = () => {
   getAllBrands()
     .then((response: AxiosResponse) => {
       brands.value = response.data.brandResponses
