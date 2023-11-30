@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BannerManageComponent from "@/components/BannerManageComponent.vue"
-import BrandManageComponent from "@/components/BrandManageComponent.vue"
+import BrandManageComponent from "@/components/brand/BrandManageComponent.vue"
 import CategoryManageComponent from "@/components/CategoryManageComponent.vue"
 import CouponManagerComponent from "@/components/CouponManagerComponent.vue"
 import DashBoardComponent from "@/components/DashBoardComponent.vue"
