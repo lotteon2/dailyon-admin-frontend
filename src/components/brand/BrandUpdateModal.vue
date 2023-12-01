@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import type { AxiosError } from "axios"
 import { updateBrand } from "@/apis/brand/BrandClient"
 import type { UpdateBrandRequest } from "@/apis/brand/dto/BrandRequest"
-import type { ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
 
 const props = defineProps({
   brandId: {
@@ -34,7 +32,7 @@ const executeUpdate = () => {
       closeModal()
     })
     .catch((error: any) => {
-      alert(error.response.data.message)
+      alert(error.response!.data!.message)
     })
 }
 
