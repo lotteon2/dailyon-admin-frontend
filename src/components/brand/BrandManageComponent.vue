@@ -13,7 +13,7 @@ const initData = () => {
       brands.value = response.data.brandResponses
     })
     .catch((error: any) => {
-      alert(error.response.data.message)
+      alert(error.response!.data!.message)
     })
 }
 

@@ -21,7 +21,7 @@ const router = createRouter({
         {
           path: "/manage-category",
           name: "manage-category",
-          component: () => import("@/components/CategoryManageComponent.vue")
+          component: () => import("@/components/category/CategoryManageComponent.vue")
         },
         {
           path: "/manage-coupon",

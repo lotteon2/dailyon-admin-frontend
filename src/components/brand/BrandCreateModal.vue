@@ -27,7 +27,7 @@ const executeCreate = () => {
       closeModal()
     })
     .catch((error: any) => {
-      alert(error.response.data.message)
+      alert(error.response!.data!.message)
     })
 }
 
