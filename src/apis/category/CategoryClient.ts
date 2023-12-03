@@ -30,5 +30,3 @@ export const updateCategory = async (
     updateCategoryRequest
   )
 }
-
-// TODO : 리프 카테고리 api 하고 나서 추가
