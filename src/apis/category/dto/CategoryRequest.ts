@@ -1,6 +1,6 @@
 export interface CreateCategoryRequest {
   masterCategoryId: number | null
-  name: string
+  categoryName: string
 }
 
 export interface UpdateCategoryRequest {
