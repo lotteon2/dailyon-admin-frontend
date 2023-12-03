@@ -1,39 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { onBeforeMount, ref } from "vue"
 import type { ReadCategoryResponse } from "@/apis/category/dto/CategoryResponse"
 import CategoryCreateModal from "@/components/category/CategoryCreateModal.vue"
 import CategoryUpdateModal from "@/components/category/CategoryUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
+import type { AxiosError, AxiosResponse } from "axios"
+import { getAllCategories } from "@/apis/category/CategoryClient"
 
-// const categories = ref<Array<ReadCategoryResponse>>([])
+const initData = () => {
+  getAllCategories()
+    .then((response: AxiosResponse) => {
+      categories.value = response.data.allCategories
+    })
+    .catch((error: any) => {
+      alert(error.response.data.message)
+    })
+}
 
-// masterCategoryId 없어도 될 것 같은데?
-const categories = ref<Array<ReadCategoryResponse>>([
-  {
-    id: 1,
-    name: "상의",
-    masterId: null,
-    masterName: null
-  },
-  {
-    id: 2,
-    name: "아우터",
-    masterId: 1,
-    masterName: "상의"
-  },
-  {
-    id: 3,
-    name: "코트",
-    masterId: 1,
-    masterName: "상의"
-  },
-  {
-    id: 4,
-    name: "패딩",
-    masterId: 1,
-    masterName: "상의"
-  }
-])
+onBeforeMount(initData)
+
+const categories = ref<Array<ReadCategoryResponse>>([])
 
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
@@ -43,15 +29,16 @@ const selectedId = ref(0)
 const selectedName = ref("")
 const selectedMasterName = ref("")
 
-const openUpdateModal = (id: number, name: string, masterName: string, index: number) => {
+const openUpdateModal = (id: number, name: string, masterName: string | null, index: number) => {
   isUpdateModalVisible.value = true
   selectedId.value = id
   selectedName.value = name
-  selectedMasterName.value = masterName
+  selectedMasterName.value = masterName ?? "-"
   selectedIndex.value = index
 }
 
 const openCreateModal = () => {
+  console.log(categories.value)
   isCreateModalVisible.value = true
 }
 
@@ -77,6 +64,7 @@ const updateCategory = (data: { index: number; name: string }) => {
   <div class="category-container">
     <CategoryCreateModal
       :show-modal="isCreateModalVisible"
+      :all-categories="categories"
       @create-category="createCategory"
       @close-create-modal="closeCreateModal"
     />
@@ -105,12 +93,14 @@ const updateCategory = (data: { index: number; name: string }) => {
         <tbody>
           <tr v-for="(category, index) in categories" :key="index">
             <td>{{ category.id }}</td>
-            <td>{{ category.masterName }}</td>
+            <td>{{ category.masterCategoryName === null ? "-" : category.masterCategoryName }}</td>
             <td>{{ category.name }}</td>
             <td>
               <button
                 class="updateBtn"
-                @click="openUpdateModal(category.id, category.name, category.masterName, index)"
+                @click="
+                  openUpdateModal(category.id, category.name, category.masterCategoryName, index)
+                "
               >
                 수정
               </button>
