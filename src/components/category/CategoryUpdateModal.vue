@@ -32,7 +32,7 @@ const closeModal = () => {
 }
 
 const executeUpdate = () => {
-  updateCategory(props.categoryId, { name: editedName.value } as UpdateCategoryRequest)
+  updateCategory(props!.categoryId!, { name: editedName.value } as UpdateCategoryRequest)
     .then(() => {
       emits("update-category", { index: props.index, name: editedName.value })
       alert("수정 성공")
