@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue"
+import { onBeforeUpdate, ref } from "vue"
 import type { AxiosResponse } from "axios"
 import { createCategory } from "@/apis/category/CategoryClient"
 import type { CreateCategoryRequest } from "@/apis/category/dto/CategoryRequest"
@@ -13,46 +13,43 @@ interface Category {
 const props = defineProps({
   showModal: {
     type: Boolean
+  },
+  allCategories: {
+    type: Array<ReadCategoryResponse>
   }
+})
+
+onBeforeUpdate(() => {
+  categories = props.allCategories!.map((category) => ({
+    id: category.id,
+    name: category.name
+  }))
+  categories.push({ id: null, name: "-" } as Category)
 })
 
 const emits = defineEmits(["create-category", "close-create-modal"])
 
 const name = ref("")
-const masterCategory = reactive<Category>(undefined)
-
-// 모달이 켜질 때 매번 다시 가져와야 한다.
-const leaves = ref<Array<Category>>([
-  {
-    id: 2,
-    name: "아우터"
-  },
-  {
-    id: 3,
-    name: "코트"
-  },
-  {
-    id: 4,
-    name: "패딩"
-  }
-])
+const masterCategory = ref<Category>()
+let categories = Array<Category>()
 
 const closeModal = () => {
+  console.log(categories)
   name.value = ""
   emits("close-create-modal")
 }
 
 const executeCreate = () => {
   createCategory({
-    masterCategoryId: masterCategory.id,
-    name: name.value
+    masterCategoryId: masterCategory.value!.id,
+    categoryName: name.value
   } as CreateCategoryRequest)
     .then((axiosResponse: AxiosResponse) => {
       emits("create-category", {
         id: axiosResponse.data.categoryId,
         name: name.value,
-        masterId: masterCategory.name,
-        masterName: masterCategory.name
+        masterCategoryId: masterCategory.value!.id,
+        masterCategoryName: masterCategory.value!.name
       } as ReadCategoryResponse)
       alert("등록 성공")
       closeModal()
@@ -72,21 +69,15 @@ const executeCreate = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label">상위 카테고리 이름</label>
-        <select class="modal-select" v-model="masterCategory">
-          <option v-for="(leaf, index) in leaves" :key="index" :value="leaf">
-            {{ leaf.name }}
+        <select class="modal-select" v-model.lazy.number="masterCategory">
+          <option v-for="(category, index) in categories" :key="index" :value="category">
+            {{ category.name }}
           </option>
         </select>
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">카테고리 이름</label>
-        <input
-          class="modal-input"
-          type="text"
-          id="brandName"
-          v-model="name"
-          placeholder="카테고리 이름"
-        />
+        <input class="modal-input" type="text" v-model="name" placeholder="카테고리 이름" />
       </div>
       <div class="modal-button">
         <button class="checkBtn" @click="executeCreate">등록</button>
