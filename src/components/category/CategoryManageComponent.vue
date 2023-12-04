@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
-import type { ReadCategoryResponse } from "@/apis/category/dto/CategoryResponse"
 import CategoryCreateModal from "@/components/category/CategoryCreateModal.vue"
 import CategoryUpdateModal from "@/components/category/CategoryUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
-import type { AxiosError, AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
 import { getAllCategories } from "@/apis/category/CategoryClient"
+import { useCategoryStore } from "@/stores/CategoryStore"
+
+const categoryStore = useCategoryStore()
 
 const initData = () => {
   getAllCategories()
     .then((response: AxiosResponse) => {
-      categories.value = response.data.allCategories
+      categoryStore.setCategories(response)
     })
     .catch((error: any) => {
       alert(error.response.data.message)
@@ -18,8 +20,6 @@ const initData = () => {
 }
 
 onBeforeMount(initData)
-
-const categories = ref<Array<ReadCategoryResponse>>([])
 
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
@@ -38,7 +38,6 @@ const openUpdateModal = (id: number, name: string, masterName: string | null, in
 }
 
 const openCreateModal = () => {
-  console.log(categories.value)
   isCreateModalVisible.value = true
 }
 
@@ -49,23 +48,11 @@ const closeUpdateModal = () => {
 const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
-
-const createCategory = (data: ReadCategoryResponse) => {
-  categories!.value.push(data)
-  isCreateModalVisible.value = false
-}
-
-const updateCategory = (data: { index: number; name: string }) => {
-  categories!.value[data.index].name = data.name
-  isUpdateModalVisible.value = false
-}
 </script>
 <template>
   <div class="category-container">
     <CategoryCreateModal
       :show-modal="isCreateModalVisible"
-      :all-categories="categories"
-      @create-category="createCategory"
       @close-create-modal="closeCreateModal"
     />
     <CategoryUpdateModal
@@ -74,7 +61,6 @@ const updateCategory = (data: { index: number; name: string }) => {
       :category-id="selectedId"
       :category-name="selectedName"
       :index="selectedIndex"
-      @update-category="updateCategory"
       @close-update-modal="closeUpdateModal"
     />
     <div class="button-block">
@@ -91,7 +77,7 @@ const updateCategory = (data: { index: number; name: string }) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(category, index) in categories" :key="index">
+          <tr v-for="(category, index) in categoryStore.categories" :key="index">
             <td>{{ category.id }}</td>
             <td>{{ category.masterCategoryName === null ? "-" : category.masterCategoryName }}</td>
             <td>{{ category.name }}</td>

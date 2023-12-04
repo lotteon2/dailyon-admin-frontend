@@ -1,9 +1,6 @@
 import { authAxiosInstance } from "@/apis/utils"
 import { type AxiosResponse } from "axios"
-import type {
-  CreateCategoryRequest,
-  UpdateCategoryRequest
-} from "@/apis/category/dto/CategoryRequest"
+import type { CreateCategoryRequest, UpdateCategoryRequest } from "@/apis/category/CategoryDto"
 
 const PRODUCT_ADMIN_PREFIX: string = "/admin"
 const PRODUCT_CATEGORY_PREFIX: string = "/categories"
