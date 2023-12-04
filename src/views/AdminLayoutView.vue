@@ -6,7 +6,7 @@ import CouponManagerComponent from "@/components/CouponManagerComponent.vue"
 import DashBoardComponent from "@/components/DashBoardComponent.vue"
 import ProductManageComponent from "@/components/ProductManageComponent.vue"
 import RaffleManageComponent from "@/components/RaffleManageComponent.vue"
-import ProductSizeManageComponent from "@/components/ProductSizeManageComponent.vue"
+import ProductSizeManageComponent from "@/components/productsize/ProductSizeManageComponent.vue"
 import SideBarComponent from "@/components/SideBarComponent.vue"
 import HeaderComponent from "@/components/HeaderComponent.vue"
 </script>

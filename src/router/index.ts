@@ -46,7 +46,7 @@ const router = createRouter({
         {
           path: "/manage-product-size",
           name: "manage-product-size",
-          component: () => import("@/components/ProductSizeManageComponent.vue")
+          component: () => import("@/components/productsize/ProductSizeManageComponent.vue")
         },
         {
           path: "/manage-raffle",
