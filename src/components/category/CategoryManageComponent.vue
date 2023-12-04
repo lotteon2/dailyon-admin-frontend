@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from "vue"
-import type { ReadCategoryResponse } from "@/apis/category/dto/CategoryResponse"
 import CategoryCreateModal from "@/components/category/CategoryCreateModal.vue"
 import CategoryUpdateModal from "@/components/category/CategoryUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"

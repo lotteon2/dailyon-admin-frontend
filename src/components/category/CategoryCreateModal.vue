@@ -2,8 +2,11 @@
 import { onBeforeUpdate, ref } from "vue"
 import type { AxiosResponse } from "axios"
 import { createCategory } from "@/apis/category/CategoryClient"
-import type { CreateCategoryRequest } from "@/apis/category/dto/CategoryRequest"
-import type { ReadCategoryResponse, Category } from "@/apis/category/dto/CategoryResponse"
+import type {
+  CreateCategoryRequest,
+  ReadCategoryResponse,
+  Category
+} from "@/apis/category/CategoryDto"
 import { useCategoryStore } from "@/stores/CategoryStore"
 
 const categoryStore = useCategoryStore()

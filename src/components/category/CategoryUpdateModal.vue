@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateCategory } from "@/apis/category/CategoryClient"
-import type { UpdateCategoryRequest } from "@/apis/category/dto/CategoryRequest"
+import type { UpdateCategoryRequest, UpdateCategoryResponse } from "@/apis/category/CategoryDto"
 import { useCategoryStore } from "@/stores/CategoryStore"
-import type { UpdateCategoryResponse } from "@/apis/category/dto/CategoryResponse"
 
 const categoryStore = useCategoryStore()
 

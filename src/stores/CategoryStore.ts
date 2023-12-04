@@ -1,10 +1,7 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import type { AxiosResponse } from "axios"
-import type {
-  ReadCategoryResponse,
-  UpdateCategoryResponse
-} from "@/apis/category/dto/CategoryResponse"
+import type { ReadCategoryResponse, UpdateCategoryResponse } from "@/apis/category/CategoryDto"
 
 export const useCategoryStore = defineStore("category", () => {
   const categories = ref<Array<ReadCategoryResponse>>([])
