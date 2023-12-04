@@ -3,38 +3,35 @@ import { onBeforeUpdate, ref } from "vue"
 import type { AxiosResponse } from "axios"
 import { createCategory } from "@/apis/category/CategoryClient"
 import type { CreateCategoryRequest } from "@/apis/category/dto/CategoryRequest"
-import type { ReadCategoryResponse } from "@/apis/category/dto/CategoryResponse"
+import type { ReadCategoryResponse, Category } from "@/apis/category/dto/CategoryResponse"
+import { useCategoryStore } from "@/stores/CategoryStore"
 
-interface Category {
-  id: number | null
-  name: string | null
-}
+const categoryStore = useCategoryStore()
 
 const props = defineProps({
   showModal: {
     type: Boolean
-  },
-  allCategories: {
-    type: Array<ReadCategoryResponse>
   }
 })
 
 onBeforeUpdate(() => {
-  categories = props.allCategories!.map((category) => ({
-    id: category.id,
-    name: category.name
-  }))
+  categories = categoryStore.categories!.map(
+    (category) =>
+      ({
+        id: category.id,
+        name: category.name
+      }) as Category
+  )
   categories.push({ id: null, name: "-" } as Category)
 })
 
-const emits = defineEmits(["create-category", "close-create-modal"])
+const emits = defineEmits(["close-create-modal"])
 
 const name = ref("")
 const masterCategory = ref<Category>()
 let categories = Array<Category>()
 
 const closeModal = () => {
-  console.log(categories)
   name.value = ""
   emits("close-create-modal")
 }
@@ -45,7 +42,7 @@ const executeCreate = () => {
     categoryName: name.value
   } as CreateCategoryRequest)
     .then((axiosResponse: AxiosResponse) => {
-      emits("create-category", {
+      categoryStore.addCategory({
         id: axiosResponse.data.categoryId,
         name: name.value,
         masterCategoryId: masterCategory.value!.id,
