@@ -7,14 +7,16 @@ import type {
 } from "@/apis/productsize/ProductSizeDto"
 
 export const useProductSizeStore = defineStore("productSize", () => {
-  const productSizeMap = ref<Map<number, Ref<Array<ReadProductSizeResponse>>>>(new Map())
+  const productSizeMap = ref(new Map<number, Ref<Array<ReadProductSizeResponse>>>())
 
   function setProductSizeMap(categoryId: number, response: AxiosResponse) {
     productSizeMap.value.set(categoryId, ref(response.data.productSizes))
   }
 
   function addProductSize(categoryId: number, productSize: ReadProductSizeResponse) {
-    productSizeMap.value.get(categoryId).value.unshift(productSize)
+    console.log(productSizeMap.value)
+    console.log(productSizeMap.value.keys())
+    productSizeMap.value.get(categoryId).value.unshift(ref(productSize))
   }
 
   function updateProductSize(categoryId: number, productSize: UpdateProductSizeDto) {

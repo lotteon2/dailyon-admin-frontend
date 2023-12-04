@@ -3,7 +3,7 @@ import type { AxiosResponse } from "axios"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import { useProductSizeStore } from "@/stores/ProductSizeStore"
 import { getAllCategories } from "@/apis/category/CategoryClient"
-import { onBeforeMount, ref, watch } from "vue"
+import { onBeforeMount, onMounted, ref, watch } from "vue"
 import ProductSizeCreateModal from "@/components/productsize/ProductSizeCreateModal.vue"
 import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
@@ -23,10 +23,7 @@ const initData = () => {
 }
 
 const setProductSizeByCategory = () => {
-  if (
-    selectedCategory.value.id > 0 &&
-    !productSizeStore.productSizeMap.has(selectedCategory.value?.id)
-  ) {
+  if (!productSizeStore.productSizeMap.has(selectedCategory.value?.id)) {
     getProductSizesByCategory(selectedCategory.value?.id)
       .then((response: AxiosResponse) => {
         productSizeStore.setProductSizeMap(selectedCategory.value?.id, response)
@@ -37,17 +34,12 @@ const setProductSizeByCategory = () => {
   }
 }
 
-onBeforeMount(initData)
+onMounted(initData)
 
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
 
-const selectedCategory = ref<ReadCategoryResponse>({
-  id: 0,
-  name: "NULL",
-  masterCategoryId: null,
-  masterCategoryName: null
-} as ReadCategoryResponse)
+const selectedCategory = ref<ReadCategoryResponse>()
 
 watch(selectedCategory, setProductSizeByCategory)
 
@@ -99,9 +91,9 @@ const closeCreateModal = () => {
         </thead>
         <tbody>
           <tr
-            v-for="(productSize, index) in productSizeStore.productSizeMap.value.get(
+            v-for="(productSize, index) in productSizeStore.productSizeMap?.get(
               selectedCategory?.id
-            ).value"
+            )?.value"
             :key="index"
           >
             <td>{{ productSize.id }}</td>
