@@ -14,10 +14,12 @@ const props = defineProps({
     type: Boolean
   },
   selectedCategoryId: {
-    type: Number
+    type: Number,
+    required: true
   },
   selectedCategoryName: {
-    type: String
+    type: String,
+    required: true
   }
 })
 

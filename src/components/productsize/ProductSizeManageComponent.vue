@@ -3,7 +3,7 @@ import type { AxiosResponse } from "axios"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import { useProductSizeStore } from "@/stores/ProductSizeStore"
 import { getAllCategories } from "@/apis/category/CategoryClient"
-import { onBeforeMount, onMounted, ref, watch } from "vue"
+import { onMounted, ref, watch } from "vue"
 import ProductSizeCreateModal from "@/components/productsize/ProductSizeCreateModal.vue"
 import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
@@ -23,10 +23,10 @@ const initData = () => {
 }
 
 const setProductSizeByCategory = () => {
-  if (!productSizeStore.productSizeMap.has(selectedCategory.value?.id)) {
-    getProductSizesByCategory(selectedCategory.value?.id)
+  if (!productSizeStore.productSizeMap.has(selectedCategory.value!.id)) {
+    getProductSizesByCategory(selectedCategory.value!.id)
       .then((response: AxiosResponse) => {
-        productSizeStore.setProductSizeMap(selectedCategory.value?.id, response)
+        productSizeStore.setProductSizeMap(selectedCategory.value!.id, response)
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
@@ -60,8 +60,8 @@ const closeCreateModal = () => {
   <div class="product-size-container">
     <ProductSizeCreateModal
       :show-modal="isCreateModalVisible"
-      :selected-category-id="selectedCategory?.id"
-      :selected-category-name="selectedCategory?.name"
+      :selected-category-id="selectedCategory!.id"
+      :selected-category-name="selectedCategory!.name"
       @close-create-modal="closeCreateModal"
     />
     <ProductSizeUpdateModal
@@ -92,7 +92,7 @@ const closeCreateModal = () => {
         <tbody>
           <tr
             v-for="(productSize, index) in productSizeStore.productSizeMap?.get(
-              selectedCategory?.id
+              selectedCategory!.id
             )?.value"
             :key="index"
           >

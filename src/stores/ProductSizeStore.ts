@@ -14,11 +14,11 @@ export const useProductSizeStore = defineStore("productSize", () => {
   }
 
   function addProductSize(categoryId: number, productSize: ReadProductSizeResponse) {
-    productSizeMap.value.get(categoryId).value.unshift(productSize)
+    productSizeMap.value.get(categoryId)?.value.unshift(productSize)
   }
 
   function updateProductSize(categoryId: number, productSize: UpdateProductSizeDto) {
-    productSizeMap.value.get(categoryId).value[productSize.index].name = productSize.name
+    productSizeMap.value.get(categoryId)!.value[productSize.index].name = productSize.name
   }
 
   return { productSizeMap, setProductSizeMap, addProductSize, updateProductSize }
