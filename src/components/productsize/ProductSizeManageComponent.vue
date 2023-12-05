@@ -36,12 +36,28 @@ const setProductSizeByCategory = () => {
 
 onMounted(initData)
 
-const isCreateModalVisible = ref(false)
-const isUpdateModalVisible = ref(false)
+const isCreateModalVisible = ref<boolean>(false)
+const isUpdateModalVisible = ref<boolean>(false)
 
-const selectedCategory = ref<ReadCategoryResponse>()
+const selectedIndex = ref<number>(0)
+const selectedId = ref<number>(0)
+const selectedName = ref<string>("")
+
+const selectedCategory = ref<ReadCategoryResponse>({
+  id: 0,
+  masterCategoryId: 0,
+  masterCategoryName: "",
+  name: ""
+} as ReadCategoryResponse)
 
 watch(selectedCategory, setProductSizeByCategory)
+
+const openUpdateModal = (index: number, id: number, name: string) => {
+  isUpdateModalVisible.value = true
+  selectedIndex.value = index
+  selectedId.value = id
+  selectedName.value = name
+}
 
 const closeUpdateModal = () => {
   isUpdateModalVisible.value = false
@@ -60,12 +76,16 @@ const closeCreateModal = () => {
   <div class="product-size-container">
     <ProductSizeCreateModal
       :show-modal="isCreateModalVisible"
-      :selected-category-id="selectedCategory!.id"
-      :selected-category-name="selectedCategory!.name"
+      :selected-category-id="selectedCategory.id"
+      :selected-category-name="selectedCategory.name"
       @close-create-modal="closeCreateModal"
     />
     <ProductSizeUpdateModal
       :show-modal="isUpdateModalVisible"
+      :index="selectedIndex"
+      :product-size-id="selectedId"
+      :selected-category-id="selectedCategory.id"
+      :selected-category-name="selectedCategory.name"
       @close-update-modal="closeUpdateModal"
     />
     <div class="head-block">
@@ -91,15 +111,19 @@ const closeCreateModal = () => {
         </thead>
         <tbody>
           <tr
-            v-for="(productSize, index) in productSizeStore.productSizeMap?.get(
-              selectedCategory!.id
-            )?.value"
+            v-for="(productSize, index) in productSizeStore.productSizeMap.get(selectedCategory.id)
+              ?.value"
             :key="index"
           >
             <td>{{ productSize.id }}</td>
             <td>{{ productSize.name }}</td>
             <td>
-              <button class="updateBtn">수정</button>
+              <button
+                class="updateBtn"
+                @click="openUpdateModal(index, productSize.id, productSize.name)"
+              >
+                수정
+              </button>
               <button class="deleteBtn">삭제</button>
             </td>
           </tr>
