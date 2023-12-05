@@ -26,7 +26,7 @@ const props = defineProps({
 const emits = defineEmits(["close-create-modal"])
 
 const productSizeStore = useProductSizeStore()
-const name = ref("")
+const name = ref<string>("")
 
 const executeCreate = () => {
   createProductSize({
