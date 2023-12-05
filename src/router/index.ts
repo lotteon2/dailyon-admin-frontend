@@ -26,7 +26,7 @@ const router = createRouter({
         {
           path: "/manage-coupon",
           name: "manage-coupon",
-          component: () => import("@/components/CouponManagerComponent.vue")
+          component: () => import("@/components/coupon/CouponManagerComponent.vue")
         },
         {
           path: "/manage-banner",
