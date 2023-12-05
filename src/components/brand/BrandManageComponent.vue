@@ -5,7 +5,7 @@ import BrandUpdateModal from "@/components/brand/BrandUpdateModal.vue"
 import BrandCreateModal from "@/components/brand/BrandCreateModal.vue"
 import type { AxiosError, AxiosResponse } from "axios"
 import { deleteBrand, getAllBrands } from "@/apis/brand/BrandClient"
-import type { ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
+import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 
 const initData = () => {
   getAllBrands()
@@ -19,12 +19,12 @@ const initData = () => {
 
 onBeforeMount(initData)
 
-const brands = ref<Array<ReadBrandResponse>>([])
-const isCreateModalVisible = ref(false)
-const isUpdateModalVisible = ref(false)
-const selectedBrandId = ref()
-const selectedBrandName = ref()
-const brandIndex = ref(0)
+const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
+const isCreateModalVisible = ref<boolean>(false)
+const isUpdateModalVisible = ref<boolean>(false)
+const selectedBrandId = ref<number>(0)
+const selectedBrandName = ref<string>("")
+const brandIndex = ref<number>(0)
 
 const openUpdateModal = (brandId: number, brandName: string, index: number) => {
   isUpdateModalVisible.value = true
@@ -46,12 +46,12 @@ const closeCreateModal = () => {
 }
 
 const createBrand = (data: ReadBrandResponse) => {
-  brands!.value.push(data)
+  brands.value.push(data)
   isCreateModalVisible.value = false
 }
 
 const updateBrand = (data: { index: number; name: string }) => {
-  brands!.value[data.index].name = data.name
+  brands.value[data.index].name = data.name
   isUpdateModalVisible.value = false
 }
 

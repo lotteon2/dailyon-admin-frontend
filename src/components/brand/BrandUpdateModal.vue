@@ -1,29 +1,32 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateBrand } from "@/apis/brand/BrandClient"
-import type { UpdateBrandRequest } from "@/apis/brand/dto/BrandRequest"
+import type { UpdateBrandRequest } from "@/apis/brand/BrandDto"
 
 const props = defineProps({
   brandId: {
-    type: Number
+    type: Number,
+    required: true
   },
   brandName: {
-    type: String
+    type: String,
+    required: true
   },
   showModal: {
     type: Boolean
   },
   index: {
-    type: Number
+    type: Number,
+    required: true
   }
 })
 
 const emits = defineEmits(["update-brand", "close-update-modal"])
 
-const editedBrandName = ref("")
+const editedBrandName = ref<string>("")
 
 const executeUpdate = () => {
-  updateBrand(props.brandId!, {
+  updateBrand(props.brandId, {
     name: editedBrandName.value
   } as UpdateBrandRequest)
     .then(() => {

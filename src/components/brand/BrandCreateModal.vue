@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import type { AxiosError, AxiosResponse } from "axios"
+import type { AxiosResponse } from "axios"
 import { createBrand } from "@/apis/brand/BrandClient"
-import type { CreateBrandRequest } from "@/apis/brand/dto/BrandRequest"
-import type { CreateBrandResponse, ReadBrandResponse } from "@/apis/brand/dto/BrandResponse"
+import type {
+  CreateBrandRequest,
+  CreateBrandResponse,
+  ReadBrandResponse
+} from "@/apis/brand/BrandDto"
 
 const props = defineProps({
   showModal: {
@@ -13,7 +16,7 @@ const props = defineProps({
 
 const emits = defineEmits(["create-brand", "close-create-modal"])
 
-const brandName = ref("")
+const brandName = ref<string>("")
 
 const executeCreate = () => {
   createBrand({ name: brandName.value } as CreateBrandRequest)
