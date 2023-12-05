@@ -14,9 +14,7 @@ export const useProductSizeStore = defineStore("productSize", () => {
   }
 
   function addProductSize(categoryId: number, productSize: ReadProductSizeResponse) {
-    console.log(productSizeMap.value)
-    console.log(productSizeMap.value.keys())
-    productSizeMap.value.get(categoryId).value.unshift(ref(productSize))
+    productSizeMap.value.get(categoryId).value.unshift(productSize)
   }
 
   function updateProductSize(categoryId: number, productSize: UpdateProductSizeDto) {

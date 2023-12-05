@@ -30,18 +30,19 @@ const executeCreate = () => {
   createProductSize({
     categoryId: props.selectedCategoryId,
     name: name.value
-  } as CreateProductSizeRequest).then((axiosResponse: AxiosResponse) => {
-    const response: CreateProductSizeResponse = axiosResponse.data
-    productSizeStore.addProductSize(response.productSizeId, {
-      id: props.selectedCategoryId,
-      name: name.value
-    } as ReadProductSizeResponse)
-    alert("등록 성공")
-    closeModal()
-  })
-  // .catch((error: any) => {
-  //   alert(error.response!.data!.message)
-  // })
+  } as CreateProductSizeRequest)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: CreateProductSizeResponse = axiosResponse.data
+      productSizeStore.addProductSize(props.selectedCategoryId, {
+        id: response.productSizeId,
+        name: name.value
+      } as ReadProductSizeResponse)
+      alert("등록 성공")
+      closeModal()
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 
 const closeModal = () => {
