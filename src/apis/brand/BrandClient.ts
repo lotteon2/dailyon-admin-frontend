@@ -1,6 +1,6 @@
 import { authAxiosInstance } from "@/apis/utils"
 import { type AxiosResponse } from "axios"
-import type { CreateBrandRequest, UpdateBrandRequest } from "@/apis/brand/dto/BrandRequest"
+import type { CreateBrandRequest, UpdateBrandRequest } from "@/apis/brand/BrandDto"
 
 const PRODUCT_BRAND_PREFIX: string = "/brands"
 const PRODUCT_ADMIN_PREFIX: string = "/admin"
