@@ -14,3 +14,9 @@ export interface ReadBrandResponse {
 export interface CreateBrandResponse {
   brandId: number
 }
+
+export interface ReadBrandPageResponse {
+  totalElements: number
+  totalPages: number
+  brandResponses: Array<ReadBrandResponse>
+}
