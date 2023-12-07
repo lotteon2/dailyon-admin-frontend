@@ -2,6 +2,7 @@ import { authAxiosInstance } from "@/apis/utils"
 import { type AxiosResponse } from "axios"
 import type { CreateBrandRequest, UpdateBrandRequest } from "@/apis/brand/BrandDto"
 
+const PRODUCT_SERVICE_PREFIX: string = "/product-service"
 const PRODUCT_BRAND_PREFIX: string = "/brands"
 const PRODUCT_ADMIN_PREFIX: string = "/admin"
 
@@ -10,7 +11,7 @@ export const getAllBrands = async (): Promise<AxiosResponse> => {
 }
 
 export const getBrandPages = async (page: number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_BRAND_PREFIX, {
+  return await authAxiosInstance.get(`${PRODUCT_ADMIN_PREFIX}/page${PRODUCT_BRAND_PREFIX}`, {
     params: { page: page }
   })
 }
@@ -29,11 +30,11 @@ export const updateBrand = async (
   updateBrandRequest: UpdateBrandRequest
 ): Promise<AxiosResponse> => {
   return await authAxiosInstance.put(
-    PRODUCT_ADMIN_PREFIX + PRODUCT_BRAND_PREFIX + "/" + brandId,
+    `${PRODUCT_ADMIN_PREFIX}${PRODUCT_BRAND_PREFIX}/${brandId}`,
     updateBrandRequest
   )
 }
 
 export const deleteBrand = async (brandId: number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.put(PRODUCT_ADMIN_PREFIX + PRODUCT_BRAND_PREFIX + "/" + brandId)
+  return await authAxiosInstance.put(`${PRODUCT_ADMIN_PREFIX}${PRODUCT_BRAND_PREFIX}/${brandId}`)
 }

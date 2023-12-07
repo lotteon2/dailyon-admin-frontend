@@ -2,6 +2,7 @@ import { authAxiosInstance } from "@/apis/utils"
 import { type AxiosResponse } from "axios"
 import type { CreateCategoryRequest, UpdateCategoryRequest } from "@/apis/category/CategoryDto"
 
+const PRODUCT_SERVICE_PREFIX: string = "/product-service"
 const PRODUCT_ADMIN_PREFIX: string = "/admin"
 const PRODUCT_CATEGORY_PREFIX: string = "/categories"
 
@@ -10,7 +11,7 @@ export const getAllCategories = async (): Promise<AxiosResponse> => {
 }
 
 export const getCategoryPages = async (page: number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_CATEGORY_PREFIX, {
+  return await authAxiosInstance.get(`${PRODUCT_ADMIN_PREFIX}/page${PRODUCT_CATEGORY_PREFIX}`, {
     params: { page: page }
   })
 }

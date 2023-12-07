@@ -15,13 +15,16 @@ const props = defineProps({
     default: ""
   },
   categoryId: {
-    type: Number
+    type: Number,
+    required: true
   },
   categoryName: {
-    type: String
+    type: String,
+    required: true
   },
   index: {
-    type: Number
+    type: Number,
+    required: true
   }
 })
 
@@ -35,7 +38,7 @@ const closeModal = () => {
 }
 
 const executeUpdate = () => {
-  updateCategory(props!.categoryId!, { name: editedName.value } as UpdateCategoryRequest)
+  updateCategory(props.categoryId, { name: editedName.value } as UpdateCategoryRequest)
     .then(() => {
       categoryStore.updateCategory({
         index: props.index,

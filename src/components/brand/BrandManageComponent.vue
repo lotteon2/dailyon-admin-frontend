@@ -82,11 +82,7 @@ const createBrand = (data: ReadBrandResponse) => {
 }
 
 const updateBrand = (data: UpdateBrandDto) => {
-  const objToMove: ReadBrandResponse = brands.value[data.index]
-  objToMove.name = data.name
-
-  brands.value.splice(data.index, 1)
-  brands.value.unshift(objToMove)
+  brands.value[data.index].name = data.name
   isUpdateModalVisible.value = false
 }
 
