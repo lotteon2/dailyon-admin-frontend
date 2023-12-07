@@ -10,6 +10,10 @@ export const createCouponInfo = async (body: CouponCreateRequest): Promise<Axios
   return await authAxiosInstance.post(COUPON_ADMIN_PREFIX + COUPON_PREFIX, body)
 }
 
+export const updateCouponInfo = async (couponInfoId:number, body: CouponUpdateRequest): Promise<AxiosResponse> => {
+  return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`, body)
+}
+
 export const getCouponInfoPage = async (size?: number, page?: number): Promise<CouponPageResponse> => {
   let queryParams: string[] = [];
   if (size != null) {

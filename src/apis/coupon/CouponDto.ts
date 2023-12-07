@@ -11,6 +11,7 @@ export interface CouponCreateRequest {
     
     appliesToType: string;
     appliesToId: number;
+    appliesToName: string;
 
     requiresConcurrencyControl: boolean;
     targetImgUrl?: string;     // Optional
@@ -19,36 +20,58 @@ export interface CouponCreateRequest {
     maxDiscountAmount?: number; // Optional
 }
 
+export interface CouponUpdateRequest {
+  name: string;
+    
+  discountType: string;
+  discountValue: number;
+
+  startAt: string; // ISO 8601 date-time string format
+  endAt: string;   // ISO 8601 date-time string format
+
+  issuedQuantity: number;
+    
+  appliesToType: string;
+  appliesToId: number;
+  appliesToName: string;
+
+  requiresConcurrencyControl: boolean;
+  targetImgUrl?: string;     // Optional
+
+  minPurchaseAmount?: number; // Optional
+  maxDiscountAmount?: number; // Optional
+}
+
 export interface CouponInfo {
-    id: number;
-    name: string;
-    discountType: string;
-    discountValue: number;
-    startAt: string;
-    endAt: string;
-    remainingQuantity: number;
-    totalQuantity: number;
-    appliesToType: string;
-    appliesToId: number;
-    appliesToName: string;
-    requiresConcurrencyControl: boolean;
-    targetImgUrl?: string;
-    minPurchaseAmount?: number;
-    maxDiscountAmount?: number;
-  }
+  id: number;
+  name: string;
+  discountType: string;
+  discountValue: number;
+  startAt: string;
+  endAt: string;
+  remainingQuantity: number;
+  totalQuantity: number;
+  appliesToType: string;
+  appliesToId: number;
+  appliesToName: string;
+  requiresConcurrencyControl: boolean;
+  targetImgUrl?: string;
+  minPurchaseAmount?: number;
+  maxDiscountAmount?: number;
+}
 
 export interface CouponInfoPageResponse {
-    values: CouponInfo[];
-    totalPages: number;
+  values: CouponInfo[];
+  totalPages: number;
 }
 
 export const getDiscountTypeDisplayValue = (discountType: string) => {
-    const discountTypeMap: Record<string, string> = {
-      PERCENTAGE: '정률',
-      FIXED_AMOUNT: '정액',
-    };
-    return discountTypeMap[discountType] || discountType; // default to the same value if not found in the map
+  const discountTypeMap: Record<string, string> = {
+    PERCENTAGE: '정률',
+    FIXED_AMOUNT: '정액',
   };
+  return discountTypeMap[discountType] || discountType; // default to the same value if not found in the map
+};
 
 export const formatDiscountValue = (discountType: string, discountValue: number): string => {
   switch (discountType) {
