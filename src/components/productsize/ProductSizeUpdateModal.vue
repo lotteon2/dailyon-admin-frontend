@@ -37,7 +37,7 @@ const emits = defineEmits(["close-update-modal"])
 const executeUpdate = () => {
   updateProductSize(props.productSizeId, { name: name.value } as UpdateProductSizeRequest)
     .then(() => {
-      productSizeStore.updateProductSize(props.selectedCategoryId, {
+      productSizeStore.updateProductSize({
         index: props.index,
         name: name.value
       } as UpdateProductSizeDto)

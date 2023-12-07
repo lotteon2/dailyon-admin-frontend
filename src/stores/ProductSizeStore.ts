@@ -1,25 +1,24 @@
 import { defineStore } from "pinia"
-import { type Ref, ref } from "vue"
-import type { AxiosResponse } from "axios"
+import { ref } from "vue"
 import type {
   ReadProductSizeResponse,
   UpdateProductSizeDto
 } from "@/apis/productsize/ProductSizeDto"
 
 export const useProductSizeStore = defineStore("productSize", () => {
-  const productSizeMap = ref(new Map<number, Ref<Array<ReadProductSizeResponse>>>())
+  const productSizes = ref<Array<ReadProductSizeResponse>>([])
 
-  function setProductSizeMap(categoryId: number, response: AxiosResponse) {
-    productSizeMap.value.set(categoryId, ref(response.data.productSizes))
+  function setProductSizes(data: Array<ReadProductSizeResponse>) {
+    productSizes.value = data
   }
 
-  function addProductSize(categoryId: number, productSize: ReadProductSizeResponse) {
-    productSizeMap.value.get(categoryId)?.value.unshift(productSize)
+  function addProductSize(data: ReadProductSizeResponse) {
+    productSizes.value.unshift(data)
   }
 
-  function updateProductSize(categoryId: number, productSize: UpdateProductSizeDto) {
-    productSizeMap.value.get(categoryId)!.value[productSize.index].name = productSize.name
+  function updateProductSize(data: UpdateProductSizeDto) {
+    productSizes.value[data.index].name = data.name
   }
 
-  return { productSizeMap, setProductSizeMap, addProductSize, updateProductSize }
+  return { productSizes, setProductSizes, addProductSize, updateProductSize }
 })

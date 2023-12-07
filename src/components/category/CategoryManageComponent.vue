@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue"
+import { onBeforeMount, ref, watch } from "vue"
 import CategoryCreateModal from "@/components/category/CategoryCreateModal.vue"
 import CategoryUpdateModal from "@/components/category/CategoryUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import type { AxiosResponse } from "axios"
-import { getAllCategories } from "@/apis/category/CategoryClient"
+import { getCategoryPages } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
+import type { ReadCategoryPageResponse } from "@/apis/category/CategoryDto"
 
 const categoryStore = useCategoryStore()
 
 const initData = () => {
-  getAllCategories()
-    .then((response: AxiosResponse) => {
-      categoryStore.setCategories(response)
+  getCategoryPages(requestPage.value)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadCategoryPageResponse = axiosResponse.data
+      categoryStore.setCategories(response.responses)
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
     })
     .catch((error: any) => {
       alert(error.response.data.message)
@@ -21,6 +25,10 @@ const initData = () => {
 
 onBeforeMount(initData)
 
+const requestPage = ref<number>(0)
+const totalPages = ref<number>(0)
+const totalElements = ref<number>(0)
+
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
 
@@ -28,6 +36,27 @@ const selectedIndex = ref(0)
 const selectedId = ref(0)
 const selectedName = ref("")
 const selectedMasterName = ref("")
+
+const onChangePage = async (page: number) => {
+  if (0 <= page && page < totalPages.value) {
+    requestPage.value = page
+  }
+}
+
+watch(requestPage, async (afterPage: number, beforePage: number) => {
+  if (afterPage < totalPages.value) {
+    getCategoryPages(afterPage)
+      .then((axiosResponse: AxiosResponse) => {
+        const response: ReadCategoryPageResponse = axiosResponse.data
+        categoryStore.setCategories(response.responses)
+        totalPages.value = response.totalPages
+        totalElements.value = response.totalElements
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+})
 
 const openUpdateModal = (id: number, name: string, masterName: string | null, index: number) => {
   isUpdateModalVisible.value = true
@@ -96,7 +125,11 @@ const closeCreateModal = () => {
         </tbody>
       </table>
     </div>
-    <PaginationComponent />
+    <PaginationComponent
+      :request-page="requestPage"
+      :total-pages="totalPages"
+      :on-change-page="onChangePage"
+    />
   </div>
 </template>
 

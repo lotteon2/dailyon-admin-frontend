@@ -1,16 +1,23 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue"
+import { onBeforeMount, ref, watch } from "vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import BrandUpdateModal from "@/components/brand/BrandUpdateModal.vue"
 import BrandCreateModal from "@/components/brand/BrandCreateModal.vue"
-import type { AxiosError, AxiosResponse } from "axios"
-import { deleteBrand, getAllBrands } from "@/apis/brand/BrandClient"
-import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
+import type { AxiosResponse } from "axios"
+import { getBrandPages } from "@/apis/brand/BrandClient"
+import type {
+  ReadBrandPageResponse,
+  ReadBrandResponse,
+  UpdateBrandDto
+} from "@/apis/brand/BrandDto"
 
 const initData = () => {
-  getAllBrands()
-    .then((response: AxiosResponse) => {
-      brands.value = response.data.brandResponses
+  getBrandPages(requestPage.value)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadBrandPageResponse = axiosResponse.data
+      totalElements.value = response.totalElements
+      totalPages.value = response.totalPages
+      brands.value = response.brandResponses
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
@@ -19,12 +26,36 @@ const initData = () => {
 
 onBeforeMount(initData)
 
+const requestPage = ref<number>(0)
+const totalPages = ref<number>(0)
+const totalElements = ref<number>(0)
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const isCreateModalVisible = ref<boolean>(false)
 const isUpdateModalVisible = ref<boolean>(false)
 const selectedBrandId = ref<number>(0)
 const selectedBrandName = ref<string>("")
 const brandIndex = ref<number>(0)
+
+const onChangePage = async (page: number) => {
+  if (0 <= page && page < totalPages.value) {
+    requestPage.value = page
+  }
+}
+
+watch(requestPage, async (afterPage: number, beforePage: number) => {
+  if (afterPage < totalPages.value) {
+    getBrandPages(afterPage)
+      .then((axiosResponse: AxiosResponse) => {
+        const response: ReadBrandPageResponse = axiosResponse.data
+        totalElements.value = response.totalElements
+        totalPages.value = response.totalPages
+        brands.value = response.brandResponses
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+})
 
 const openUpdateModal = (brandId: number, brandName: string, index: number) => {
   isUpdateModalVisible.value = true
@@ -46,11 +77,11 @@ const closeCreateModal = () => {
 }
 
 const createBrand = (data: ReadBrandResponse) => {
-  brands.value.push(data)
+  brands.value.unshift(data)
   isCreateModalVisible.value = false
 }
 
-const updateBrand = (data: { index: number; name: string }) => {
+const updateBrand = (data: UpdateBrandDto) => {
   brands.value[data.index].name = data.name
   isUpdateModalVisible.value = false
 }
@@ -110,7 +141,11 @@ const executeDelete = (brandId: number, index: number) => {
         </tbody>
       </table>
     </div>
-    <PaginationComponent />
+    <PaginationComponent
+      :on-change-page="onChangePage"
+      :request-page="requestPage"
+      :total-pages="totalPages"
+    />
   </div>
 </template>
 
