@@ -10,7 +10,13 @@ export interface ReadCategoryResponse {
   masterCategoryName: null | string
 }
 
-export interface UpdateCategoryResponse {
+export interface ReadCategoryPageResponse {
+  totalElements: number
+  totalPages: number
+  responses: Array<ReadCategoryResponse>
+}
+
+export interface UpdateCategoryDto {
   index: number
   name: string
 }

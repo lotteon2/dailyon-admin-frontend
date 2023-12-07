@@ -9,6 +9,12 @@ export const getAllCategories = async (): Promise<AxiosResponse> => {
   return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + PRODUCT_CATEGORY_PREFIX)
 }
 
+export const getCategoryPages = async (page: number): Promise<AxiosResponse> => {
+  return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_CATEGORY_PREFIX, {
+    params: { page: page }
+  })
+}
+
 export const createCategory = async (
   createCategoryRequest: CreateCategoryRequest
 ): Promise<AxiosResponse> => {

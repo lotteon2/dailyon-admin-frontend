@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateCategory } from "@/apis/category/CategoryClient"
-import type { UpdateCategoryRequest, UpdateCategoryResponse } from "@/apis/category/CategoryDto"
+import type { UpdateCategoryRequest, UpdateCategoryDto } from "@/apis/category/CategoryDto"
 import { useCategoryStore } from "@/stores/CategoryStore"
 
 const categoryStore = useCategoryStore()
@@ -40,7 +40,7 @@ const executeUpdate = () => {
       categoryStore.updateCategory({
         index: props.index,
         name: editedName.value
-      } as UpdateCategoryResponse)
+      } as UpdateCategoryDto)
       alert("수정 성공")
       closeModal()
     })
