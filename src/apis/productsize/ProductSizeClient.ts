@@ -12,6 +12,18 @@ export const getProductSizesByCategory = async (categoryId: number): Promise<Axi
   return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + PRODUCT_SIZE_PREFIX + "/" + categoryId)
 }
 
+export const getProductSizePagesByCategory = async (
+  categoryId: number,
+  page: number
+): Promise<AxiosResponse> => {
+  return await authAxiosInstance.get(
+    PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_SIZE_PREFIX + "/" + categoryId,
+    {
+      params: { page: page }
+    }
+  )
+}
+
 export const createProductSize = async (body: CreateProductSizeRequest): Promise<AxiosResponse> => {
   return await authAxiosInstance.post(PRODUCT_ADMIN_PREFIX + PRODUCT_SIZE_PREFIX, body)
 }

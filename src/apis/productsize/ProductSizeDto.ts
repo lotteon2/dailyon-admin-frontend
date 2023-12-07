@@ -12,6 +12,12 @@ export interface ReadProductSizeResponse {
   name: string
 }
 
+export interface ReadProductSizePageResponse {
+  totalPages: number
+  totalElements: number
+  productSizes: Array<ReadProductSizeResponse>
+}
+
 export interface UpdateProductSizeRequest {
   name: string
 }

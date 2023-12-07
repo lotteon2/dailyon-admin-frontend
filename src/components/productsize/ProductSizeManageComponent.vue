@@ -6,35 +6,43 @@ import { getAllCategories } from "@/apis/category/CategoryClient"
 import { onMounted, ref, watch } from "vue"
 import ProductSizeCreateModal from "@/components/productsize/ProductSizeCreateModal.vue"
 import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
-import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
+import { getProductSizePagesByCategory } from "@/apis/productsize/ProductSizeClient"
 import type { ReadCategoryResponse } from "@/apis/category/CategoryDto"
+import PaginationComponent from "@/components/PaginationComponent.vue"
+import type { ReadProductSizePageResponse } from "@/apis/productsize/ProductSizeDto"
 
 const categoryStore = useCategoryStore()
 const productSizeStore = useProductSizeStore()
 
 const initData = () => {
   getAllCategories()
-    .then((response: AxiosResponse) => {
+    .then((axiosResponse: AxiosResponse) => {
+      const response: Array<ReadCategoryResponse> = axiosResponse.data.allCategories
       categoryStore.setCategories(response)
     })
     .catch((error: any) => {
-      alert(error.response.data.message)
+      alert(error.response!.data!.message)
     })
 }
 
 const setProductSizeByCategory = () => {
-  if (!productSizeStore.productSizeMap.has(selectedCategory.value!.id)) {
-    getProductSizesByCategory(selectedCategory.value!.id)
-      .then((response: AxiosResponse) => {
-        productSizeStore.setProductSizeMap(selectedCategory.value!.id, response)
-      })
-      .catch((error: any) => {
-        alert(error.response!.data!.message)
-      })
-  }
+  getProductSizePagesByCategory(selectedCategory.value.id, requestPage.value)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductSizePageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      productSizeStore.setProductSizes(response.productSizes)
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 
 onMounted(initData)
+
+const requestPage = ref<number>(0)
+const totalPages = ref<number>(0)
+const totalElements = ref<number>(0)
 
 const isCreateModalVisible = ref<boolean>(false)
 const isUpdateModalVisible = ref<boolean>(false)
@@ -50,7 +58,28 @@ const selectedCategory = ref<ReadCategoryResponse>({
   name: ""
 } as ReadCategoryResponse)
 
+const onChangePage = async (page: number) => {
+  if (0 <= page && page < totalPages.value) {
+    requestPage.value = page
+  }
+}
+
 watch(selectedCategory, setProductSizeByCategory)
+
+watch(requestPage, async (afterPage: number, beforePage: number) => {
+  if (afterPage < totalPages.value) {
+    getProductSizePagesByCategory(selectedCategory.value.id, afterPage)
+      .then((axiosResponse: AxiosResponse) => {
+        const response: ReadProductSizePageResponse = axiosResponse.data
+        totalPages.value = response.totalPages
+        totalElements.value = response.totalElements
+        productSizeStore.setProductSizes(response.productSizes)
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+})
 
 const openUpdateModal = (index: number, id: number, name: string) => {
   isUpdateModalVisible.value = true
@@ -110,11 +139,7 @@ const closeCreateModal = () => {
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(productSize, index) in productSizeStore.productSizeMap.get(selectedCategory.id)
-              ?.value"
-            :key="index"
-          >
+          <tr v-for="(productSize, index) in productSizeStore.productSizes" :key="index">
             <td>{{ productSize.id }}</td>
             <td>{{ productSize.name }}</td>
             <td>
@@ -130,6 +155,11 @@ const closeCreateModal = () => {
         </tbody>
       </table>
     </div>
+    <PaginationComponent
+      :on-change-page="onChangePage"
+      :request-page="requestPage"
+      :total-pages="totalPages"
+    />
   </div>
 </template>
 

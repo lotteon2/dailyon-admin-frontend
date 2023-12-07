@@ -35,7 +35,7 @@ const executeCreate = () => {
   } as CreateProductSizeRequest)
     .then((axiosResponse: AxiosResponse) => {
       const response: CreateProductSizeResponse = axiosResponse.data
-      productSizeStore.addProductSize(props.selectedCategoryId, {
+      productSizeStore.addProductSize({
         id: response.productSizeId,
         name: name.value
       } as ReadProductSizeResponse)
