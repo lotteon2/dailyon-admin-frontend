@@ -16,7 +16,7 @@ const initData = () => {
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadBrandPageResponse = axiosResponse.data
       totalElements.value = response.totalElements
-      totalPage.value = response.totalPages
+      totalPages.value = response.totalPages
       brands.value = response.brandResponses
     })
     .catch((error: any) => {
@@ -27,7 +27,7 @@ const initData = () => {
 onBeforeMount(initData)
 
 const requestPage = ref<number>(0)
-const totalPage = ref<number>(0)
+const totalPages = ref<number>(0)
 const totalElements = ref<number>(0)
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const isCreateModalVisible = ref<boolean>(false)
@@ -37,18 +37,18 @@ const selectedBrandName = ref<string>("")
 const brandIndex = ref<number>(0)
 
 const onChangePage = async (page: number) => {
-  if (0 <= page && page < totalPage.value) {
+  if (0 <= page && page < totalPages.value) {
     requestPage.value = page
   }
 }
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
-  if (afterPage < totalPage.value) {
+  if (afterPage < totalPages.value) {
     getBrandPages(afterPage)
       .then((axiosResponse: AxiosResponse) => {
         const response: ReadBrandPageResponse = axiosResponse.data
         totalElements.value = response.totalElements
-        totalPage.value = response.totalPages
+        totalPages.value = response.totalPages
         brands.value = response.brandResponses
       })
       .catch((error: any) => {
@@ -148,7 +148,7 @@ const executeDelete = (brandId: number, index: number) => {
     <PaginationComponent
       :on-change-page="onChangePage"
       :request-page="requestPage"
-      :total-pages="totalPage"
+      :total-pages="totalPages"
     />
   </div>
 </template>
