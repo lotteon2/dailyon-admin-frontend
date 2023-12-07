@@ -10,9 +10,9 @@ export const getAllBrands = async (): Promise<AxiosResponse> => {
 }
 
 export const getBrandPages = async (page: number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.get(
-    PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_BRAND_PREFIX + "?page=" + page
-  )
+  return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + "/page" + PRODUCT_BRAND_PREFIX, {
+    params: { page: page }
+  })
 }
 
 export const createBrand = async (

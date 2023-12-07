@@ -6,6 +6,11 @@ export interface UpdateBrandRequest {
   name: string
 }
 
+export interface UpdateBrandDto {
+  index: number
+  name: string
+}
+
 export interface ReadBrandResponse {
   id: number
   name: string
