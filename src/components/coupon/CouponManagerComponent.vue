@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { AxiosResponse } from "axios"
 import { onBeforeMount, ref, watch } from "vue"
-import ProductSizeCreateModal from "@/components/productsize/ProductSizeCreateModal.vue"
-import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
+// import ProductSizeCreateModal from "@/components/productsize/ProductSizeCreateModal.vue"
+// import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
+import CouponCreateModal from "@/components/coupon/CouponCreateModal.vue"
+import CouponUpdateModal from "@/components/coupon/CouponUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import { getCouponInfoPage } from "@/apis/coupon/CouponClient"
 import type { CouponInfo, CouponCreateRequest, CouponInfoPageResponse } from "@/apis/coupon/CouponDto"
@@ -10,10 +12,16 @@ import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/
 
 let size = ref<number>(10);
 let page = ref<number>(0);
-let list = ref([]);
+let list = ref<CouponInfo[]>([]);
 let totalPages = ref<number>();
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
+
+const selectedCoupon = ref<CouponInfo | null>(null);
+const openUpdateModal = (coupon: CouponInfo) => {
+  selectedCoupon.value = coupon;
+  isUpdateModalVisible.value = true;
+}
 
 const initData = async () => {
   try {
@@ -28,12 +36,18 @@ onBeforeMount(initData)
 // watch(() => categoryId.value, setProductSizeByCategory)
 // watch(categoryId, setProductSizeByCategory)
 
-const closeUpdateModal = () => {
-  isUpdateModalVisible.value = false
-}
+const isCouponStartInFuture = (startAt: string): boolean => {
+  const now = new Date();
+  const startTime = new Date(startAt);
+  return startTime > now;
+};
 
 const closeCreateModal = () => {
   isCreateModalVisible.value = false
+}
+
+const closeUpdateModal = () => {
+  isUpdateModalVisible.value = false
 }
 
 const formatName = (name: string) => {
@@ -53,12 +67,13 @@ const optionalValue = (value: number | undefined) => {
 
 <template>
   <div class="product-size-container">
-    <ProductSizeCreateModal
+    <CouponCreateModal
       :show-modal="isCreateModalVisible"
       @close-create-modal="closeCreateModal"
     />
-    <ProductSizeUpdateModal
+    <CouponUpdateModal
       :show-modal="isUpdateModalVisible"
+      :coupon="selectedCoupon"
       @close-update-modal="closeUpdateModal"
     />
     
@@ -69,7 +84,7 @@ const optionalValue = (value: number | undefined) => {
           {{ category.name }}
         </option>
       </select> -->
-      <button class="createBtn">쿠폰 등록</button>
+      <button class="createBtn" @click="isCreateModalVisible = true">쿠폰 등록</button>
     </div>
     
     
@@ -113,11 +128,28 @@ const optionalValue = (value: number | undefined) => {
                 <td>1000/1000</td>
                 <td>CATEGORY/1<br/>나이키 에어포스1</td>
                 <td>false</td>
-                <td><img src="" alt="이미지 없음"></td>
+                <!-- <td><img src="" alt="이미지 없음"></td> -->
+                <td><span>-</span></td>
                 <td>최소 구매금액 5,000원<br/> 최대 할인금액 30,000원</td>
                 <td>
                     <button class="updateBtn">수정</button>
                     <button class="deleteBtn">삭제</button>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>[겨울 특별세일] <br/>나이키 에어포스1 20% 할인쿠폰</td>
+                <td>PERCENTAGE/20</td>
+                <td>2023년 12월 5일 00:00 <br/>~ 2023년 12월 30일 23:59</td>
+                <td>200/1000</td>
+                <td>CATEGORY/1<br/>나이키 에어포스1</td>
+                <td>false</td>
+                <!-- <td><img src="" alt="이미지 없음"></td> -->
+                <td><span>-</span></td>
+                <td>최소 구매금액 5,000원<br/> 최대 할인금액 30,000원</td>
+                <td>
+                  <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
+                    <button class="deleteBtn">종료</button>
                 </td>
             </tr>
           <tr
@@ -134,8 +166,9 @@ const optionalValue = (value: number | undefined) => {
             <td><img :src="adminCouponInfo.targetImgUrl || ''" alt="이미지 없음"></td>
             <td>{{ optionalValue(adminCouponInfo.minPurchaseAmount) }} <br/> {{ optionalValue(adminCouponInfo.maxDiscountAmount) }}</td> <!-- 둘 다 optional data. 없으면 "-"로 표기. -->
             <td>
-              <button class="updateBtn">수정</button>
-              <button class="deleteBtn">삭제</button>
+              <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
+              <button v-if="isCouponStartInFuture(adminCouponInfo.startAt)" class="terminateBtn">종료</button>
+              <button v-else class="deleteBtn">삭제</button>
             </td>
           </tr>
         </tbody>
