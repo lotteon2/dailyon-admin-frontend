@@ -4,7 +4,7 @@ import CategoryCreateModal from "@/components/category/CategoryCreateModal.vue"
 import CategoryUpdateModal from "@/components/category/CategoryUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import type { AxiosResponse } from "axios"
-import { getCategoryPages } from "@/apis/category/CategoryClient"
+import { deleteCategory, getCategoryPages } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadCategoryPageResponse } from "@/apis/category/CategoryDto"
 
@@ -77,6 +77,32 @@ const closeUpdateModal = () => {
 const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
+
+const executeUpdate = () => {
+  getCategoryPages(0)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadCategoryPageResponse = axiosResponse.data
+      categoryStore.setCategories(response.responses)
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+    })
+    .catch((error: any) => {
+      alert(error.response.data.message)
+    })
+}
+
+const executeDelete = (categoryId: number) => {
+  if (confirm("삭제하시겠습니까?")) {
+    deleteCategory(categoryId)
+      .then(() => {
+        alert("삭제 성공")
+      })
+      .then(initData)
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+}
 </script>
 <template>
   <div class="category-container">
@@ -91,6 +117,7 @@ const closeCreateModal = () => {
       :category-name="selectedName"
       :index="selectedIndex"
       @close-update-modal="closeUpdateModal"
+      @update-category="executeUpdate"
     />
     <div class="button-block">
       <button class="createBtn" @click="openCreateModal">카테고리 등록</button>
@@ -119,7 +146,7 @@ const closeCreateModal = () => {
               >
                 수정
               </button>
-              <button class="deleteBtn" @click="">삭제</button>
+              <button class="deleteBtn" @click="executeDelete(category.id)">삭제</button>
             </td>
           </tr>
         </tbody>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUpdate, ref } from "vue"
 import type { AxiosResponse } from "axios"
-import { createCategory, getAllCategories } from "@/apis/category/CategoryClient"
+import { createCategory } from "@/apis/category/CategoryClient"
 import type {
   CreateCategoryRequest,
   ReadCategoryResponse,
@@ -19,25 +19,17 @@ const props = defineProps({
 
 onBeforeUpdate(() => {
   if (props.showModal) {
-    getAllCategories()
-      .then((axiosResponse: AxiosResponse) => {
-        const response: Array<ReadCategoryResponse> = axiosResponse.data.allCategories
-        const toPush: Category[] = response.map(
-          (category: ReadCategoryResponse) => ({ id: category.id, name: category.name }) as Category
-        )
-        categories.push(...toPush)
-      })
-      .catch((error: any) => {
-        alert(error.response!.data!.message)
-      })
+    categories.value.splice(0, categories.value.length)
+    categories.value.push({ id: null, name: "-" })
+    categories.value.push(...categoryStore.categories)
   }
 })
 
 const emits = defineEmits(["close-create-modal"])
 
 const name = ref("")
-const masterCategory = ref<Category>({ id: 0, name: "" } as Category)
-let categories: Category[] = [{ id: null, name: "-" }]
+const masterCategory = ref<Category>({ id: 0, name: "" })
+const categories = ref<Array<Category>>([])
 
 const closeModal = () => {
   name.value = ""
@@ -48,14 +40,14 @@ const executeCreate = () => {
   createCategory({
     masterCategoryId: masterCategory.value.id,
     categoryName: name.value
-  } as CreateCategoryRequest)
+  })
     .then((axiosResponse: AxiosResponse) => {
       categoryStore.addCategory({
         id: axiosResponse.data.categoryId,
         name: name.value,
         masterCategoryId: masterCategory.value.id,
         masterCategoryName: masterCategory.value.name
-      } as ReadCategoryResponse)
+      })
       alert("등록 성공")
       closeModal()
     })

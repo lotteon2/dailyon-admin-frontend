@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateCategory } from "@/apis/category/CategoryClient"
-import type { UpdateCategoryRequest, UpdateCategoryDto } from "@/apis/category/CategoryDto"
+import type { UpdateCategoryDto } from "@/apis/category/CategoryDto"
 import { useCategoryStore } from "@/stores/CategoryStore"
 
 const categoryStore = useCategoryStore()
@@ -28,7 +28,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(["close-update-modal"])
+const emits = defineEmits(["close-update-modal", "update-category"])
 
 const editedName = ref("")
 
@@ -38,14 +38,15 @@ const closeModal = () => {
 }
 
 const executeUpdate = () => {
-  updateCategory(props.categoryId, { name: editedName.value } as UpdateCategoryRequest)
+  updateCategory(props.categoryId, { name: editedName.value })
     .then(() => {
       categoryStore.updateCategory({
         index: props.index,
         name: editedName.value
-      } as UpdateCategoryDto)
+      })
       alert("수정 성공")
       closeModal()
+      emits("update-category")
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
