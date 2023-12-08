@@ -40,14 +40,14 @@ const executeCreate = () => {
   createCategory({
     masterCategoryId: masterCategory.value.id,
     categoryName: name.value
-  } as CreateCategoryRequest)
+  })
     .then((axiosResponse: AxiosResponse) => {
       categoryStore.addCategory({
         id: axiosResponse.data.categoryId,
         name: name.value,
         masterCategoryId: masterCategory.value.id,
         masterCategoryName: masterCategory.value.name
-      } as ReadCategoryResponse)
+      })
       alert("등록 성공")
       closeModal()
     })

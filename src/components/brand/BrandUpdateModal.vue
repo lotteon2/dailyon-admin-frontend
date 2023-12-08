@@ -28,7 +28,7 @@ const editedBrandName = ref<string>("")
 const executeUpdate = () => {
   updateBrand(props.brandId, {
     name: editedBrandName.value
-  } as UpdateBrandRequest)
+  })
     .then(() => {
       emits("update-brand", { index: props.index, name: editedBrandName.value })
       alert("수정 성공")

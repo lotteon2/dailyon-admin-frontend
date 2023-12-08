@@ -32,13 +32,13 @@ const executeCreate = () => {
   createProductSize({
     categoryId: props.selectedCategoryId,
     name: name.value
-  } as CreateProductSizeRequest)
+  })
     .then((axiosResponse: AxiosResponse) => {
       const response: CreateProductSizeResponse = axiosResponse.data
       productSizeStore.addProductSize({
         id: response.productSizeId,
         name: name.value
-      } as ReadProductSizeResponse)
+      })
       alert("등록 성공")
       closeModal()
     })

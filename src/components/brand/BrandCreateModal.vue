@@ -19,13 +19,13 @@ const emits = defineEmits(["create-brand", "close-create-modal"])
 const brandName = ref<string>("")
 
 const executeCreate = () => {
-  createBrand({ name: brandName.value } as CreateBrandRequest)
+  createBrand({ name: brandName.value })
     .then((axiosResponse: AxiosResponse) => {
-      const response = { brandId: axiosResponse.data.brandId } as CreateBrandResponse
+      const response = { brandId: axiosResponse.data.brandId }
       emits("create-brand", {
         id: response.brandId,
         name: brandName.value
-      } as ReadBrandResponse)
+      })
       alert("등록 성공")
       closeModal()
     })

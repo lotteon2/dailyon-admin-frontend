@@ -56,7 +56,7 @@ const selectedCategory = ref<ReadCategoryResponse>({
   masterCategoryId: 0,
   masterCategoryName: "",
   name: ""
-} as ReadCategoryResponse)
+})
 
 const onChangePage = async (page: number) => {
   if (0 <= page && page < totalPages.value) {

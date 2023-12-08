@@ -35,12 +35,12 @@ const name = ref<string>("")
 const emits = defineEmits(["close-update-modal"])
 
 const executeUpdate = () => {
-  updateProductSize(props.productSizeId, { name: name.value } as UpdateProductSizeRequest)
+  updateProductSize(props.productSizeId, { name: name.value })
     .then(() => {
       productSizeStore.updateProductSize({
         index: props.index,
         name: name.value
-      } as UpdateProductSizeDto)
+      })
       alert("수정 성공")
       closeModal()
     })

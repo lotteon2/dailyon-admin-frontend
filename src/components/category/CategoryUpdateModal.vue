@@ -43,7 +43,7 @@ const executeUpdate = () => {
       categoryStore.updateCategory({
         index: props.index,
         name: editedName.value
-      } as UpdateCategoryDto)
+      })
       alert("수정 성공")
       closeModal()
       emits("update-category")
