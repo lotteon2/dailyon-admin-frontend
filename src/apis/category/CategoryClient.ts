@@ -30,7 +30,13 @@ export const updateCategory = async (
   updateCategoryRequest: UpdateCategoryRequest
 ): Promise<AxiosResponse> => {
   return await authAxiosInstance.put(
-    PRODUCT_ADMIN_PREFIX + PRODUCT_CATEGORY_PREFIX + "/" + categoryId,
+    `${PRODUCT_ADMIN_PREFIX}${PRODUCT_CATEGORY_PREFIX}/${categoryId}`,
     updateCategoryRequest
+  )
+}
+
+export const deleteCategory = async (categoryId: number): Promise<AxiosResponse> => {
+  return await authAxiosInstance.delete(
+    `${PRODUCT_ADMIN_PREFIX}${PRODUCT_CATEGORY_PREFIX}/${categoryId}`
   )
 }

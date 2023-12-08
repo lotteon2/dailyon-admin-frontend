@@ -90,6 +90,7 @@ const executeDelete = (brandId: number, index: number) => {
   if (confirm("삭제하시겠습니까?")) {
     deleteBrand(brandId)
       .then(() => {
+        alert("삭제 성공")
         brands!.value.splice(index, 1)
       })
       .catch((error: any) => {
