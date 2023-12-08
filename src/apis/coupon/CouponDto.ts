@@ -62,7 +62,7 @@ export interface CouponInfo {
 
 export interface CouponInfoPageResponse {
   values: CouponInfo[];
-  totalPages: number;
+  totalCounts: number;
 }
 
 export const getDiscountTypeDisplayValue = (discountType: string) => {

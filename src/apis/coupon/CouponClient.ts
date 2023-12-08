@@ -3,7 +3,7 @@ import type { AxiosResponse } from "axios"
 import type { CouponCreateRequest, CouponInfo, CouponInfoPageResponse
 } from "@/apis/coupon/CouponDto"
 
-const COUPON_ADMIN_PREFIX: string = "" // TODO: /admin 추가
+const COUPON_ADMIN_PREFIX: string = "/admin"
 const COUPON_PREFIX: string = "/coupons"
 
 export const createCouponInfo = async (body: CouponCreateRequest): Promise<AxiosResponse> => {
