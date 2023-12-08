@@ -4,7 +4,7 @@ import PaginationComponent from "@/components/PaginationComponent.vue"
 import BrandUpdateModal from "@/components/brand/BrandUpdateModal.vue"
 import BrandCreateModal from "@/components/brand/BrandCreateModal.vue"
 import type { AxiosResponse } from "axios"
-import { getBrandPages } from "@/apis/brand/BrandClient"
+import { deleteBrand, getBrandPages } from "@/apis/brand/BrandClient"
 import type {
   ReadBrandPageResponse,
   ReadBrandResponse,
@@ -88,14 +88,13 @@ const updateBrand = (data: UpdateBrandDto) => {
 
 const executeDelete = (brandId: number, index: number) => {
   if (confirm("삭제하시겠습니까?")) {
-    /* TODO : delete api 개발
-      deleteBrand(brandId)
+    deleteBrand(brandId)
       .then(() => {
-        brands!.value.splice(index)
+        brands!.value.splice(index, 1)
       })
-      .catch((error: AxiosError) => {
+      .catch((error: any) => {
         alert(error.response!.data!.message)
-      })*/
+      })
   }
 }
 </script>

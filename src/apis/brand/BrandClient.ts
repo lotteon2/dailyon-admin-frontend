@@ -36,5 +36,5 @@ export const updateBrand = async (
 }
 
 export const deleteBrand = async (brandId: number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.put(`${PRODUCT_ADMIN_PREFIX}${PRODUCT_BRAND_PREFIX}/${brandId}`)
+  return await authAxiosInstance.delete(`${PRODUCT_ADMIN_PREFIX}${PRODUCT_BRAND_PREFIX}/${brandId}`)
 }
