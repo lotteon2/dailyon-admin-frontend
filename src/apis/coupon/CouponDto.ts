@@ -42,7 +42,7 @@ export interface CouponUpdateRequest {
   maxDiscountAmount?: number; // Optional
 }
 
-export interface CouponInfo {
+export interface couponInfoReadItemResponse {
   id: number;
   name: string;
   discountType: string;
@@ -50,20 +50,38 @@ export interface CouponInfo {
   startAt: string;
   endAt: string;
   remainingQuantity: number;
-  totalQuantity: number;
+  issuedQuantity: number;
   appliesToType: string;
   appliesToId: number;
   appliesToName: string;
   requiresConcurrencyControl: boolean;
   targetImgUrl?: string;
-  minPurchaseAmount?: number;
-  maxDiscountAmount?: number;
+  minPurchaseAmount?: number | null;
+  maxDiscountAmount?: number | null;
 }
 
 export interface CouponInfoPageResponse {
-  values: CouponInfo[];
+  couponInfoReadItemResponseList: couponInfoReadItemResponse[];
   totalCounts: number;
 }
+
+export const convertToCouponUpdateRequest = (coupon: couponInfoReadItemResponse): CouponUpdateRequest => {
+  return {
+    name: coupon.name,
+    discountType: coupon.discountType,
+    discountValue: coupon.discountValue,
+    startAt: coupon.startAt, // 이미 ISO 8601 포맷으로되어있어야함
+    endAt: coupon.endAt,     // 이미 ISO 8601 포맷으로되어있어야함
+    issuedQuantity: coupon.issuedQuantity,
+    appliesToType: coupon.appliesToType,
+    appliesToId: coupon.appliesToId,
+    appliesToName: coupon.appliesToName,
+    requiresConcurrencyControl: coupon.requiresConcurrencyControl,
+    targetImgUrl: coupon.targetImgUrl,  // Optional
+    minPurchaseAmount: coupon.minPurchaseAmount === null ? undefined : coupon.minPurchaseAmount, // Optional, null을 undefined로 변환
+    maxDiscountAmount: coupon.maxDiscountAmount === null ? undefined : coupon.maxDiscountAmount, // Optional, null을 undefined로 변환
+  };
+};
 
 export const getDiscountTypeDisplayValue = (discountType: string) => {
   const discountTypeMap: Record<string, string> = {

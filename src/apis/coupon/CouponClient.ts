@@ -1,6 +1,6 @@
 import { authAxiosInstance } from "@/apis/utils"
 import type { AxiosResponse } from "axios"
-import type { CouponCreateRequest, CouponInfo, CouponInfoPageResponse
+import type { CouponCreateRequest, CouponUpdateRequest, CouponInfoPageResponse, couponInfoReadItemResponse
 } from "@/apis/coupon/CouponDto"
 
 const COUPON_ADMIN_PREFIX: string = "/admin"
@@ -14,7 +14,7 @@ export const updateCouponInfo = async (couponInfoId:number, body: CouponUpdateRe
   return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`, body)
 }
 
-export const getCouponInfoPage = async (size?: number, page?: number): Promise<CouponPageResponse> => {
+export const getCouponInfoPage = async (size?: number, page?: number): Promise<CouponInfoPageResponse> => {
   let queryParams: string[] = [];
   if (size != null) {
     queryParams.push(`size=${size}`);
