@@ -7,18 +7,18 @@ import CouponCreateModal from "@/components/coupon/CouponCreateModal.vue"
 import CouponUpdateModal from "@/components/coupon/CouponUpdateModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import { getCouponInfoPage } from "@/apis/coupon/CouponClient"
-import type { CouponInfo, CouponCreateRequest, CouponInfoPageResponse } from "@/apis/coupon/CouponDto"
+import type { CouponCreateRequest, CouponUpdateRequest, couponInfoReadItemResponse, CouponInfoPageResponse } from "@/apis/coupon/CouponDto"
 import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/CouponDto"
 
 let size = ref<number>(10);
 let page = ref<number>(0);
-let list = ref<CouponInfo[]>([]);
+let list = ref<couponInfoReadItemResponse[]>([]);
 let totalPages = ref<number>();
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
 
-const selectedCoupon = ref<CouponInfo | null>(null);
-const openUpdateModal = (coupon: CouponInfo) => {
+const selectedCoupon = ref<couponInfoReadItemResponse | null>(null);
+const openUpdateModal = (coupon: couponInfoReadItemResponse) => {
   selectedCoupon.value = coupon;
   isUpdateModalVisible.value = true;
 }
@@ -26,8 +26,8 @@ const openUpdateModal = (coupon: CouponInfo) => {
 const initData = async () => {
   try {
     const data = await getCouponInfoPage(size.value, page.value);
-    list.value = data.values;
-    totalPages.value = data.totalPages;
+    list.value = data.couponInfoReadItemResponseList;
+    totalPages.value = Math.ceil(data.totalCounts? (data.totalCounts / size.value) : 1)
   } catch(err) {
     console.error(err);
   }
@@ -52,7 +52,7 @@ const closeUpdateModal = () => {
 
 const formatName = (name: string) => {
   // Replace square brackets with <br/> tags
-  return name.replace(/\[/g, '<br/>[');
+  return name.replace(/\]/g, ']<br/>');
 };
 
 const formatDate = (localDateTime: string) => {
@@ -60,8 +60,8 @@ const formatDate = (localDateTime: string) => {
   return localDateTime.replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}).*$/, '$1년 $2월 $3일 $4:$5');
 };
 
-const optionalValue = (value: number | undefined) => {
-  return value ?? '-';
+const optionalValue = (value: number | undefined | null) => {
+  return value? value.toLocaleString('ko-KR') : '-';
 };
 </script>
 
@@ -104,67 +104,21 @@ const optionalValue = (value: number | undefined) => {
           </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>[겨울 특별세일] <br/>나이키 에어포스1 20% 할인쿠폰</td>
-                <td>PERCENTAGE/20</td>
-                <td>2023년 12월 5일 00:00 <br/>~ 2023년 12월 30일 23:59</td>
-                <td>1000/1000</td>
-                <td>PRODUCT/1<br/>나이키 에어포스1</td>
-                <td>false</td>
-                <td><img src="https://contents.lotteon.com/itemimage/20231031160737/LE/12/09/70/22/15/_1/25/24/37/81/3/LE1209702215_1252437813_5.jpg/dims/resizef/554X554" alt="이미지 없음."></td>
-                <td>최소 구매금액 5,000원 <br/> 최대 할인금액 30,000원</td>
-                <td>
-                    <button class="updateBtn">수정</button>
-                    <button class="deleteBtn">삭제</button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>2</td>
-                <td>[겨울 특별세일] <br/>나이키 에어포스1 20% 할인쿠폰</td>
-                <td>PERCENTAGE/20</td>
-                <td>2023년 12월 5일 00:00 <br/>~ 2023년 12월 30일 23:59</td>
-                <td>1000/1000</td>
-                <td>CATEGORY/1<br/>나이키 에어포스1</td>
-                <td>false</td>
-                <!-- <td><img src="" alt="이미지 없음"></td> -->
-                <td><span>-</span></td>
-                <td>최소 구매금액 5,000원<br/> 최대 할인금액 30,000원</td>
-                <td>
-                    <button class="updateBtn">수정</button>
-                    <button class="deleteBtn">삭제</button>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>[겨울 특별세일] <br/>나이키 에어포스1 20% 할인쿠폰</td>
-                <td>PERCENTAGE/20</td>
-                <td>2023년 12월 5일 00:00 <br/>~ 2023년 12월 30일 23:59</td>
-                <td>200/1000</td>
-                <td>CATEGORY/1<br/>나이키 에어포스1</td>
-                <td>false</td>
-                <!-- <td><img src="" alt="이미지 없음"></td> -->
-                <td><span>-</span></td>
-                <td>최소 구매금액 5,000원<br/> 최대 할인금액 30,000원</td>
-                <td>
-                  <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
-                    <button class="deleteBtn">종료</button>
-                </td>
-            </tr>
+            
           <tr
-            v-for="(adminCouponInfo, index) in list.values"
+            v-for="(adminCouponInfo, index) in list"
             :key="index"
           >
             <td>{{ adminCouponInfo.id }}</td>
             <td v-html="formatName(adminCouponInfo.name)"></td> <!-- br을 넣기 위해 v-html 사용 -->
-            <td>{{ getDiscountTypeDisplayValue(adminCouponInfo.discountType) }}/{{ formatDiscountDisplay(adminCouponInfo.discountType, adminCouponInfo.discountValue) }}</td>
+            <td>{{ getDiscountTypeDisplayValue(adminCouponInfo.discountType) }}/{{ formatDiscountValue(adminCouponInfo.discountType, adminCouponInfo.discountValue) }}</td>
             <td>{{ formatDate(adminCouponInfo.startAt) }} <br/>~ {{ formatDate(adminCouponInfo.endAt) }}</td> <!-- LocalDateTime으로 들어오는값을 0000년 00월 00일 00:00 형식으로 -->
-            <td>{{ adminCouponInfo.remainingQuantity }}/{{ adminCouponInfo.totalQuantity }}</td>
+            <td>{{ adminCouponInfo.remainingQuantity }}/{{ adminCouponInfo.issuedQuantity }}</td>
             <td>{{ adminCouponInfo.appliesToType }}/{{ adminCouponInfo.appliesToId }}<br/> {{ adminCouponInfo.appliesToName }}</td>
             <td>{{ adminCouponInfo.requiresConcurrencyControl }}</td>
             <td><img :src="adminCouponInfo.targetImgUrl || ''" alt="이미지 없음"></td>
-            <td>{{ optionalValue(adminCouponInfo.minPurchaseAmount) }} <br/> {{ optionalValue(adminCouponInfo.maxDiscountAmount) }}</td> <!-- 둘 다 optional data. 없으면 "-"로 표기. -->
+            <td>{{ optionalValue(adminCouponInfo.minPurchaseAmount) !== '-' ? `최소 구매금액 ${optionalValue(adminCouponInfo.minPurchaseAmount)}원`: '-'}} <br/> 
+              {{ optionalValue(adminCouponInfo.maxDiscountAmount) !== '-' ? `최대 할인금액 ${optionalValue(adminCouponInfo.maxDiscountAmount)}원` : '-' }} </td>
             <td>
               <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
               <button v-if="isCouponStartInFuture(adminCouponInfo.startAt)" class="terminateBtn">종료</button>
