@@ -164,3 +164,11 @@ button:hover {
 .center-align {
     margin: 0 auto; /* Center the button */
 }
+
+.flex-row {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: row;
+    width: 60%
+}
