@@ -83,26 +83,28 @@
           </div>
   
           <!-- Submit Button -->
-          <button type="submit" class="center-align">쿠폰 수정하기</button>
-          <button type="submit" class="center-align">취소하기</button>
+          <div class="flex-row">
+            <button type="submit" class="center-align">쿠폰 수정하기</button>
+            <button @click="closeModal" class="center-align">취소하기</button>
+          </div>
         </form>
-  
-        <!-- Close Button -->
-        <!-- <button class="modal-close-btn" @click="closeModal">&times; 닫기</button> -->
       </div>
     </div>
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, defineProps, PropType, watch } from "vue";
+import { ref, onMounted, defineEmits, defineProps, watch } from "vue";
+import type {PropType} from "vue";
 import { updateCouponInfo } from "@/apis/coupon/CouponClient";
-import type { CouponUpdateRequest, CouponInfo } from "@/apis/coupon/CouponDto";
+import type { CouponUpdateRequest, couponInfoReadItemResponse } from "@/apis/coupon/CouponDto";
+import { convertToCouponUpdateRequest } from "@/apis/coupon/CouponDto";
+
 import axios from "axios"; // assuming you are using axios for HTTP requests
 
-const emits = defineEmits(["close-create-modal"]);
+const emits = defineEmits(["close-update-modal"]);
 const props = defineProps({
   showModal: Boolean,
-  coupon: Object as PropType<CouponInfo> // Make sure to import PropType
+  coupon: Object as PropType<couponInfoReadItemResponse> // Make sure to import PropType
 });
 
 const searchQuery = ref("");
@@ -111,8 +113,28 @@ const categories = ref([]);
 const targetType = ref("PRODUCT"); // Default to product
 const selectedCategoryId = ref(null);
 
+
+const formatDateForInput = (dateTime: string) => {
+  if (!dateTime) return '';
+  const formattedDateTime = dateTime.split(':')[0] + ':' + dateTime.split(':')[1].substring(0, 2);
+  return formattedDateTime;
+};
+// `props.coupon.startAt` 및 `props.coupon.endAt` 값을 감시하고 초 단위를 제거합니다.
+watch(() => props.coupon && props.coupon.startAt, (newStartAt) => {
+  if (props.coupon) {
+    props.coupon.startAt = formatDateForInput(newStartAt);
+  }
+}, { immediate: true });
+
+watch(() => props.coupon && props.coupon.endAt, (newEndAt) => {
+  if (props.coupon) {
+    props.coupon.endAt = formatDateForInput(newEndAt);
+  }
+}, { immediate: true });
+
+
 const closeModal = () => {
-  emits("close-create-modal");
+  emits("close-update-modal");
 };
 
 const fetchCategories = async () => {
@@ -150,9 +172,10 @@ const updateCoupon = async () => {
     props.coupon.appliesToName = selectedCategory.name;
     props.coupon.appliesToType = targetType.value;
   }
-
+  
+  const updateRequest = convertToCouponUpdateRequest(props.coupon);
   try {
-    const response = await updateCouponInfo(coupon.value);
+    const response = await updateCouponInfo(props.coupon.id, updateRequest);
     if (response.status === 200) {
       emits("coupon-modified");  // Emit an event to the parent component
       closeModal();
@@ -201,4 +224,5 @@ onMounted(fetchCategories);
 
 <style scoped>
 @import url("@/assets/css/coupon-create-modal.css");
+/* coupon-create-modal과 같은 스타일을 사용.  */
 </style>
