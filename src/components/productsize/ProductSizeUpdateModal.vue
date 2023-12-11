@@ -2,10 +2,6 @@
 import { ref } from "vue"
 import { updateProductSize } from "@/apis/productsize/ProductSizeClient"
 import { useProductSizeStore } from "@/stores/ProductSizeStore"
-import type {
-  UpdateProductSizeDto,
-  UpdateProductSizeRequest
-} from "@/apis/productsize/ProductSizeDto"
 
 const props = defineProps({
   showModal: {
@@ -19,6 +15,10 @@ const props = defineProps({
     type: Number,
     required: true
   },
+  productSizeName: {
+    type: String,
+    required: true
+  },
   selectedCategoryId: {
     type: Number,
     required: true
@@ -30,7 +30,7 @@ const props = defineProps({
 })
 
 const productSizeStore = useProductSizeStore()
-const name = ref<string>("")
+const name = ref<string>(props.productSizeName)
 
 const emits = defineEmits(["close-update-modal"])
 
@@ -50,7 +50,6 @@ const executeUpdate = () => {
 }
 
 const closeModal = () => {
-  name.value = ""
   emits("close-update-modal")
 }
 </script>
@@ -68,7 +67,13 @@ const closeModal = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">치수 값</label>
-        <input class="modal-input" type="text" v-model="name" placeholder="치수 값" />
+        <input
+          class="modal-input"
+          type="text"
+          v-model="name"
+          :placeholder="props.productSizeName"
+          @keyup.enter="executeUpdate"
+        />
       </div>
       <div class="modal-button">
         <button class="checkBtn" @click="executeUpdate">등록</button>

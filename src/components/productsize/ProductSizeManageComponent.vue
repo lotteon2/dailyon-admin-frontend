@@ -113,6 +113,7 @@ const closeCreateModal = () => {
       :show-modal="isUpdateModalVisible"
       :index="selectedIndex"
       :product-size-id="selectedId"
+      :product-size-name="selectedName"
       :selected-category-id="selectedCategory.id"
       :selected-category-name="selectedCategory.name"
       @close-update-modal="closeUpdateModal"
@@ -149,7 +150,6 @@ const closeCreateModal = () => {
               >
                 수정
               </button>
-              <button class="deleteBtn">삭제</button>
             </td>
           </tr>
         </tbody>
