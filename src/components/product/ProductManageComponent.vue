@@ -29,13 +29,18 @@ const initData = () => {
   getAllCategories()
     .then((axiosResponse: AxiosResponse) => {
       categoryStore.setCategories(axiosResponse.data.allCategories)
-      categoryStore.categories.unshift({ id: 0, name: "카테고리" })
+      categoryStore.categories.unshift({
+        id: 0,
+        masterCategoryId: null,
+        masterCategoryName: null,
+        name: "카테고리"
+      })
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
     })
 
-  getProductPages({ page: 0, type: "NORMAL" })
+  getProductPages({ page: 0, brandId: null, categoryId: null, type: "NORMAL" })
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadProductPageResponse = axiosResponse.data
       totalPages.value = response.totalPages
@@ -66,6 +71,7 @@ const selectedProduct = ref<ReadProductAdminResponse>({
 
 const selectedBrandId = ref<number>(0)
 const selectedCategoryId = ref<number>(0)
+const checkedProducts = ref<Array<Number>>(new Array<Number>())
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const products = ref<Array<ReadProductAdminResponse>>(new Array<ReadProductAdminResponse>())
 const onChangePage = async (page: number) => {
@@ -164,9 +170,16 @@ watch(
         </thead>
         <tbody>
           <tr v-for="(product, index) in products" :key="index">
-            <td>체크박스</td>
+            <td>
+              <input
+                type="checkbox"
+                :id="`checkbox-${index}`"
+                :value="product.id"
+                v-model="checkedProducts"
+              />
+            </td>
             <td>{{ product.id }}</td>
-            <td><img src="{{ product.imgUrl }}" alt="productImgUrl" /></td>
+            <td>{{ product.imgUrl }}</td>
             <td>{{ product.code }}</td>
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
