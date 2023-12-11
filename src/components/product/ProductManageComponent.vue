@@ -101,24 +101,22 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
 watch(
   [selectedCategoryId, selectedBrandId],
   async ([newCategoryId, newBrandId], [oldCategoryId, oldBrandId]) => {
-    if (newCategoryId > 0 || newBrandId > 0) {
-      const request: ReadProductPageRequest = {
-        page: requestPage.value,
-        type: "NORMAL",
-        brandId: newBrandId === 0 ? null : newBrandId,
-        categoryId: newCategoryId === 0 ? null : newCategoryId
-      }
-      getProductPages(request)
-        .then((axiosResponse: AxiosResponse) => {
-          const response: ReadProductPageResponse = axiosResponse.data
-          totalPages.value = response.totalPages
-          totalElements.value = response.totalElements
-          products.value = response.productResponses
-        })
-        .catch((error: any) => {
-          alert(error.response!.data!.message)
-        })
+    const request: ReadProductPageRequest = {
+      page: requestPage.value,
+      type: "NORMAL",
+      brandId: newBrandId === 0 ? null : newBrandId,
+      categoryId: newCategoryId === 0 ? null : newCategoryId
     }
+    getProductPages(request)
+      .then((axiosResponse: AxiosResponse) => {
+        const response: ReadProductPageResponse = axiosResponse.data
+        totalPages.value = response.totalPages
+        totalElements.value = response.totalElements
+        products.value = response.productResponses
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
   }
 )
 </script>
