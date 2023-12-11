@@ -66,7 +66,13 @@ const closeModal = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">치수 값</label>
-        <input class="modal-input" type="text" v-model="name" placeholder="치수 값" />
+        <input
+          class="modal-input"
+          type="text"
+          v-model="name"
+          placeholder="치수 값"
+          @keyup.enter="executeCreate"
+        />
       </div>
       <div class="modal-button">
         <button class="checkBtn" @click="executeCreate">등록</button>
