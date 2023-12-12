@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import router from '@/router';
-import { authAxiosInstance } from '@/apis/utils';
+import { defaultAxiosInstance } from '@/apis/utils';
 import qs from 'qs';
 
 const username = ref('');
@@ -15,7 +15,7 @@ const login = async () => {
   password: password.value
 }
 
-authAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
+defaultAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded'
   },
