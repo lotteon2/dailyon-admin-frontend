@@ -63,6 +63,11 @@ button {
     margin-left: 10px;
 }
 
+.product-thumbnail {
+    width: 80px;
+    height: 80px;
+}
+
 .table-block {
     width: 100%;
     height: 60%;
@@ -80,6 +85,8 @@ button {
                 & th {
                     padding-top: 10px;
                     padding-bottom: 10px;
+                    text-align: center;
+                    vertical-align: middle;
                 }
             }
         }
@@ -92,6 +99,7 @@ button {
                     padding-top: 10px;
                     padding-bottom: 10px;
                     text-align: center;
+                    vertical-align: middle;
                 }
             }
         }

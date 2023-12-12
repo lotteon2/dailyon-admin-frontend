@@ -16,6 +16,9 @@ import { getAllBrands } from "@/apis/brand/BrandClient"
 
 const categoryStore = useCategoryStore()
 
+const pageSize: number = 5
+const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
+
 const initData = () => {
   getAllBrands()
     .then((axiosResponse: AxiosResponse) => {
@@ -40,7 +43,7 @@ const initData = () => {
       alert(error.response!.data!.message)
     })
 
-  getProductPages({ page: 0, brandId: null, categoryId: null, type: "NORMAL" })
+  getProductPages({ page: 0, size: pageSize, brandId: null, categoryId: null, type: "NORMAL" })
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadProductPageResponse = axiosResponse.data
       totalPages.value = response.totalPages
@@ -86,6 +89,7 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
     const request: ReadProductPageRequest = {
       page: afterPage,
+      size: pageSize,
       type: "NORMAL",
       brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
       categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value
@@ -179,7 +183,9 @@ watch(
               />
             </td>
             <td>{{ product.id }}</td>
-            <td>{{ product.imgUrl }}</td>
+            <td>
+              <img class="product-thumbnail" :src="`${VITE_STATIC_IMG_URL}${product.imgUrl}`" />
+            </td>
             <td>{{ product.code }}</td>
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
