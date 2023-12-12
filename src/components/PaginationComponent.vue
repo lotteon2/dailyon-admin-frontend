@@ -39,6 +39,9 @@ defineProps({
         />
       </svg>
     </div>
+    <div v-if="totalPages === 0" class="page-button-wrapper selected">
+      <div class="page-button selected">1</div>
+    </div>
     <div
       class="page-button-wrapper"
       v-for="page in totalPages"
