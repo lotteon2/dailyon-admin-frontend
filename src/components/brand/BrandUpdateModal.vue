@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateBrand } from "@/apis/brand/BrandClient"
-import type { UpdateBrandRequest } from "@/apis/brand/BrandDto"
 
 const props = defineProps({
   brandId: {
@@ -23,7 +22,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update-brand", "close-update-modal"])
 
-const editedBrandName = ref<string>("")
+const editedBrandName = ref<string>(props.brandName)
 
 const executeUpdate = () => {
   updateBrand(props.brandId, {
@@ -40,7 +39,6 @@ const executeUpdate = () => {
 }
 
 const closeModal = () => {
-  editedBrandName.value = ""
   emits("close-update-modal")
 }
 </script>
@@ -60,6 +58,7 @@ const closeModal = () => {
           id="brandName"
           v-model="editedBrandName"
           :placeholder="props.brandName"
+          @keyup.enter="executeUpdate"
         />
       </div>
       <div class="modal-button">

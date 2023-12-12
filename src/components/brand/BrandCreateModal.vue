@@ -55,6 +55,7 @@ const closeModal = () => {
           id="brandName"
           v-model="brandName"
           placeholder="브랜드 이름"
+          @keyup.enter="executeCreate"
         />
       </div>
       <div class="modal-button">

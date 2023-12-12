@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { updateCategory } from "@/apis/category/CategoryClient"
-import type { UpdateCategoryDto } from "@/apis/category/CategoryDto"
 import { useCategoryStore } from "@/stores/CategoryStore"
 
 const categoryStore = useCategoryStore()
@@ -30,10 +29,9 @@ const props = defineProps({
 
 const emits = defineEmits(["close-update-modal", "update-category"])
 
-const editedName = ref("")
+const editedName = ref<string>(props.categoryName)
 
 const closeModal = () => {
-  editedName.value = ""
   emits("close-update-modal")
 }
 
@@ -67,7 +65,13 @@ const executeUpdate = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">카테고리 이름</label>
-        <input class="modal-input" type="text" v-model="editedName" placeholder="카테고리 이름" />
+        <input
+          class="modal-input"
+          type="text"
+          v-model="editedName"
+          :placeholder="props.categoryName"
+          @keyup.enter="executeUpdate"
+        />
       </div>
       <div class="modal-button">
         <button class="checkBtn" @click="executeUpdate">등록</button>

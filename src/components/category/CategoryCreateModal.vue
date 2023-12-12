@@ -74,7 +74,13 @@ const executeCreate = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">카테고리 이름</label>
-        <input class="modal-input" type="text" v-model="name" placeholder="카테고리 이름" />
+        <input
+          class="modal-input"
+          type="text"
+          v-model="name"
+          @keyup.enter="executeCreate"
+          placeholder="카테고리 이름"
+        />
       </div>
       <div class="modal-button">
         <button class="checkBtn" @click="executeCreate">등록</button>
