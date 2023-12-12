@@ -10,6 +10,10 @@ export const getAllCategories = async (): Promise<AxiosResponse> => {
   return await authAxiosInstance.get(PRODUCT_ADMIN_PREFIX + PRODUCT_CATEGORY_PREFIX)
 }
 
+export const getLeafCategories = async (): Promise<AxiosResponse> => {
+  return await authAxiosInstance.get(`${PRODUCT_ADMIN_PREFIX}${PRODUCT_CATEGORY_PREFIX}/leaf`)
+}
+
 export const getCategoryPages = async (page: number): Promise<AxiosResponse> => {
   return await authAxiosInstance.get(`${PRODUCT_ADMIN_PREFIX}/page${PRODUCT_CATEGORY_PREFIX}`, {
     params: { page: page }

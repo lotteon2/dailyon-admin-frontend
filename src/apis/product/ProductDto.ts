@@ -30,3 +30,20 @@ export interface ReadProductStockAdminResponse {
   productSizeName: string
   quantity: number
 }
+
+export interface CreateProductRequest {
+  brandId: number
+  categoryId: number
+  price: number
+  name: string
+  code: string
+  type: string
+  image: string
+  productStocks: Array<ProductStockRequest>
+  describeImages: Array<String>
+}
+
+export interface ProductStockRequest {
+  productSizeId: number
+  quantity: number
+}
