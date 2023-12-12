@@ -138,47 +138,50 @@ watch(requestCategory, () => {
           </div>
         </div>
       </div>
-      <div class="modal-sub">
-        <div class="modal-sub-items">
-          <label class="modal-label">상품 코드</label>
-          <input class="modal-input" type="text" v-model="requestCode" required />
+      <div class="modal-sub-container">
+        <div class="modal-sub">
+          <div class="modal-sub-items">
+            <label class="modal-label">상품 코드</label>
+            <input class="modal-input" type="text" v-model="requestCode" required />
+          </div>
+          <div class="modal-sub-items">
+            <label class="modal-label">상품명</label>
+            <input class="modal-input" type="text" v-model="requestName" required />
+          </div>
+          <div class="modal-sub-items">
+            <label class="modal-label">상품 가격</label>
+            <input class="modal-input" type="number" v-model="requestPrice" required />
+          </div>
+          <div class="modal-sub-items">
+            <label class="modal-label">카테고리</label>
+            <select class="modal-select" v-model.lazy="requestCategory" required>
+              <option
+                v-for="(category, index) in leafCategories"
+                :key="index"
+                :value="requestCategory"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+          <div class="modal-sub-items">
+            <label class="modal-label">브랜드</label>
+            <select class="modal-select" v-model.lazy="requestBrand" required>
+              <option v-for="(brand, index) in brands" :key="index" :value="requestBrand">
+                {{ brand.name }}
+              </option>
+            </select>
+          </div>
+          <div class="modal-sub-items">
+            <label class="modal-label">성별</label>
+            <select class="modal-select" v-model.lazy="requestGender" required>
+              <option v-for="(gender, index) in genders" :key="index" :value="requestGender">
+                {{ gender.name }}
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="modal-sub-items">
-          <label class="modal-label">상품명</label>
-          <input class="modal-input" type="text" v-model="requestName" required />
-        </div>
-        <div class="modal-sub-items">
-          <label class="modal-label">상품 가격</label>
-          <input class="modal-input" type="number" v-model="requestPrice" required />
-        </div>
-        <div class="modal-sub-items">
-          <label class="modal-label">카테고리</label>
-          <select class="modal-select" v-model.lazy="requestCategory" required>
-            <option
-              v-for="(category, index) in leafCategories"
-              :key="index"
-              :value="requestCategory"
-            >
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-        <div class="modal-sub-items">
-          <label class="modal-label">브랜드</label>
-          <select class="modal-select" v-model.lazy="requestBrand" required>
-            <option v-for="(brand, index) in brands" :key="index" :value="requestBrand">
-              {{ brand.name }}
-            </option>
-          </select>
-        </div>
-        <div class="modal-sub-items">
-          <label class="modal-label">성별</label>
-          <select class="modal-select" v-model.lazy="requestGender" required>
-            <option v-for="(gender, index) in genders" :key="index" :value="requestGender">
-              {{ gender.name }}
-            </option>
-          </select>
-        </div>
+        <div class="modal-sub"></div>
       </div>
       <div class="modal-button">
         <button class="createBtn">상품 등록</button>

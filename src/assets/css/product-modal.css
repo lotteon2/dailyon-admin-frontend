@@ -15,7 +15,6 @@
 
 .modal-content {
     background-color: #FFFFFF;
-    height: 95%;
     width: 50%;
     padding: 20px;
     border-radius: 5px;
@@ -87,7 +86,15 @@ img {
     object-fit: contain;
 }
 
+.modal-sub-container {
+    display: flex;
+    flex-direction: row;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
 .modal-sub {
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -95,7 +102,7 @@ img {
 }
 
 .modal-sub-items {
-    width: 50%;
+    width: 80%;
     display: flex;
     justify-content: space-between;
     padding-top: 10px;
