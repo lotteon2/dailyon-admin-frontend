@@ -3,6 +3,7 @@ export interface ReadProductPageRequest {
   categoryId: number | null
   type: string
   page: number
+  size: number
 }
 
 export interface ReadProductPageResponse {
