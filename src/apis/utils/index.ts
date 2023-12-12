@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from "axios"
 // vite에서 환경변수 값을 가져오기 위해서 import.meta 를 사용함
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-// 비로그인 axios instance
+// 비로그인 axios instancec:\git\front\dailyon-frontend\.env
 const axiosApi = (baseURL: string) => {
   return axios.create({
     baseURL
