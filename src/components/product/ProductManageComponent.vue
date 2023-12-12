@@ -113,6 +113,7 @@ watch(
   async ([newCategoryId, newBrandId], [oldCategoryId, oldBrandId]) => {
     const request: ReadProductPageRequest = {
       page: requestPage.value,
+      size: pageSize,
       type: "NORMAL",
       brandId: newBrandId === 0 ? null : newBrandId,
       categoryId: newCategoryId === 0 ? null : newCategoryId
