@@ -3,11 +3,7 @@ import { useProductSizeStore } from "@/stores/ProductSizeStore"
 import { ref } from "vue"
 import type { AxiosResponse } from "axios"
 import { createProductSize } from "@/apis/productsize/ProductSizeClient"
-import type {
-  CreateProductSizeRequest,
-  CreateProductSizeResponse,
-  ReadProductSizeResponse
-} from "@/apis/productsize/ProductSizeDto"
+import type { CreateProductSizeResponse } from "@/apis/productsize/ProductSizeDto"
 
 const props = defineProps({
   showModal: {
