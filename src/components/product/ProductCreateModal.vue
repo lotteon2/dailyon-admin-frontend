@@ -68,7 +68,7 @@ const previewDescribeFiles: Ref<Array<string>> = ref(new Array<string>())
 const onDescribeImageChange = (event: Event, index: number) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
-    if (describeFiles.value.some((file) => file.name === target.files[0].name)) {
+    if (describeFiles.value.some((file) => file.name === target.files![0].name)) {
       alert("다른 이미지를 선택해주세요")
       return
     }
