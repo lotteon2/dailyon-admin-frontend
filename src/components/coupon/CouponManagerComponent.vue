@@ -5,8 +5,9 @@ import { onBeforeMount, ref, watch } from "vue"
 // import ProductSizeUpdateModal from "@/components/productsize/ProductSizeUpdateModal.vue"
 import CouponCreateModal from "@/components/coupon/CouponCreateModal.vue"
 import CouponUpdateModal from "@/components/coupon/CouponUpdateModal.vue"
+import ConfirmDialogModal from "@/components/common/ConfirmDialogueModal.vue"
 import PaginationComponent from "@/components/PaginationComponent.vue"
-import { getCouponInfoPage } from "@/apis/coupon/CouponClient"
+import { getCouponInfoPage, deleteCouponInfo, invalidateCouponInfo } from "@/apis/coupon/CouponClient"
 import type { CouponCreateRequest, CouponUpdateRequest, couponInfoReadItemResponse, CouponInfoPageResponse } from "@/apis/coupon/CouponDto"
 import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/CouponDto"
 
@@ -63,6 +64,70 @@ const formatDate = (localDateTime: string) => {
 const optionalValue = (value: number | undefined | null) => {
   return value? value.toLocaleString('ko-KR') : '-';
 };
+
+
+
+// confirm 모달 관련
+const isConfirmDialogVisible = ref(false);
+const confirmModalTitle = ref("");
+const confirmModalMessage = ref("");
+const confirmMessage = ref("");
+const cancelMessage = ref("");
+const couponInfoIdToActOn = ref(0);
+
+const onDeleteClick = async (couponInfoId: number) => {
+  console.log("onDeleteClick 발동");
+
+  couponInfoIdToActOn.value = couponInfoId;
+  confirmModalTitle.value = "쿠폰 이벤트 삭제하기";
+  confirmModalMessage.value = "정말로 삭제하시겠습니까?";
+  confirmMessage.value = "예";
+  cancelMessage.value = "아니오";
+  isConfirmDialogVisible.value = true;
+};
+
+const onInvalidateClick = async (couponInfoId: number) => {
+  console.log("onInvalidateClick 발동");
+
+  couponInfoIdToActOn.value = couponInfoId;
+  confirmModalTitle.value = "쿠폰 이벤트 종료하기";
+  confirmModalMessage.value = "정말로 종료하시겠습니까?";
+  confirmMessage.value = "예";
+  cancelMessage.value = "아니오";
+  isConfirmDialogVisible.value = true;
+};
+
+const onConfirmAction = async () => {
+  console.log("onConfirmAction 발동");
+  if (confirmModalTitle.value === "쿠폰 이벤트 삭제하기") {
+    try{
+      const response = await deleteCouponInfo(couponInfoIdToActOn.value);
+      if (response.status === 204) {
+        isConfirmDialogVisible.value = false;
+      }
+    } catch(err) {
+      console.log(err);
+      throw err;
+    }
+  } else if (confirmModalTitle.value === "쿠폰 이벤트 종료하기") {
+    try{
+      const response = await invalidateCouponInfo(couponInfoIdToActOn.value);
+      if (response.status === 200) {
+        isConfirmDialogVisible.value = false;
+      }
+    } catch(err) {
+      console.log(err);
+      throw err;
+    }
+  }
+  // TODO: After the API call, you may want to refresh your data or indicate success to the user
+};
+
+const onCancelAction = () => {
+  // TODO: Simply close the dialog here, or you could also reset couponInfoIdToActOn if needed
+  isConfirmDialogVisible.value = false;
+};
+
 </script>
 
 <template>
@@ -77,6 +142,15 @@ const optionalValue = (value: number | undefined | null) => {
       :coupon="selectedCoupon"
       @close-update-modal="closeUpdateModal"
     />
+    <ConfirmDialogModal
+    :title="confirmModalTitle"
+    :message="confirmModalMessage"
+    :confirmMessage="confirmMessage"
+    :cancelMessage="cancelMessage"
+    :isVisible="isConfirmDialogVisible"
+    @modal-dialogue-confirm="onConfirmAction"
+    @modal-dialogue-cancel="onCancelAction"
+  />
     
     
     <div class="head-block">
@@ -122,8 +196,8 @@ const optionalValue = (value: number | undefined | null) => {
               {{ optionalValue(adminCouponInfo.maxDiscountAmount) !== '-' ? `최대 할인금액 ${optionalValue(adminCouponInfo.maxDiscountAmount)}원` : '-' }} </td>
             <td>
               <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
-              <button v-if="isCouponStartInFuture(adminCouponInfo.startAt)" class="terminateBtn">종료</button>
-              <button v-else class="deleteBtn">삭제</button>
+              <button v-if="isCouponStartInFuture(adminCouponInfo.startAt)" @click="onInvalidateClick(adminCouponInfo.id)" class="terminateBtn">종료</button>
+              <button v-else @click="onDeleteClick(adminCouponInfo.id)" class="deleteBtn">삭제</button>
             </td>
           </tr>
         </tbody>
