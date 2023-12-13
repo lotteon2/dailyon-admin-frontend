@@ -22,7 +22,7 @@ const props = defineProps({
     type: Boolean
   }
 })
-const emits = defineEmits(["close-create-modal"])
+const emits = defineEmits(["close-create-modal", "create-success"])
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
@@ -134,7 +134,7 @@ const executeCreate = () => {
       const response: CreateProductResponse = axiosResponse.data
 
       uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
-        alert("이미지 업로드 오류")
+        alert("상품 이미지 업로드 오류")
       })
 
       for (let i = 0; i < describeImages.length; i++) {
@@ -142,9 +142,13 @@ const executeCreate = () => {
           response.describeImgPresignedUrl[`${describeImages[i]}`],
           describeFiles.value[i]
         ).catch((error: any) => {
-          alert("이미지 업로드 오류")
+          alert("상품 설명 이미지 업로드 오류")
         })
       }
+    })
+    .then(() => {
+      alert("등록 성공")
+      emits("create-success")
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
