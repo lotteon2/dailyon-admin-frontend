@@ -181,6 +181,7 @@ watch(requestCategory, () => {
   }
 })
 
+// TODO : 선택한 치수 option에서 삭제, 선택 취소한 치수 다시 option에 추가
 const filteredProductSizes = computed(() => {
   return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
 })
@@ -205,11 +206,13 @@ const selectProductSize = (selectedProductId: number) => {
       </div>
       <div class="modal-main">
         <div class="modal-main-image">
+          <!-- TODO : ref 걸어서 이미지 등록 버튼 대체 -->
           <img v-if="previewImageFile" :src="previewImageFile" alt="productPreviewImg" />
           <input type="file" @change="onImageChange" />
         </div>
         <div class="modal-sub-images">
           <div v-for="index in 5" :key="index" class="modal-sub-image">
+            <!-- TODO : ref 걸어서 이미지 등록 버튼 대체 -->
             <img
               v-if="previewDescribeFiles[index]"
               :src="previewDescribeFiles[index]"
