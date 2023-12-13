@@ -43,19 +43,26 @@ export interface CouponUpdateRequest {
 }
 
 export interface couponInfoReadItemResponse {
-  id: number;
+  id: number; // read에 추가
+  
   name: string;
+  
   discountType: string;
   discountValue: number;
+  
   startAt: string;
   endAt: string;
+  
   remainingQuantity: number;
-  issuedQuantity: number;
+  issuedQuantity: number; // read에 추가
+  
   appliesToType: string;
   appliesToId: number;
   appliesToName: string;
+  
   requiresConcurrencyControl: boolean;
   targetImgUrl?: string;
+  
   minPurchaseAmount?: number | null;
   maxDiscountAmount?: number | null;
 }
@@ -65,19 +72,47 @@ export interface CouponInfoPageResponse {
   totalCounts: number;
 }
 
+// product 조회용
+export interface ReadProductSliceResponse {
+  hasNext: boolean;
+  productResponses: ReadProductResponse[];
+}
+
+export interface ReadProductResponse {
+  id: number;
+  name: string;
+  imgUrl: string;
+}
+
+// leaf 카테고리 조회용 DTO
+export interface ReadChildrenCategoryListResponse {
+  categoryResponses: ReadChildrenCategoryResponse[];
+}
+
+export interface ReadChildrenCategoryResponse {
+  id: number;
+  name: string;
+}
+
 export const convertToCouponUpdateRequest = (coupon: couponInfoReadItemResponse): CouponUpdateRequest => {
   return {
     name: coupon.name,
+    
     discountType: coupon.discountType,
     discountValue: coupon.discountValue,
+    
     startAt: coupon.startAt, // 이미 ISO 8601 포맷으로되어있어야함
     endAt: coupon.endAt,     // 이미 ISO 8601 포맷으로되어있어야함
+    
     issuedQuantity: coupon.issuedQuantity,
+    
     appliesToType: coupon.appliesToType,
     appliesToId: coupon.appliesToId,
     appliesToName: coupon.appliesToName,
+    
     requiresConcurrencyControl: coupon.requiresConcurrencyControl,
     targetImgUrl: coupon.targetImgUrl,  // Optional
+    
     minPurchaseAmount: coupon.minPurchaseAmount === null ? undefined : coupon.minPurchaseAmount, // Optional, null을 undefined로 변환
     maxDiscountAmount: coupon.maxDiscountAmount === null ? undefined : coupon.maxDiscountAmount, // Optional, null을 undefined로 변환
   };
@@ -101,3 +136,4 @@ export const formatDiscountValue = (discountType: string, discountValue: number)
       return discountValue.toString();
 }
 };
+
