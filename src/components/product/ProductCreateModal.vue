@@ -42,6 +42,7 @@ const requestProductStocks = ref<Array<ProductStockRequest>>(
   new Array<ProductStockRequest>({ productSizeId: 0, quantity: 0 })
 )
 
+const inputImageFile: Ref<HTMLInputElement | null> = ref(null)
 const imageFile: Ref<File | null> = ref(null)
 const previewImageFile: Ref<string | null> = ref(null)
 const onImageChange = (event: Event) => {
@@ -63,6 +64,13 @@ const onImageChange = (event: Event) => {
   }
 }
 
+const triggerInputFile = () => {
+  if (inputImageFile.value) {
+    inputImageFile.value.click()
+  }
+}
+
+const inputDescribeFiles: Ref<Array<HTMLInputElement | null>> = ref([])
 const describeFiles: Ref<Array<File>> = ref(new Array<File>())
 const previewDescribeFiles: Ref<Array<string>> = ref(new Array<string>())
 const onDescribeImageChange = (event: Event, index: number) => {
@@ -85,6 +93,13 @@ const onDescribeImageChange = (event: Event, index: number) => {
     if (describeFiles.value[index]) {
       fileReader.readAsDataURL(describeFiles.value[index])
     }
+  }
+}
+
+const triggerInputDescribeFile = (index: number) => {
+  console.log(index)
+  if (inputDescribeFiles.value[index] !== null) {
+    inputDescribeFiles.value[index]!.click()
   }
 }
 
@@ -206,19 +221,36 @@ const selectProductSize = (selectedProductId: number) => {
       </div>
       <div class="modal-main">
         <div class="modal-main-image">
-          <!-- TODO : ref 걸어서 이미지 등록 버튼 대체 -->
-          <img v-if="previewImageFile" :src="previewImageFile" alt="productPreviewImg" />
-          <input type="file" @change="onImageChange" />
+          <img
+            v-if="previewImageFile"
+            :src="previewImageFile"
+            @click="triggerInputFile"
+            alt="productPreviewImg"
+          />
+          <input type="file" style="display: none" ref="inputImageFile" @change="onImageChange" />
+          <button v-if="!previewImageFile" class="updateBtn" @click="triggerInputFile">추가</button>
         </div>
         <div class="modal-sub-images">
           <div v-for="index in 5" :key="index" class="modal-sub-image">
-            <!-- TODO : ref 걸어서 이미지 등록 버튼 대체 -->
             <img
-              v-if="previewDescribeFiles[index]"
-              :src="previewDescribeFiles[index]"
+              v-if="previewDescribeFiles[index - 1]"
+              :src="previewDescribeFiles[index - 1]"
+              @click="triggerInputDescribeFile(index - 1)"
               alt="describeImages"
             />
-            <input type="file" @change="onDescribeImageChange($event, index)" />
+            <input
+              type="file"
+              style="display: none"
+              ref="inputDescribeFiles"
+              @change="onDescribeImageChange($event, index - 1)"
+            />
+            <button
+              class="updateBtn"
+              v-if="!previewDescribeFiles[index - 1]"
+              @click="triggerInputDescribeFile(index - 1)"
+            >
+              추가
+            </button>
           </div>
         </div>
       </div>
