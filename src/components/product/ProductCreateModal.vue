@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import type { Category } from "@/apis/category/CategoryDto"
-import { Ref, ref, watch } from "vue"
+import { computed, type Ref, ref, watch } from "vue"
 import type { AxiosResponse } from "axios"
 import { getLeafCategories } from "@/apis/category/CategoryClient"
 import { getAllBrands } from "@/apis/brand/BrandClient"
-import { ReadBrandResponse } from "@/apis/brand/BrandDto"
+import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import type { ReadProductSizeResponse } from "@/apis/productsize/ProductSizeDto"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
 import { genders } from "@/apis/utils/CommonDto"
 import type { Gender } from "@/apis/utils/CommonDto"
-import type { ProductStockRequest } from "@/apis/product/ProductDto"
+import type {
+  CreateProductRequest,
+  CreateProductResponse,
+  ProductStockRequest
+} from "@/apis/product/ProductDto"
+import { createProduct } from "@/apis/product/ProductClient"
+import { uploadImageToS3 } from "@/apis/s3/S3Client"
 
 const props = defineProps({
   showModal: {
@@ -21,6 +27,7 @@ const emits = defineEmits(["close-create-modal"])
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
 const productSizesToUse = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
+const productSizeUsed = ref<boolean[]>([])
 
 const requestCode = ref<string>("")
 const requestName = ref<string>("")
@@ -31,7 +38,9 @@ const requestBrand = ref<ReadBrandResponse>({ id: 0, name: "" })
 const requestGender = ref<Gender>({ name: "", value: "" })
 const requestImage = ref<string>("")
 const requestDescribeImages = ref<Array<String>>(new Array<String>())
-const requestProductStocks = ref<Array<ProductStockRequest>>(new Array<ProductStockRequest>())
+const requestProductStocks = ref<Array<ProductStockRequest>>(
+  new Array<ProductStockRequest>({ productSizeId: 0, quantity: 0 })
+)
 
 const imageFile: Ref<File | null> = ref(null)
 const previewImageFile: Ref<string | null> = ref(null)
@@ -54,8 +63,8 @@ const onImageChange = (event: Event) => {
   }
 }
 
-const describeFiles: Ref<Array<File | null>> = ref(new Array<File | null>())
-const previewDescribeFiles: Ref<Array<string | null>> = ref(new Array<string | null>())
+const describeFiles: Ref<Array<File>> = ref(new Array<File>())
+const previewDescribeFiles: Ref<Array<string>> = ref(new Array<string>())
 const onDescribeImageChange = (event: Event, index: number) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
@@ -79,6 +88,60 @@ const onDescribeImageChange = (event: Event, index: number) => {
 
 const closeModal = () => {
   emits("close-create-modal")
+}
+
+const executeCreate = () => {
+  const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
+    (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
+  )
+
+  const describeImages: Array<String> = requestDescribeImages.value.filter(
+    (describeImage) => describeImage !== null
+  )
+
+  const request: CreateProductRequest = {
+    brandId: requestBrand.value.id,
+    categoryId: requestCategory.value.id!,
+    code: requestCode.value,
+    describeImages: describeImages,
+    image: requestImage.value,
+    name: requestName.value,
+    price: requestPrice.value,
+    gender: requestGender.value.value,
+    type: "NORMAL",
+    productStocks: productStocks
+  }
+
+  console.log(request)
+
+  createProduct(request)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: CreateProductResponse = axiosResponse.data
+
+      uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
+        alert("이미지 업로드 오류")
+      })
+
+      for (let i = 0; i < describeImages.length; i++) {
+        uploadImageToS3(
+          response.describeImgPresignedUrl[`${describeImages[i]}`],
+          describeFiles.value[i]
+        ).catch((error: any) => {
+          alert("이미지 업로드 오류")
+        })
+      }
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
+}
+
+const addProductStock = () => {
+  requestProductStocks.value.push({ productSizeId: 0, quantity: 0 })
+}
+
+function removeProductStock(index: number) {
+  requestProductStocks.value.splice(index, 1)
 }
 
 watch(
@@ -105,14 +168,35 @@ watch(
 )
 
 watch(requestCategory, () => {
-  getProductSizesByCategory(requestCategory.value.id)
-    .then((axiosResponse: AxiosResponse) => {
-      productSizesToUse.value = axiosResponse.data.productSizes
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+  if (requestCategory.value && requestCategory.value.id !== null) {
+    getProductSizesByCategory(requestCategory.value.id)
+      .then((axiosResponse: AxiosResponse) => {
+        productSizesToUse.value = axiosResponse.data.productSizes
+        requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
+        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 })
+
+const filteredProductSizes = computed(() => {
+  console.log(productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index]))
+  return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
+})
+
+const selectProductSize = (selectedProductId: number) => {
+  const selectedIndex = productSizesToUse.value.findIndex(
+    (productSize) => productSize.id === selectedProductId
+  )
+
+  console.log(selectedIndex)
+
+  if (selectedIndex !== -1) {
+    productSizeUsed.value[selectedIndex] = false
+  }
+}
 </script>
 
 <template>
@@ -146,45 +230,73 @@ watch(requestCategory, () => {
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">상품명</label>
-            <input class="modal-input" type="text" v-model="requestName" required />
+            <input class="modal-input" type="text" v-model="requestName" />
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">상품 가격</label>
-            <input class="modal-input" type="number" v-model="requestPrice" required />
+            <input class="modal-input" type="number" v-model="requestPrice" />
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">카테고리</label>
-            <select class="modal-select" v-model.lazy="requestCategory" required>
-              <option
-                v-for="(category, index) in leafCategories"
-                :key="index"
-                :value="requestCategory"
-              >
+            <select class="modal-select" v-model.lazy="requestCategory">
+              <option v-for="(category, index) in leafCategories" :key="index" :value="category">
                 {{ category.name }}
               </option>
             </select>
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">브랜드</label>
-            <select class="modal-select" v-model.lazy="requestBrand" required>
-              <option v-for="(brand, index) in brands" :key="index" :value="requestBrand">
+            <select class="modal-select" v-model.lazy="requestBrand">
+              <option v-for="(brand, index) in brands" :key="index" :value="brand">
                 {{ brand.name }}
               </option>
             </select>
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">성별</label>
-            <select class="modal-select" v-model.lazy="requestGender" required>
-              <option v-for="(gender, index) in genders" :key="index" :value="requestGender">
+            <select class="modal-select" v-model.lazy="requestGender">
+              <option v-for="(gender, index) in genders" :key="index" :value="gender">
                 {{ gender.name }}
               </option>
             </select>
           </div>
         </div>
-        <div class="modal-sub"></div>
+        <div class="modal-sub">
+          <div class="modal-sub-header">
+            <label class="modal-sub-label">치수별 수량</label>
+            <button
+              class="updateBtn"
+              @click="addProductStock"
+              v-if="filteredProductSizes.length > 0"
+            >
+              추가
+            </button>
+          </div>
+          <div
+            v-for="(productStock, index) in requestProductStocks"
+            :key="index"
+            class="modal-sub-items"
+          >
+            <select
+              class="modal-select"
+              v-model.lazy="productStock.productSizeId"
+              @change="selectProductSize(productStock.productSizeId)"
+            >
+              <option
+                v-for="(productSize, productSizeIdx) in filteredProductSizes"
+                :key="productSizeIdx"
+                :value="productSize.id"
+              >
+                {{ productSize.name }}
+              </option>
+            </select>
+            <input class="modal-input" type="number" v-model="productStock.quantity" />
+            <button class="deleteBtn" @click="removeProductStock(index)">삭제</button>
+          </div>
+        </div>
       </div>
       <div class="modal-button">
-        <button class="createBtn">상품 등록</button>
+        <button class="createBtn" @click="executeCreate">상품 등록</button>
       </div>
     </div>
   </div>

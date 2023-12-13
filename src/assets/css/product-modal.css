@@ -97,8 +97,20 @@ img {
     width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+}
+
+.modal-sub-header {
+    display: flex;
+    width: 80%;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.modal-sub-label {
+    font-size: 20px;
+    padding-right: 20px;
 }
 
 .modal-sub-items {
@@ -126,6 +138,15 @@ button {
     height: 50px;
     font-size: 25px;
     background-color: black;
+}
+
+.updateBtn {
+    width: 60px;
+    height: 30px;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: black 1px solid;
 }
 
 .modal-select {
