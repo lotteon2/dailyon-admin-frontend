@@ -13,6 +13,7 @@ import { getAllCategories } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import { getAllBrands } from "@/apis/brand/BrandClient"
+import ProductCreateModal from "@/components/product/ProductCreateModal.vue"
 
 const categoryStore = useCategoryStore()
 
@@ -77,6 +78,8 @@ const selectedCategoryId = ref<number>(0)
 const checkedProducts = ref<Array<Number>>(new Array<Number>())
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const products = ref<Array<ReadProductAdminResponse>>(new Array<ReadProductAdminResponse>())
+
+const isCreateModalVisible = ref(false)
 const onChangePage = async (page: number) => {
   if (0 <= page && page < totalPages.value) {
     requestPage.value = page
@@ -84,6 +87,19 @@ const onChangePage = async (page: number) => {
 }
 
 onMounted(initData)
+
+const openCreateModal = () => {
+  isCreateModalVisible.value = true
+}
+
+const closeCreateModal = () => {
+  isCreateModalVisible.value = false
+}
+
+const afterCreate = () => {
+  isCreateModalVisible.value = false
+  initData()
+}
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
@@ -134,8 +150,13 @@ watch(
 
 <template>
   <div class="product-container">
+    <ProductCreateModal
+      :show-modal="isCreateModalVisible"
+      @close-create-modal="closeCreateModal"
+      @create-success="afterCreate"
+    />
     <div class="head-button-block">
-      <button class="createBtn">상품 등록</button>
+      <button class="createBtn" @click="openCreateModal">상품 등록</button>
     </div>
     <div class="head-block">
       <div>

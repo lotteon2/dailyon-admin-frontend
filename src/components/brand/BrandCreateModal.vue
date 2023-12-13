@@ -2,11 +2,6 @@
 import { ref } from "vue"
 import type { AxiosResponse } from "axios"
 import { createBrand } from "@/apis/brand/BrandClient"
-import type {
-  CreateBrandRequest,
-  CreateBrandResponse,
-  ReadBrandResponse
-} from "@/apis/brand/BrandDto"
 
 const props = defineProps({
   showModal: {
