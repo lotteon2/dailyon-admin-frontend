@@ -73,6 +73,7 @@ const optionalValue = (value: number | undefined | null) => {
     />
     <CouponUpdateModal
       :show-modal="isUpdateModalVisible"
+      :couponInfoId="selectedCoupon ? selectedCoupon.id : undefined"
       :coupon="selectedCoupon"
       @close-update-modal="closeUpdateModal"
     />
