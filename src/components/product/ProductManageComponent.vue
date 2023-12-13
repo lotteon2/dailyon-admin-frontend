@@ -96,6 +96,11 @@ const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
 
+const afterCreate = () => {
+  isCreateModalVisible.value = false
+  initData()
+}
+
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
     const request: ReadProductPageRequest = {
@@ -145,7 +150,11 @@ watch(
 
 <template>
   <div class="product-container">
-    <ProductCreateModal :show-modal="isCreateModalVisible" @close-create-modal="closeCreateModal" />
+    <ProductCreateModal
+      :show-modal="isCreateModalVisible"
+      @close-create-modal="closeCreateModal"
+      @create-success="afterCreate"
+    />
     <div class="head-button-block">
       <button class="createBtn" @click="openCreateModal">상품 등록</button>
     </div>
