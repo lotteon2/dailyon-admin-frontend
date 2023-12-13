@@ -15,6 +15,14 @@ export const updateCouponInfo = async (couponInfoId:number | undefined, body: Co
   return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`, body)
 }
 
+export const deleteCouponInfo = async (couponInfoId:number): Promise<AxiosResponse> => {
+  return await authAxiosInstance.delete(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`)
+}
+
+export const invalidateCouponInfo = async (couponInfoId:number): Promise<AxiosResponse> => {
+  return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}/invalidate`)
+}
+
 export const getCouponInfoPage = async (size?: number, page?: number): Promise<CouponInfoPageResponse> => {
   let queryParams: string[] = [];
   if (size != null) {
