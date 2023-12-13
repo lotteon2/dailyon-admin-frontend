@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Category } from "@/apis/category/CategoryDto"
-import { computed, type Ref, ref, watch } from "vue"
+import { computed, type Ref, ref, toRefs, watch } from "vue"
 import type { AxiosResponse } from "axios"
 import { getLeafCategories } from "@/apis/category/CategoryClient"
 import { getAllBrands } from "@/apis/brand/BrandClient"
@@ -68,6 +68,10 @@ const previewDescribeFiles: Ref<Array<string>> = ref(new Array<string>())
 const onDescribeImageChange = (event: Event, index: number) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
+    if (describeFiles.value.some((file) => file.name === target.files[0].name)) {
+      alert("다른 이미지를 선택해주세요")
+      return
+    }
     describeFiles.value[index] = target.files[0]
     requestDescribeImages.value[index] = target.files[0].name
 
@@ -81,8 +85,6 @@ const onDescribeImageChange = (event: Event, index: number) => {
     if (describeFiles.value[index]) {
       fileReader.readAsDataURL(describeFiles.value[index])
     }
-
-    console.log(requestDescribeImages.value)
   }
 }
 
@@ -111,8 +113,6 @@ const executeCreate = () => {
     type: "NORMAL",
     productStocks: productStocks
   }
-
-  console.log(request)
 
   createProduct(request)
     .then((axiosResponse: AxiosResponse) => {
@@ -182,7 +182,6 @@ watch(requestCategory, () => {
 })
 
 const filteredProductSizes = computed(() => {
-  console.log(productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index]))
   return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
 })
 
@@ -190,8 +189,6 @@ const selectProductSize = (selectedProductId: number) => {
   const selectedIndex = productSizesToUse.value.findIndex(
     (productSize) => productSize.id === selectedProductId
   )
-
-  console.log(selectedIndex)
 
   if (selectedIndex !== -1) {
     productSizeUsed.value[selectedIndex] = false
@@ -291,7 +288,7 @@ const selectProductSize = (selectedProductId: number) => {
               </option>
             </select>
             <input class="modal-input" type="number" v-model="productStock.quantity" />
-            <button class="deleteBtn" @click="removeProductStock(index)">삭제</button>
+            <button class="updateBtn" @click="removeProductStock(index)">삭제</button>
           </div>
         </div>
       </div>
