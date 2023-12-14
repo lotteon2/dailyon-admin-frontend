@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { ProductStockRequest, ReadProductAdminResponse } from "@/apis/product/ProductDto"
+import type {
+  ProductStockRequest,
+  ReadProductAdminResponse,
+  UpdateProductRequest
+} from "@/apis/product/ProductDto"
 import { computed, type Ref, ref, watch } from "vue"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import type { Category } from "@/apis/category/CategoryDto"
@@ -10,6 +14,7 @@ import { getAllBrands } from "@/apis/brand/BrandClient"
 import type { AxiosResponse } from "axios"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
 import { genders } from "@/apis/utils/CommonDto"
+import { updateProduct } from "@/apis/product/ProductClient"
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
@@ -114,7 +119,7 @@ const closeModal = () => {
 
   inputImageFile.value = null
   imageFile.value = null
-  previewImageFile.value = null
+  previewImageFile.value = ""
 
   inputDescribeFiles.value = []
   describeFiles.value = []
@@ -122,7 +127,29 @@ const closeModal = () => {
   emits("close-update-modal")
 }
 
-const executeUpdate = () => {}
+const executeUpdate = () => {
+  const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
+    (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
+  )
+
+  const describeImages: Array<String> = requestDescribeImages.value.filter(
+    (describeImage) => describeImage !== null
+  )
+
+  const request: UpdateProductRequest = {
+    brandId: requestBrand.value.id,
+    categoryId: requestCategory.value.id!,
+    price: requestPrice.value,
+    name: requestName.value,
+    code: requestCode.value,
+    gender: requestGender.value.value,
+    image: requestImage.value,
+    productStocks: productStocks,
+    describeImages: describeImages
+  }
+
+  console.log(request)
+}
 
 const addProductStock = () => {
   requestProductStocks.value.push({ productSizeId: 0, quantity: 0 })
@@ -155,26 +182,23 @@ watch(
       previewImageFile.value = `${VITE_STATIC_IMG_URL.value}${props.productToUpdate!.imgUrl}`
       requestGender.value = genders.value.find(
         (gender) => gender.value === props.productToUpdate!.gender
-      )
+      )!
       previewDescribeFiles.value = props.productToUpdate!.describeImgUrls.map(
         (imgUrl) => `${VITE_STATIC_IMG_URL.value}${imgUrl}`
-      )
+      )!
 
       getLeafCategories()
         .then((axiosResponse: AxiosResponse) => {
           leafCategories.value = axiosResponse.data.categoryResponses
           requestCategory.value = leafCategories.value.find(
             (category) => category.id === props.productToUpdate!.categoryId
-          )
+          )!
+
+          requestProductStocks.value = props.productToUpdate!.productStocks.map((productStock) => ({
+            productSizeId: productStock.productSizeId,
+            quantity: productStock.quantity
+          }))
         })
-        .then(
-          (requestProductStocks.value = props.productToUpdate!.productStocks.map(
-            (productStock) => ({
-              productSizeId: productStock.productSizeId,
-              quantity: productStock.quantity
-            })
-          ))
-        )
         .catch((error: any) => {
           alert(error.response!.data!.message)
         })
@@ -184,7 +208,7 @@ watch(
           brands.value = axiosResponse.data.brandResponses
           requestBrand.value = brands.value.find(
             (brand) => brand.id === props.productToUpdate!.brandId
-          )
+          )!
         })
         .catch((error: any) => {
           alert(error.response!.data!.message)
@@ -195,7 +219,7 @@ watch(
 
 watch(requestCategory, (nv, ov) => {
   if (ov.id == 0) {
-    getProductSizesByCategory(requestCategory.value.id)
+    getProductSizesByCategory(requestCategory.value!.id!)
       .then((axiosResponse: AxiosResponse) => {
         productSizesToUse.value = axiosResponse.data.productSizes
         // requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
@@ -205,7 +229,7 @@ watch(requestCategory, (nv, ov) => {
         alert(error.response!.data!.message)
       })
   } else {
-    getProductSizesByCategory(requestCategory.value.id)
+    getProductSizesByCategory(requestCategory.value!.id!)
       .then((axiosResponse: AxiosResponse) => {
         productSizesToUse.value = axiosResponse.data.productSizes
         requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
@@ -215,17 +239,6 @@ watch(requestCategory, (nv, ov) => {
         alert(error.response!.data!.message)
       })
   }
-  // if (requestCategory.value && requestCategory.value.id !== null) {
-  //   getProductSizesByCategory(requestCategory.value.id)
-  //     .then((axiosResponse: AxiosResponse) => {
-  //       productSizesToUse.value = axiosResponse.data.productSizes
-  //       // requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
-  //       productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
-  //     })
-  //     .catch((error: any) => {
-  //       alert(error.response!.data!.message)
-  //     })
-  // }
 })
 </script>
 
