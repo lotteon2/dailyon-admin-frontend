@@ -44,6 +44,18 @@ export interface CreateProductRequest {
   describeImages: Array<String>
 }
 
+export interface UpdateProductRequest {
+  brandId: number
+  categoryId: number
+  price: number
+  name: string
+  code: string
+  gender: string
+  image: string
+  productStocks: Array<ProductStockRequest>
+  describeImages: Array<String>
+}
+
 export interface CreateProductResponse {
   productId: number
   imgPresignedUrl: string
