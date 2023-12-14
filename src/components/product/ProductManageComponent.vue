@@ -113,6 +113,10 @@ const toggleAll = () => {
 }
 
 const deleteChecked = () => {
+  if (checkedProducts.value.length == 0) {
+    alert("삭제할 상품을 선택해주세요")
+    return
+  }
   if (confirm("삭제하시겠습니까?")) {
     deleteProducts(checkedProducts.value)
       .then(() => {
