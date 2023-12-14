@@ -14,6 +14,7 @@ import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import { getAllBrands } from "@/apis/brand/BrandClient"
 import ProductCreateModal from "@/components/product/ProductCreateModal.vue"
+import ProductUpdateModal from "@/components/product/ProductUpdateModal.vue"
 
 const categoryStore = useCategoryStore()
 
@@ -79,6 +80,7 @@ const checkedProducts = ref<Array<Number>>(new Array<Number>())
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const products = ref<Array<ReadProductAdminResponse>>(new Array<ReadProductAdminResponse>())
 
+const isUpdateModalVisible = ref(false)
 const isCreateModalVisible = ref(false)
 const onChangePage = async (page: number) => {
   if (0 <= page && page < totalPages.value) {
@@ -94,6 +96,22 @@ const openCreateModal = () => {
 
 const closeCreateModal = () => {
   isCreateModalVisible.value = false
+}
+
+const openUpdateModal = (index: number) => {
+  console.log("할당 전", products.value[index])
+  selectedProduct.value = products.value[index]
+  console.log("할당 후", selectedProduct.value)
+  isUpdateModalVisible.value = true
+}
+
+const closeUpdateModal = () => {
+  isUpdateModalVisible.value = false
+}
+
+const afterUpdate = () => {
+  isUpdateModalVisible.value = false
+  initData()
 }
 
 const afterCreate = () => {
@@ -155,6 +173,12 @@ watch(
       @close-create-modal="closeCreateModal"
       @create-success="afterCreate"
     />
+    <ProductUpdateModal
+      :show-modal="isUpdateModalVisible"
+      :product-to-update="selectedProduct"
+      @close-update-modal="closeUpdateModal"
+      @update-succes="afterUpdate"
+    />
     <div class="head-button-block">
       <button class="createBtn" @click="openCreateModal">상품 등록</button>
     </div>
@@ -212,7 +236,7 @@ watch(
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
             <td>
-              <button class="updateBtn">수정</button>
+              <button class="updateBtn" @click="openUpdateModal(index)">수정</button>
             </td>
           </tr>
         </tbody>
