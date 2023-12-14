@@ -99,9 +99,7 @@ const closeCreateModal = () => {
 }
 
 const openUpdateModal = (index: number) => {
-  console.log("할당 전", products.value[index])
   selectedProduct.value = products.value[index]
-  console.log("할당 후", selectedProduct.value)
   isUpdateModalVisible.value = true
 }
 

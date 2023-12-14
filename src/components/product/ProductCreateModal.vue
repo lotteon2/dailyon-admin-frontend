@@ -104,6 +104,24 @@ const triggerInputDescribeFile = (index: number) => {
 }
 
 const closeModal = () => {
+  requestCode.value = ""
+  requestName.value = ""
+  requestPrice.value = 0
+
+  requestCategory.value = { id: 0, name: "" }
+  requestBrand.value = { id: 0, name: "" }
+  requestGender.value = { name: "", value: "" }
+  requestImage.value = ""
+  requestDescribeImages.value = []
+  requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
+
+  inputImageFile.value = null
+  imageFile.value = null
+  previewImageFile.value = null
+
+  inputDescribeFiles.value = []
+  describeFiles.value = []
+  previewDescribeFiles.value = []
   emits("close-create-modal")
 }
 
@@ -148,7 +166,7 @@ const executeCreate = () => {
     })
     .then(() => {
       alert("등록 성공")
-      emits("create-success")
+      closeModal()
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
