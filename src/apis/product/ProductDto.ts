@@ -21,7 +21,7 @@ export interface ReadProductAdminResponse {
   gender: string
   code: string
   imgUrl: string
-  describeImgUrls: Array<String>
+  describeImgUrls: Array<string>
   productStocks: Array<ReadProductStockAdminResponse>
 }
 
@@ -44,6 +44,12 @@ export interface CreateProductRequest {
   describeImages: Array<String>
 }
 
+export interface CreateProductResponse {
+  productId: number
+  imgPresignedUrl: string
+  describeImgPresignedUrl: Record<string, string>
+}
+
 export interface UpdateProductRequest {
   brandId: number
   categoryId: number
@@ -51,15 +57,14 @@ export interface UpdateProductRequest {
   name: string
   code: string
   gender: string
-  image: string
+  image: string | null
   productStocks: Array<ProductStockRequest>
-  describeImages: Array<String>
+  describeImages: Record<string, string> | null
 }
 
-export interface CreateProductResponse {
-  productId: number
-  imgPresignedUrl: string
-  describeImgPresignedUrl: Record<string, string>
+export interface UpdateProductResponse {
+  imgPresignedUrl: string | null
+  describeImgPresignedUrl: Record<string, string> | null
 }
 
 export interface ProductStockRequest {

@@ -2,7 +2,8 @@
 import type {
   ProductStockRequest,
   ReadProductAdminResponse,
-  UpdateProductRequest
+  UpdateProductRequest,
+  UpdateProductResponse
 } from "@/apis/product/ProductDto"
 import { computed, type Ref, ref, watch } from "vue"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
@@ -15,6 +16,7 @@ import type { AxiosResponse } from "axios"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
 import { genders } from "@/apis/utils/CommonDto"
 import { updateProduct } from "@/apis/product/ProductClient"
+import { uploadImageToS3 } from "@/apis/s3/S3Client"
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
@@ -42,7 +44,6 @@ const requestCategory = ref<Category>({ id: 0, name: "" })
 const requestBrand = ref<ReadBrandResponse>({ id: 0, name: "" })
 const requestGender = ref<Gender>({ name: "", value: "" })
 const requestImage = ref<string>("")
-const requestDescribeImages = ref<Array<String>>([])
 const requestProductStocks = ref<Array<ProductStockRequest>>([])
 
 const inputImageFile: Ref<HTMLInputElement | null> = ref(null)
@@ -73,10 +74,11 @@ const onImageChange = (event: Event) => {
   }
 }
 
+const requestDescribeImages = ref<Record<string, string>>({})
 const inputDescribeFiles: Ref<Array<HTMLInputElement | null>> = ref([])
 const describeFiles: Ref<Array<File>> = ref([])
 const previewDescribeFiles: Ref<Array<string>> = ref([])
-const onDescribeImageChange = (event: Event, index: number) => {
+const onDescribeImageChange = (event: Event, index: number, fileToChange: string) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
     if (describeFiles.value.some((file) => file.name === target.files![0].name)) {
@@ -84,7 +86,7 @@ const onDescribeImageChange = (event: Event, index: number) => {
       return
     }
     describeFiles.value[index] = target.files[0]
-    requestDescribeImages.value[index] = target.files[0].name
+    requestDescribeImages.value[fileToChange] = target.files[0].name
 
     const fileReader = new FileReader()
     fileReader.onload = (event: any) => {
@@ -114,7 +116,7 @@ const closeModal = () => {
   requestBrand.value = { id: 0, name: "" }
   requestGender.value = { name: "", value: "" }
   requestImage.value = ""
-  requestDescribeImages.value = []
+  requestDescribeImages.value = {}
   requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
 
   inputImageFile.value = null
@@ -132,9 +134,11 @@ const executeUpdate = () => {
     (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
   )
 
-  const describeImages: Array<String> = requestDescribeImages.value.filter(
-    (describeImage) => describeImage !== null
-  )
+  const describeImagesToUpdate: Record<string, string> = Object.entries(requestDescribeImages.value)
+    .filter(([key, value]) => value !== "")
+    .reduce((filteredRecord: Record<string, string>, [key, value]) => {
+      return { ...filteredRecord, [key]: value }
+    }, {})
 
   const request: UpdateProductRequest = {
     brandId: requestBrand.value.id,
@@ -145,10 +149,42 @@ const executeUpdate = () => {
     gender: requestGender.value.value,
     image: requestImage.value,
     productStocks: productStocks,
-    describeImages: describeImages
+    describeImages: describeImagesToUpdate
   }
 
-  console.log(request)
+  updateProduct(props.productToUpdate!.id, request)
+    .then((axiosResponse: AxiosResponse) => {
+      console.log("request body")
+      console.log(request)
+      const response: UpdateProductResponse = axiosResponse.data
+
+      if (response.imgPresignedUrl != null) {
+        console.log("uploading image file")
+        console.log(response.imgPresignedUrl, imageFile.value!)
+        uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
+          alert("상품 이미지 업로드 오류")
+        })
+      }
+
+      if (response.describeImgPresignedUrl != null) {
+        console.log("uploading describe files")
+        Object.entries(response.describeImgPresignedUrl).map(([key, value]) => {
+          console.log(value, describeFiles.value.find((file) => file.name === key)!)
+          uploadImageToS3(value, describeFiles.value.find((file) => file.name === key)!).catch(
+            (error: any) => {
+              alert("상품 설명 이미지 업로드 오류")
+            }
+          )
+        })
+      }
+    })
+    .then(() => {
+      alert("등록 성공")
+      closeModal()
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 
 const addProductStock = () => {
@@ -186,6 +222,12 @@ watch(
       previewDescribeFiles.value = props.productToUpdate!.describeImgUrls.map(
         (imgUrl) => `${VITE_STATIC_IMG_URL.value}${imgUrl}`
       )!
+      requestDescribeImages.value = props.productToUpdate!.describeImgUrls.reduce(
+        (record: Record<string, string>, key: string) => {
+          return { ...record, [key]: "" }
+        },
+        {}
+      )
 
       getLeafCategories()
         .then((axiosResponse: AxiosResponse) => {
@@ -222,7 +264,6 @@ watch(requestCategory, (nv, ov) => {
     getProductSizesByCategory(requestCategory.value!.id!)
       .then((axiosResponse: AxiosResponse) => {
         productSizesToUse.value = axiosResponse.data.productSizes
-        // requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
         productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
       })
       .catch((error: any) => {
@@ -261,7 +302,11 @@ watch(requestCategory, (nv, ov) => {
           <button v-if="!previewImageFile" class="updateBtn" @click="triggerInputFile">추가</button>
         </div>
         <div class="modal-sub-images">
-          <div v-for="index in 5" :key="index" class="modal-sub-image">
+          <div
+            v-for="index in props.productToUpdate!.describeImgUrls.length"
+            :key="index"
+            class="modal-sub-image"
+          >
             <img
               v-if="previewDescribeFiles[index - 1]"
               :src="previewDescribeFiles[index - 1]"
@@ -272,7 +317,7 @@ watch(requestCategory, (nv, ov) => {
               type="file"
               style="display: none"
               ref="inputDescribeFiles"
-              @change="onDescribeImageChange($event, index - 1)"
+              @change="onDescribeImageChange($event, index - 1, previewDescribeFiles[index - 1])"
             />
             <button
               class="updateBtn"
@@ -282,6 +327,11 @@ watch(requestCategory, (nv, ov) => {
               추가
             </button>
           </div>
+          <div
+            v-for="index in 5 - props.productToUpdate!.describeImgUrls.length"
+            :key="index"
+            class="modal-sub-image"
+          ></div>
         </div>
       </div>
       <div class="modal-sub-container">
