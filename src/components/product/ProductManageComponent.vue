@@ -70,7 +70,7 @@ const selectedProduct = ref<ReadProductAdminResponse>({
   code: "",
   gender: "",
   imgUrl: "",
-  describeImgUrls: new Array<String>(),
+  describeImgUrls: new Array<string>(),
   productStocks: new Array<ReadProductStockAdminResponse>()
 })
 
