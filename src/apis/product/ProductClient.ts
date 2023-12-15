@@ -44,12 +44,3 @@ export const deleteProducts = async (ids: Array<Number>): Promise<void> => {
     }
   )
 }
-
-export const deleteProducts = async (ids: Array<Number>): Promise<void> => {
-  return await authAxiosInstance.delete(
-    `${PRODUCT_SERVICE_PREFIX}${PRODUCT_ADMIN_PREFIX}${PRODUCT_PREFIX}`,
-    {
-      params: { ids: ids.join(",") }
-    }
-  )
-}
