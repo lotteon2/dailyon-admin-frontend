@@ -1,28 +1,35 @@
 <script setup lang="ts">
+import type {
+  ProductStockRequest,
+  ReadProductAdminResponse,
+  UpdateProductRequest,
+  UpdateProductResponse
+} from "@/apis/product/ProductDto"
+import { computed, type Ref, ref, watch } from "vue"
+import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import type { Category } from "@/apis/category/CategoryDto"
-import { computed, type Ref, ref, toRefs, watch } from "vue"
-import type { AxiosResponse } from "axios"
+import type { ReadProductSizeResponse } from "@/apis/productsize/ProductSizeDto"
+import type { Gender } from "@/apis/utils/CommonDto"
 import { getLeafCategories } from "@/apis/category/CategoryClient"
 import { getAllBrands } from "@/apis/brand/BrandClient"
-import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
-import type { ReadProductSizeResponse } from "@/apis/productsize/ProductSizeDto"
+import type { AxiosResponse } from "axios"
 import { getProductSizesByCategory } from "@/apis/productsize/ProductSizeClient"
 import { genders } from "@/apis/utils/CommonDto"
-import type { Gender } from "@/apis/utils/CommonDto"
-import type {
-  CreateProductRequest,
-  CreateProductResponse,
-  ProductStockRequest
-} from "@/apis/product/ProductDto"
-import { createProduct } from "@/apis/product/ProductClient"
+import { updateProduct } from "@/apis/product/ProductClient"
 import { uploadImageToS3 } from "@/apis/s3/S3Client"
+
+const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
 const props = defineProps({
   showModal: {
     type: Boolean
+  },
+  productToUpdate: {
+    type: Object as () => ReadProductAdminResponse,
+    required: true
   }
 })
-const emits = defineEmits(["close-create-modal", "create-success"])
+const emits = defineEmits(["close-update-modal", "update-success"])
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
@@ -37,14 +44,17 @@ const requestCategory = ref<Category>({ id: 0, name: "" })
 const requestBrand = ref<ReadBrandResponse>({ id: 0, name: "" })
 const requestGender = ref<Gender>({ name: "", value: "" })
 const requestImage = ref<string>("")
-const requestDescribeImages = ref<Array<String>>(new Array<String>())
-const requestProductStocks = ref<Array<ProductStockRequest>>(
-  new Array<ProductStockRequest>({ productSizeId: 0, quantity: 0 })
-)
+const requestProductStocks = ref<Array<ProductStockRequest>>([])
 
 const inputImageFile: Ref<HTMLInputElement | null> = ref(null)
 const imageFile: Ref<File | null> = ref(null)
-const previewImageFile: Ref<string | null> = ref(null)
+const previewImageFile: Ref<string> = ref("")
+const triggerInputFile = () => {
+  if (inputImageFile.value) {
+    inputImageFile.value.click()
+  }
+}
+
 const onImageChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
@@ -64,16 +74,11 @@ const onImageChange = (event: Event) => {
   }
 }
 
-const triggerInputFile = () => {
-  if (inputImageFile.value) {
-    inputImageFile.value.click()
-  }
-}
-
+const requestDescribeImages = ref<Record<string, string>>({})
 const inputDescribeFiles: Ref<Array<HTMLInputElement | null>> = ref([])
-const describeFiles: Ref<Array<File>> = ref(new Array<File>())
-const previewDescribeFiles: Ref<Array<string>> = ref(new Array<string>())
-const onDescribeImageChange = (event: Event, index: number) => {
+const describeFiles: Ref<Array<File>> = ref([])
+const previewDescribeFiles: Ref<Array<string>> = ref([])
+const onDescribeImageChange = (event: Event, index: number, fileToChange: string) => {
   const target = event.target as HTMLInputElement
   if (target.files) {
     if (describeFiles.value.some((file) => file.name === target.files![0].name)) {
@@ -81,7 +86,7 @@ const onDescribeImageChange = (event: Event, index: number) => {
       return
     }
     describeFiles.value[index] = target.files[0]
-    requestDescribeImages.value[index] = target.files[0].name
+    requestDescribeImages.value[fileToChange] = target.files[0].name
 
     const fileReader = new FileReader()
     fileReader.onload = (event: any) => {
@@ -97,7 +102,6 @@ const onDescribeImageChange = (event: Event, index: number) => {
 }
 
 const triggerInputDescribeFile = (index: number) => {
-  console.log(index)
   if (inputDescribeFiles.value[index] !== null) {
     inputDescribeFiles.value[index]!.click()
   }
@@ -107,58 +111,70 @@ const closeModal = () => {
   requestCode.value = ""
   requestName.value = ""
   requestPrice.value = 0
+
   requestCategory.value = { id: 0, name: "" }
   requestBrand.value = { id: 0, name: "" }
   requestGender.value = { name: "", value: "" }
   requestImage.value = ""
-  requestDescribeImages.value = []
+  requestDescribeImages.value = {}
   requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
 
   inputImageFile.value = null
   imageFile.value = null
   previewImageFile.value = ""
+
   inputDescribeFiles.value = []
   describeFiles.value = []
   previewDescribeFiles.value = []
-  emits("close-create-modal")
+  emits("close-update-modal")
 }
 
-const executeCreate = () => {
+const executeUpdate = () => {
   const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
     (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
   )
 
-  const describeImages: Array<String> = requestDescribeImages.value.filter(
-    (describeImage) => describeImage !== null
-  )
+  const describeImagesToUpdate: Record<string, string> = Object.entries(requestDescribeImages.value)
+    .filter(([key, value]) => value !== "")
+    .reduce((filteredRecord: Record<string, string>, [key, value]) => {
+      return { ...filteredRecord, [key]: value }
+    }, {})
 
-  const request: CreateProductRequest = {
+  const request: UpdateProductRequest = {
     brandId: requestBrand.value.id,
     categoryId: requestCategory.value.id!,
-    code: requestCode.value,
-    describeImages: describeImages,
-    image: requestImage.value,
-    name: requestName.value,
     price: requestPrice.value,
+    name: requestName.value,
+    code: requestCode.value,
     gender: requestGender.value.value,
-    type: "NORMAL",
-    productStocks: productStocks
+    image: requestImage.value,
+    productStocks: productStocks,
+    describeImages: describeImagesToUpdate
   }
 
-  createProduct(request)
+  updateProduct(props.productToUpdate!.id, request)
     .then((axiosResponse: AxiosResponse) => {
-      const response: CreateProductResponse = axiosResponse.data
+      console.log("request body")
+      console.log(request)
+      const response: UpdateProductResponse = axiosResponse.data
 
-      uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
-        alert("상품 이미지 업로드 오류")
-      })
+      if (response.imgPresignedUrl != null) {
+        console.log("uploading image file")
+        console.log(response.imgPresignedUrl, imageFile.value!)
+        uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
+          alert("상품 이미지 업로드 오류")
+        })
+      }
 
-      for (let i = 0; i < describeImages.length; i++) {
-        uploadImageToS3(
-          response.describeImgPresignedUrl[`${describeImages[i]}`],
-          describeFiles.value[i]
-        ).catch((error: any) => {
-          alert("상품 설명 이미지 업로드 오류")
+      if (response.describeImgPresignedUrl != null) {
+        console.log("uploading describe files")
+        Object.entries(response.describeImgPresignedUrl).map(([key, value]) => {
+          console.log(value, describeFiles.value.find((file) => file.name === key)!)
+          uploadImageToS3(value, describeFiles.value.find((file) => file.name === key)!).catch(
+            (error: any) => {
+              alert("상품 설명 이미지 업로드 오류")
+            }
+          )
         })
       }
     })
@@ -175,48 +191,10 @@ const addProductStock = () => {
   requestProductStocks.value.push({ productSizeId: 0, quantity: 0 })
 }
 
-function removeProductStock(index: number) {
+const removeProductStock = (index: number) => {
   requestProductStocks.value.splice(index, 1)
 }
 
-watch(
-  () => props.showModal,
-  (newVal, oldVal) => {
-    if (newVal) {
-      getLeafCategories()
-        .then((axiosResponse: AxiosResponse) => {
-          leafCategories.value = axiosResponse.data.categoryResponses
-        })
-        .catch((error: any) => {
-          alert(error.response!.data!.message)
-        })
-
-      getAllBrands()
-        .then((axiosResponse: AxiosResponse) => {
-          brands.value = axiosResponse.data.brandResponses
-        })
-        .catch((error: any) => {
-          alert(error.response!.data!.message)
-        })
-    }
-  }
-)
-
-watch(requestCategory, () => {
-  if (requestCategory.value && requestCategory.value.id !== null) {
-    getProductSizesByCategory(requestCategory.value.id)
-      .then((axiosResponse: AxiosResponse) => {
-        productSizesToUse.value = axiosResponse.data.productSizes
-        requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
-        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
-      })
-      .catch((error: any) => {
-        alert(error.response!.data!.message)
-      })
-  }
-})
-
-// TODO : 선택한 치수 option에서 삭제, 선택 취소한 치수 다시 option에 추가
 const filteredProductSizes = computed(() => {
   return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
 })
@@ -230,13 +208,86 @@ const selectProductSize = (selectedProductId: number) => {
     productSizeUsed.value[selectedIndex] = false
   }
 }
+watch(
+  () => props.showModal,
+  (newVal, oldVal) => {
+    if (newVal) {
+      requestCode.value = props.productToUpdate!.code
+      requestName.value = props.productToUpdate!.name
+      requestPrice.value = props.productToUpdate!.price
+      previewImageFile.value = `${VITE_STATIC_IMG_URL.value}${props.productToUpdate!.imgUrl}`
+      requestGender.value = genders.value.find(
+        (gender) => gender.value === props.productToUpdate!.gender
+      )!
+      previewDescribeFiles.value = props.productToUpdate!.describeImgUrls.map(
+        (imgUrl) => `${VITE_STATIC_IMG_URL.value}${imgUrl}`
+      )!
+      requestDescribeImages.value = props.productToUpdate!.describeImgUrls.reduce(
+        (record: Record<string, string>, key: string) => {
+          return { ...record, [key]: "" }
+        },
+        {}
+      )
+
+      getLeafCategories()
+        .then((axiosResponse: AxiosResponse) => {
+          leafCategories.value = axiosResponse.data.categoryResponses
+          requestCategory.value = leafCategories.value.find(
+            (category) => category.id === props.productToUpdate!.categoryId
+          )!
+
+          requestProductStocks.value = props.productToUpdate!.productStocks.map((productStock) => ({
+            productSizeId: productStock.productSizeId,
+            quantity: productStock.quantity
+          }))
+        })
+        .catch((error: any) => {
+          alert(error.response!.data!.message)
+        })
+
+      getAllBrands()
+        .then((axiosResponse: AxiosResponse) => {
+          brands.value = axiosResponse.data.brandResponses
+          requestBrand.value = brands.value.find(
+            (brand) => brand.id === props.productToUpdate!.brandId
+          )!
+        })
+        .catch((error: any) => {
+          alert(error.response!.data!.message)
+        })
+    }
+  }
+)
+
+watch(requestCategory, (nv, ov) => {
+  if (ov.id == 0) {
+    getProductSizesByCategory(requestCategory.value!.id!)
+      .then((axiosResponse: AxiosResponse) => {
+        productSizesToUse.value = axiosResponse.data.productSizes
+        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  } else {
+    getProductSizesByCategory(requestCategory.value!.id!)
+      .then((axiosResponse: AxiosResponse) => {
+        productSizesToUse.value = axiosResponse.data.productSizes
+        requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
+        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+})
 </script>
 
 <template>
   <div class="modal" v-if="showModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-name">상품 등록</div>
+        <div class="modal-name">상품 수정</div>
         <div class="modal-close" @click="closeModal">&times;</div>
       </div>
       <div class="modal-main">
@@ -251,7 +302,11 @@ const selectProductSize = (selectedProductId: number) => {
           <button v-if="!previewImageFile" class="updateBtn" @click="triggerInputFile">추가</button>
         </div>
         <div class="modal-sub-images">
-          <div v-for="index in 5" :key="index" class="modal-sub-image">
+          <div
+            v-for="index in props.productToUpdate!.describeImgUrls.length"
+            :key="index"
+            class="modal-sub-image"
+          >
             <img
               v-if="previewDescribeFiles[index - 1]"
               :src="previewDescribeFiles[index - 1]"
@@ -262,7 +317,7 @@ const selectProductSize = (selectedProductId: number) => {
               type="file"
               style="display: none"
               ref="inputDescribeFiles"
-              @change="onDescribeImageChange($event, index - 1)"
+              @change="onDescribeImageChange($event, index - 1, previewDescribeFiles[index - 1])"
             />
             <button
               class="updateBtn"
@@ -272,13 +327,18 @@ const selectProductSize = (selectedProductId: number) => {
               추가
             </button>
           </div>
+          <div
+            v-for="index in 5 - props.productToUpdate!.describeImgUrls.length"
+            :key="index"
+            class="modal-sub-image"
+          ></div>
         </div>
       </div>
       <div class="modal-sub-container">
         <div class="modal-sub">
           <div class="modal-sub-items">
             <label class="modal-label">상품 코드</label>
-            <input class="modal-input" type="text" v-model="requestCode" required />
+            <input class="modal-input" type="text" v-model="requestCode" />
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">상품명</label>
@@ -286,7 +346,7 @@ const selectProductSize = (selectedProductId: number) => {
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">상품 가격</label>
-            <input class="modal-input" type="number" v-model="requestPrice" />
+            <input class="modal-input" type="number" v-model.number="requestPrice" />
           </div>
           <div class="modal-sub-items">
             <label class="modal-label">카테고리</label>
@@ -348,7 +408,7 @@ const selectProductSize = (selectedProductId: number) => {
         </div>
       </div>
       <div class="modal-button">
-        <button class="createBtn" @click="executeCreate">상품 등록</button>
+        <button class="createBtn" @click="executeUpdate">상품 수정</button>
       </div>
     </div>
   </div>
