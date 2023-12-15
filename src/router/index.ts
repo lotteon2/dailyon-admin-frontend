@@ -63,6 +63,8 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isLoggedIn()) {
     alert('로그인이 필요한 페이지입니다.');
     next('/');
+  } else if (to.name === 'login' && isLoggedIn()) {
+    next('/main');
   } else {
     next();
   }
