@@ -12,6 +12,7 @@ const router = createRouter({
       path: "/main",
       name: "main",
       component: () => import("@/views/AdminLayoutView.vue"),
+      meta: { requiresAuth: true }, 
       children: [
         {
           path: "/manage-brand",
@@ -56,6 +57,23 @@ const router = createRouter({
       ]
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !isLoggedIn()) {
+    alert('로그인이 필요한 페이지입니다.');
+    next('/');
+  } else if (to.name === 'login' && isLoggedIn()) {
+    next('/main');
+  } else {
+    next();
+  }
+});
+
+
+const isLoggedIn = () => {
+  const token = localStorage.getItem('accessToken');
+  return !!token;
+};
 
 export default router
