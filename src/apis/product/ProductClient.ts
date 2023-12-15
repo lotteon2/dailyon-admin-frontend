@@ -33,5 +33,14 @@ export const updateProduct = async (
   return await authAxiosInstance.put(
     `${PRODUCT_SERVICE_PREFIX}${PRODUCT_ADMIN_PREFIX}${PRODUCT_PREFIX}/${productId}`,
     request
+    )
+}
+
+export const deleteProducts = async (ids: Array<Number>): Promise<void> => {
+  return await authAxiosInstance.delete(
+    `${PRODUCT_SERVICE_PREFIX}${PRODUCT_ADMIN_PREFIX}${PRODUCT_PREFIX}`,
+    {
+      params: { ids: ids.join(",") }
+    }
   )
 }

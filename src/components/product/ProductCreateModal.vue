@@ -107,7 +107,6 @@ const closeModal = () => {
   requestCode.value = ""
   requestName.value = ""
   requestPrice.value = 0
-
   requestCategory.value = { id: 0, name: "" }
   requestBrand.value = { id: 0, name: "" }
   requestGender.value = { name: "", value: "" }
@@ -117,8 +116,7 @@ const closeModal = () => {
 
   inputImageFile.value = null
   imageFile.value = null
-  previewImageFile.value = null
-
+  previewImageFile.value = ""
   inputDescribeFiles.value = []
   describeFiles.value = []
   previewDescribeFiles.value = []

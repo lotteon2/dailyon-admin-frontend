@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AxiosResponse } from "axios"
 import PaginationComponent from "@/components/PaginationComponent.vue"
-import { getProductPages } from "@/apis/product/ProductClient"
+import { deleteProducts, getProductPages } from "@/apis/product/ProductClient"
 import type {
   ReadProductAdminResponse,
   ReadProductPageRequest,
@@ -74,6 +74,8 @@ const selectedProduct = ref<ReadProductAdminResponse>({
   productStocks: new Array<ReadProductStockAdminResponse>()
 })
 
+const allChecked = ref<boolean>(false)
+
 const selectedBrandId = ref<number>(0)
 const selectedCategoryId = ref<number>(0)
 const checkedProducts = ref<Array<Number>>(new Array<Number>())
@@ -117,7 +119,49 @@ const afterCreate = () => {
   initData()
 }
 
+const toggleAll = () => {
+  if (allChecked.value) {
+    checkedProducts.value = []
+  } else {
+    checkedProducts.value = products.value.map((product) => product.id)
+  }
+  allChecked.value = !allChecked.value
+}
+
+const deleteChecked = () => {
+  if (checkedProducts.value.length == 0) {
+    alert("삭제할 상품을 선택해주세요")
+    return
+  }
+  if (confirm("삭제하시겠습니까?")) {
+    deleteProducts(checkedProducts.value)
+      .then(() => {
+        checkedProducts.value = []
+        alert("삭제 성공")
+      })
+      .then(initData)
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+}
+
+const deleteAll = () => {
+  if (confirm("삭제하시겠습니까?")) {
+    deleteProducts(products.value.map((product) => product.id))
+      .then(() => {
+        checkedProducts.value = []
+        alert("삭제 성공")
+      })
+      .then(initData)
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
+}
+
 watch(requestPage, async (afterPage: number, beforePage: number) => {
+  checkedProducts.value = []
   if (afterPage < totalPages.value) {
     const request: ReadProductPageRequest = {
       page: afterPage,
@@ -198,9 +242,11 @@ watch(
         </select>
       </div>
       <div class="button-block">
-        <button class="deleteBtn">전체 선택</button>
-        <button class="deleteBtn">선택 삭제</button>
-        <button class="deleteBtn">전체 삭제</button>
+        <button class="deleteBtn" @click="toggleAll">
+          {{ allChecked ? "전체 해제" : "전체 선택" }}
+        </button>
+        <button class="deleteBtn" @click="deleteChecked">선택 삭제</button>
+        <button class="deleteBtn" @click="deleteAll">전체 삭제</button>
       </div>
     </div>
     <div class="table-block">
@@ -228,7 +274,11 @@ watch(
             </td>
             <td>{{ product.id }}</td>
             <td>
-              <img class="product-thumbnail" :src="`${VITE_STATIC_IMG_URL}${product.imgUrl}`" />
+              <img
+                class="product-thumbnail"
+                :src="`${VITE_STATIC_IMG_URL}${product.imgUrl}`"
+                alt="product-img"
+              />
             </td>
             <td>{{ product.code }}</td>
             <td>{{ product.name }}</td>
