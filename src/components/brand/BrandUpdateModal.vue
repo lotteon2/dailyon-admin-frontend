@@ -39,6 +39,7 @@ const executeUpdate = () => {
 }
 
 const closeModal = () => {
+  editedBrandName.value = ""
   emits("close-update-modal")
 }
 </script>
