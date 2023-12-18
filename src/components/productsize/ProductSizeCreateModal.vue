@@ -58,7 +58,7 @@ const closeModal = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label">카테고리 이름</label>
-        <input class="modal-input" type="text" :placeholder="props.selectedCategoryName" readonly />
+        <input class="modal-input" type="text" :value="props.selectedCategoryName" readonly />
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">치수 값</label>
