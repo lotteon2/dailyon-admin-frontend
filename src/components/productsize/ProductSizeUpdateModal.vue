@@ -32,24 +32,33 @@ const props = defineProps({
 const productSizeStore = useProductSizeStore()
 const name = ref<string>(props.productSizeName)
 
+const isEnabled = ref<boolean>(true)
+
 const emits = defineEmits(["close-update-modal"])
 
 const executeUpdate = () => {
-  updateProductSize(props.productSizeId, { name: name.value })
-    .then(() => {
-      productSizeStore.updateProductSize({
-        index: props.index,
-        name: name.value
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+
+    updateProductSize(props.productSizeId, { name: name.value })
+      .then(() => {
+        productSizeStore.updateProductSize({
+          index: props.index,
+          name: name.value
+        })
       })
-      alert("수정 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        alert("수정 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 const closeModal = () => {
+  isEnabled.value = true
   name.value = ""
   emits("close-update-modal")
 }

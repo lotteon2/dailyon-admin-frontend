@@ -30,26 +30,32 @@ const props = defineProps({
 const emits = defineEmits(["close-update-modal", "update-category"])
 
 const editedName = ref<string>(props.categoryName)
-
+const isEnabled = ref<boolean>(true)
 const closeModal = () => {
+  isEnabled.value = true
   editedName.value = ""
   emits("close-update-modal")
 }
 
 const executeUpdate = () => {
-  updateCategory(props.categoryId, { name: editedName.value })
-    .then(() => {
-      categoryStore.updateCategory({
-        index: props.index,
-        name: editedName.value
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+    updateCategory(props.categoryId, { name: editedName.value })
+      .then(() => {
+        categoryStore.updateCategory({
+          index: props.index,
+          name: editedName.value
+        })
       })
-      alert("수정 성공")
-      closeModal()
-      emits("update-category")
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        alert("수정 성공")
+        closeModal()
+        emits("update-category")
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 </script>
 

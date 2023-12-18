@@ -16,6 +16,7 @@
 .modal-content {
     background-color: #FFFFFF;
     width: 50%;
+    height: 90%;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -48,7 +49,7 @@
 
 .modal-main {
     width: 100%;
-    height: 500px;
+    height: 40%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -57,7 +58,7 @@
 .modal-main-image {
     border: #c6c6c6 solid 1px;
     width: 40%;
-    height: 80%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,7 +76,7 @@
 
 .modal-sub-image {
     width: 100%;
-    height: 20%;
+    height: 25%;
     display: flex;
     border: #c6c6c6 solid 1px;
     justify-content: center;

@@ -23,22 +23,26 @@ const props = defineProps({
 const emits = defineEmits(["update-brand", "close-update-modal"])
 
 const editedBrandName = ref<string>(props.brandName)
-
+const isEnabled = ref<boolean>(true)
 const executeUpdate = () => {
-  updateBrand(props.brandId, {
-    name: editedBrandName.value
-  })
-    .then(() => {
-      emits("update-brand", { index: props.index, name: editedBrandName.value })
-      alert("수정 성공")
-      closeModal()
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+    updateBrand(props.brandId, {
+      name: editedBrandName.value
     })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        emits("update-brand", { index: props.index, name: editedBrandName.value })
+        alert("수정 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 const closeModal = () => {
+  isEnabled.value = true
   editedBrandName.value = ""
   emits("close-update-modal")
 }
