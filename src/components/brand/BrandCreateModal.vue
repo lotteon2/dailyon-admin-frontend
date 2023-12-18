@@ -13,23 +13,31 @@ const emits = defineEmits(["create-brand", "close-create-modal"])
 
 const brandName = ref<string>("")
 
+const isEnabled = ref<boolean>(true)
+
 const executeCreate = () => {
-  createBrand({ name: brandName.value })
-    .then((axiosResponse: AxiosResponse) => {
-      const response = { brandId: axiosResponse.data.brandId }
-      emits("create-brand", {
-        id: response.brandId,
-        name: brandName.value
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+    createBrand({ name: brandName.value })
+      .then((axiosResponse: AxiosResponse) => {
+        const response = { brandId: axiosResponse.data.brandId }
+        emits("create-brand", {
+          id: response.brandId,
+          name: brandName.value
+        })
       })
-      alert("등록 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        alert("등록 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 const closeModal = () => {
+  isEnabled.value = true
   brandName.value = ""
   emits("close-create-modal")
 }

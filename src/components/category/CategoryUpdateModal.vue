@@ -32,6 +32,7 @@ const emits = defineEmits(["close-update-modal", "update-category"])
 const editedName = ref<string>(props.categoryName)
 
 const closeModal = () => {
+  editedName.value = ""
   emits("close-update-modal")
 }
 
@@ -61,7 +62,7 @@ const executeUpdate = () => {
       </div>
       <div class="modal-main">
         <label class="modal-label">상위 카테고리 이름</label>
-        <input class="modal-input" type="text" :placeholder="props.masterCategoryName" readonly />
+        <input class="modal-input" type="text" :value="props.masterCategoryName" readonly />
       </div>
       <div class="modal-main">
         <label class="modal-label" for="brandName">카테고리 이름</label>

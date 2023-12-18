@@ -328,7 +328,7 @@ watch(requestCategory, (nv, ov) => {
             </button>
           </div>
           <div
-            v-for="index in 5 - props.productToUpdate!.describeImgUrls.length"
+            v-for="index in 4 - props.productToUpdate!.describeImgUrls.length"
             :key="index"
             class="modal-sub-image"
           ></div>
