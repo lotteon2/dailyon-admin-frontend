@@ -251,7 +251,7 @@ const selectProductSize = (selectedProductId: number) => {
           <button v-if="!previewImageFile" class="updateBtn" @click="triggerInputFile">추가</button>
         </div>
         <div class="modal-sub-images">
-          <div v-for="index in 5" :key="index" class="modal-sub-image">
+          <div v-for="index in 4" :key="index" class="modal-sub-image">
             <img
               v-if="previewDescribeFiles[index - 1]"
               :src="previewDescribeFiles[index - 1]"
