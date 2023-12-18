@@ -24,6 +24,8 @@ const props = defineProps({
 })
 const emits = defineEmits(["close-create-modal", "create-success"])
 
+const isEnabled = ref<boolean>(true)
+
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
 const productSizesToUse = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
@@ -120,55 +122,61 @@ const closeModal = () => {
   inputDescribeFiles.value = []
   describeFiles.value = []
   previewDescribeFiles.value = []
+
+  isEnabled.value = true
   emits("close-create-modal")
 }
 
 const executeCreate = () => {
-  const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
-    (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
-  )
+  if (isEnabled.value === true) {
+    isEnabled.value = false
 
-  const describeImages: Array<String> = requestDescribeImages.value.filter(
-    (describeImage) => describeImage !== null
-  )
+    const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
+      (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
+    )
 
-  const request: CreateProductRequest = {
-    brandId: requestBrand.value.id,
-    categoryId: requestCategory.value.id!,
-    code: requestCode.value,
-    describeImages: describeImages,
-    image: requestImage.value,
-    name: requestName.value,
-    price: requestPrice.value,
-    gender: requestGender.value.value,
-    type: "NORMAL",
-    productStocks: productStocks
-  }
+    const describeImages: Array<String> = requestDescribeImages.value.filter(
+      (describeImage) => describeImage !== null
+    )
 
-  createProduct(request)
-    .then((axiosResponse: AxiosResponse) => {
-      const response: CreateProductResponse = axiosResponse.data
+    const request: CreateProductRequest = {
+      brandId: requestBrand.value.id,
+      categoryId: requestCategory.value.id!,
+      code: requestCode.value,
+      describeImages: describeImages,
+      image: requestImage.value,
+      name: requestName.value,
+      price: requestPrice.value,
+      gender: requestGender.value.value,
+      type: "NORMAL",
+      productStocks: productStocks
+    }
 
-      uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
-        alert("상품 이미지 업로드 오류")
-      })
+    createProduct(request)
+      .then((axiosResponse: AxiosResponse) => {
+        const response: CreateProductResponse = axiosResponse.data
 
-      for (let i = 0; i < describeImages.length; i++) {
-        uploadImageToS3(
-          response.describeImgPresignedUrl[`${describeImages[i]}`],
-          describeFiles.value[i]
-        ).catch((error: any) => {
-          alert("상품 설명 이미지 업로드 오류")
+        uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
+          alert("상품 이미지 업로드 오류")
         })
-      }
-    })
-    .then(() => {
-      alert("등록 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+
+        for (let i = 0; i < describeImages.length; i++) {
+          uploadImageToS3(
+            response.describeImgPresignedUrl[`${describeImages[i]}`],
+            describeFiles.value[i]
+          ).catch((error: any) => {
+            alert("상품 설명 이미지 업로드 오류")
+          })
+        }
+      })
+      .then(() => {
+        alert("등록 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 const addProductStock = () => {

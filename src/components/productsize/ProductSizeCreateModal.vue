@@ -20,30 +20,38 @@ const props = defineProps({
 })
 
 const emits = defineEmits(["close-create-modal"])
+const isEnabled = ref<boolean>(true)
 
 const productSizeStore = useProductSizeStore()
 const name = ref<string>("")
 
 const executeCreate = () => {
-  createProductSize({
-    categoryId: props.selectedCategoryId,
-    name: name.value
-  })
-    .then((axiosResponse: AxiosResponse) => {
-      const response: CreateProductSizeResponse = axiosResponse.data
-      productSizeStore.addProductSize({
-        id: response.productSizeId,
-        name: name.value
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+
+    createProductSize({
+      categoryId: props.selectedCategoryId,
+      name: name.value
+    })
+      .then((axiosResponse: AxiosResponse) => {
+        const response: CreateProductSizeResponse = axiosResponse.data
+        productSizeStore.addProductSize({
+          id: response.productSizeId,
+          name: name.value
+        })
       })
-      alert("등록 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        alert("등록 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 const closeModal = () => {
+  isEnabled.value = true
   name.value = ""
   emits("close-create-modal")
 }

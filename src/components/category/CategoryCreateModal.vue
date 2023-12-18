@@ -26,30 +26,37 @@ const emits = defineEmits(["close-create-modal"])
 const name = ref("")
 const masterCategory = ref<Category>({ id: 0, name: "" })
 const categories = ref<Array<Category>>([])
+const isEnabled = ref<boolean>(true)
 
 const closeModal = () => {
+  isEnabled.value = true
   name.value = ""
   emits("close-create-modal")
 }
 
 const executeCreate = () => {
-  createCategory({
-    masterCategoryId: masterCategory.value.id,
-    categoryName: name.value
-  })
-    .then((axiosResponse: AxiosResponse) => {
-      categoryStore.addCategory({
-        id: axiosResponse.data.categoryId,
-        name: name.value,
-        masterCategoryId: masterCategory.value.id,
-        masterCategoryName: masterCategory.value.name
+  if (isEnabled.value === true) {
+    isEnabled.value = false
+    createCategory({
+      masterCategoryId: masterCategory.value.id,
+      categoryName: name.value
+    })
+      .then((axiosResponse: AxiosResponse) => {
+        categoryStore.addCategory({
+          id: axiosResponse.data.categoryId,
+          name: name.value,
+          masterCategoryId: masterCategory.value.id,
+          masterCategoryName: masterCategory.value.name
+        })
       })
-      alert("등록 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
+      .then(() => {
+        alert("등록 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 </script>
 

@@ -31,6 +31,8 @@ const props = defineProps({
 })
 const emits = defineEmits(["close-update-modal", "update-success"])
 
+const isEnabled = ref<boolean>(true)
+
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
 const productSizesToUse = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
@@ -108,6 +110,8 @@ const triggerInputDescribeFile = (index: number) => {
 }
 
 const closeModal = () => {
+  isEnabled.value = true
+
   requestCode.value = ""
   requestName.value = ""
   requestPrice.value = 0
@@ -130,61 +134,67 @@ const closeModal = () => {
 }
 
 const executeUpdate = () => {
-  const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
-    (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
-  )
+  if (isEnabled.value === true) {
+    isEnabled.value = false
 
-  const describeImagesToUpdate: Record<string, string> = Object.entries(requestDescribeImages.value)
-    .filter(([key, value]) => value !== "")
-    .reduce((filteredRecord: Record<string, string>, [key, value]) => {
-      return { ...filteredRecord, [key]: value }
-    }, {})
+    const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
+      (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
+    )
 
-  const request: UpdateProductRequest = {
-    brandId: requestBrand.value.id,
-    categoryId: requestCategory.value.id!,
-    price: requestPrice.value,
-    name: requestName.value,
-    code: requestCode.value,
-    gender: requestGender.value.value,
-    image: requestImage.value,
-    productStocks: productStocks,
-    describeImages: describeImagesToUpdate
+    const describeImagesToUpdate: Record<string, string> = Object.entries(
+      requestDescribeImages.value
+    )
+      .filter(([key, value]) => value !== "")
+      .reduce((filteredRecord: Record<string, string>, [key, value]) => {
+        return { ...filteredRecord, [key]: value }
+      }, {})
+
+    const request: UpdateProductRequest = {
+      brandId: requestBrand.value.id,
+      categoryId: requestCategory.value.id!,
+      price: requestPrice.value,
+      name: requestName.value,
+      code: requestCode.value,
+      gender: requestGender.value.value,
+      image: requestImage.value,
+      productStocks: productStocks,
+      describeImages: describeImagesToUpdate
+    }
+
+    updateProduct(props.productToUpdate!.id, request)
+      .then((axiosResponse: AxiosResponse) => {
+        console.log("request body")
+        console.log(request)
+        const response: UpdateProductResponse = axiosResponse.data
+
+        if (response.imgPresignedUrl != null) {
+          console.log("uploading image file")
+          console.log(response.imgPresignedUrl, imageFile.value!)
+          uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
+            alert("상품 이미지 업로드 오류")
+          })
+        }
+
+        if (response.describeImgPresignedUrl != null) {
+          console.log("uploading describe files")
+          Object.entries(response.describeImgPresignedUrl).map(([key, value]) => {
+            console.log(value, describeFiles.value.find((file) => file.name === key)!)
+            uploadImageToS3(value, describeFiles.value.find((file) => file.name === key)!).catch(
+              (error: any) => {
+                alert("상품 설명 이미지 업로드 오류")
+              }
+            )
+          })
+        }
+      })
+      .then(() => {
+        alert("등록 성공")
+        closeModal()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
   }
-
-  updateProduct(props.productToUpdate!.id, request)
-    .then((axiosResponse: AxiosResponse) => {
-      console.log("request body")
-      console.log(request)
-      const response: UpdateProductResponse = axiosResponse.data
-
-      if (response.imgPresignedUrl != null) {
-        console.log("uploading image file")
-        console.log(response.imgPresignedUrl, imageFile.value!)
-        uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
-          alert("상품 이미지 업로드 오류")
-        })
-      }
-
-      if (response.describeImgPresignedUrl != null) {
-        console.log("uploading describe files")
-        Object.entries(response.describeImgPresignedUrl).map(([key, value]) => {
-          console.log(value, describeFiles.value.find((file) => file.name === key)!)
-          uploadImageToS3(value, describeFiles.value.find((file) => file.name === key)!).catch(
-            (error: any) => {
-              alert("상품 설명 이미지 업로드 오류")
-            }
-          )
-        })
-      }
-    })
-    .then(() => {
-      alert("등록 성공")
-      closeModal()
-    })
-    .catch((error: any) => {
-      alert(error.response!.data!.message)
-    })
 }
 
 const addProductStock = () => {
