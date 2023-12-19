@@ -55,7 +55,12 @@ const router = createRouter({
           component: () => import("@/components/RaffleManageComponent.vue")
         }
       ]
-    }
+    },
+    {
+      path: "/:catchAll(.*)",
+      name: "not-found",
+      component: () => import("@/views/NotFoundView.vue"),
+    },
   ]
 });
 
@@ -65,6 +70,9 @@ router.beforeEach((to, from, next) => {
     next('/');
   } else if (to.name === 'login' && isLoggedIn()) {
     next('/main');
+  } else if (to.name === 'not-found') {
+    alert('페이지를 찾을 수 없습니다.');
+    next('/main');
   } else {
     next();
   }
@@ -72,7 +80,7 @@ router.beforeEach((to, from, next) => {
 
 
 const isLoggedIn = () => {
-  const token = localStorage.getItem('accessToken');
+  const token = sessionStorage.getItem('accessToken');
   return !!token;
 };
 

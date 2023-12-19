@@ -22,7 +22,7 @@ defaultAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
 }).then(response => {
   const token = response.data.token;
   if (token) {
-    localStorage.setItem('accessToken', token);
+    sessionStorage.setItem('accessToken', token);
     router.push({ name: 'main' });
   } else {
     alert('로그인에 실패하였습니다. ID와 비밀번호를 확인해주세요!');
