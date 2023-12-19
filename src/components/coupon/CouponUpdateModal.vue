@@ -95,7 +95,7 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits, defineProps, watch } from "vue";
 import type {PropType} from "vue";
-import { updateCouponInfo, searchProducts } from "@/apis/coupon/CouponClient";
+import {updateCouponInfo, searchProducts, fetchCategories} from "@/apis/coupon/CouponClient";
 import type { CouponUpdateRequest, 
   couponInfoReadItemResponse, 
   ReadProductResponse, 
@@ -154,10 +154,9 @@ const closeModal = () => {
   emits("close-update-modal");
 };
 
-const fetchCategories = async () => {
+const getFetchCategories = async () => {
   try {
-    const response = await axios.get("/admin/categories/leaf");
-    categories.value = response.data.categoryResponses;
+    categories.value = await fetchCategories()
   } catch (error) {
     // Handle error fetching categories
     console.error("Failed to fetch categories", error);
@@ -228,7 +227,7 @@ onMounted(() => {
   }
 });
 
-onMounted(fetchCategories);
+onMounted(getFetchCategories);
 
 watch(() => props.coupon, (newCoupon) => {
   if (newCoupon) {

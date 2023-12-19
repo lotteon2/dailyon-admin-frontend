@@ -4,23 +4,24 @@ import type { CouponCreateRequest, CouponUpdateRequest, CouponInfoPageResponse, 
   ReadProductSliceResponse, ReadChildrenCategoryListResponse, ReadChildrenCategoryResponse
 } from "@/apis/coupon/CouponDto"
 
+const PROMOTION_SERVICE_PREFIX: string = "/promotion-service"
 const COUPON_ADMIN_PREFIX: string = "/admin"
 const COUPON_PREFIX: string = "/coupons"
 
 export const createCouponInfo = async (body: CouponCreateRequest): Promise<AxiosResponse> => {
-  return await authAxiosInstance.post(COUPON_ADMIN_PREFIX + COUPON_PREFIX, body)
+  return await authAxiosInstance.post(PROMOTION_SERVICE_PREFIX + COUPON_ADMIN_PREFIX + COUPON_PREFIX, body)
 }
 
 export const updateCouponInfo = async (couponInfoId:number | undefined, body: CouponUpdateRequest): Promise<AxiosResponse> => {
-  return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`, body)
+  return await authAxiosInstance.patch(PROMOTION_SERVICE_PREFIX + COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`, body)
 }
 
 export const deleteCouponInfo = async (couponInfoId:number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.delete(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`)
+  return await authAxiosInstance.delete(PROMOTION_SERVICE_PREFIX + COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}`)
 }
 
 export const invalidateCouponInfo = async (couponInfoId:number): Promise<AxiosResponse> => {
-  return await authAxiosInstance.patch(COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}/invalidate`)
+  return await authAxiosInstance.patch(PROMOTION_SERVICE_PREFIX + COUPON_ADMIN_PREFIX + COUPON_PREFIX + `/${couponInfoId}/invalidate`)
 }
 
 export const getCouponInfoPage = async (size?: number, page?: number): Promise<CouponInfoPageResponse> => {
@@ -32,7 +33,7 @@ export const getCouponInfoPage = async (size?: number, page?: number): Promise<C
     queryParams.push(`page=${page}`);
   }
 
-  let url = COUPON_ADMIN_PREFIX + COUPON_PREFIX;
+  let url = PROMOTION_SERVICE_PREFIX + COUPON_ADMIN_PREFIX + COUPON_PREFIX;
   // let url = "https://3e2ab8db-c068-4228-aaef-d4f0848542bc.mock.pstmn.io/admin" + COUPON_ADMIN_PREFIX + COUPON_PREFIX;
   if (queryParams.length > 0) {
     url += `?${queryParams.join('&')}`;
@@ -46,11 +47,12 @@ export const getCouponInfoPage = async (size?: number, page?: number): Promise<C
   }
 };
 
+const PRODUCT_SERVICE_PREFIX = "/product-service"
 
 export const searchProducts = async (query: string): Promise<ReadProductResponse[]> => {
   try {
     if (query.trim() !== "") {
-      const response = await authAxiosInstance.get<ReadProductSliceResponse>('/products/search', {
+      const response = await authAxiosInstance.get<ReadProductSliceResponse>(`${PRODUCT_SERVICE_PREFIX}/products/search`, {
         params: { lastId: 0, query: query },
       });
       // 들어오는 hasNext는 사용하지 않을것임.
@@ -65,7 +67,7 @@ export const searchProducts = async (query: string): Promise<ReadProductResponse
 
 export const fetchCategories = async (): Promise<ReadChildrenCategoryResponse[]> => {
   try {
-    const response = await authAxiosInstance.get("/admin/categories/leaf");
+    const response = await authAxiosInstance.get(`${PRODUCT_SERVICE_PREFIX}/admin/categories/leaf`);
     return response.data.categoryResponses;
   } catch (error) {
     console.error("Failed to fetch categories", error);
