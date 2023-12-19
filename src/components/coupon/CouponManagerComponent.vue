@@ -11,6 +11,8 @@ import { getCouponInfoPage, deleteCouponInfo, invalidateCouponInfo } from "@/api
 import type { CouponCreateRequest, CouponUpdateRequest, couponInfoReadItemResponse, CouponInfoPageResponse } from "@/apis/coupon/CouponDto"
 import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/CouponDto"
 
+const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
+
 let size = ref<number>(10);
 let page = ref<number>(0);
 let list = ref<couponInfoReadItemResponse[]>([]);
@@ -40,7 +42,7 @@ onBeforeMount(initData)
 const isCouponStartInFuture = (startAt: string): boolean => {
   const now = new Date();
   const startTime = new Date(startAt);
-  return startTime > now;
+  return startTime < now;
 };
 
 const closeCreateModal = () => {
@@ -191,7 +193,7 @@ const onCancelAction = () => {
             <td>{{ adminCouponInfo.remainingQuantity }}/{{ adminCouponInfo.issuedQuantity }}</td>
             <td>{{ adminCouponInfo.appliesToType }}/{{ adminCouponInfo.appliesToId }}<br/> {{ adminCouponInfo.appliesToName }}</td>
             <td>{{ adminCouponInfo.requiresConcurrencyControl }}</td>
-            <td><img :src="adminCouponInfo.targetImgUrl || ''" alt="이미지 없음"></td>
+            <td><img :src="`${VITE_STATIC_IMG_URL}${adminCouponInfo.targetImgUrl}` || ''" alt="이미지 없음"></td>
             <td>{{ optionalValue(adminCouponInfo.minPurchaseAmount) !== '-' ? `최소 구매금액 ${optionalValue(adminCouponInfo.minPurchaseAmount)}원`: '-'}} <br/> 
               {{ optionalValue(adminCouponInfo.maxDiscountAmount) !== '-' ? `최대 할인금액 ${optionalValue(adminCouponInfo.maxDiscountAmount)}원` : '-' }} </td>
             <td>
