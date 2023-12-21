@@ -1,0 +1,123 @@
+.product-container {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
+    font-family: "The Jamsil 2 Light";
+}
+
+.head-block {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.button-block {
+    display: flex;
+    justify-content: start;
+    align-items: flex-end;
+}
+
+.head-button-block {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.select-block-select {
+    width: 200px;
+    font-family: "The Jamsil 3 Regular";
+    font-size: 24px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 10px;
+}
+
+button {
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: "The Jamsil 3 Regular";
+}
+
+.createBtn {
+    width: 180px;
+    height: 60px;
+    font-size: 25px;
+    background-color: black;
+}
+
+.updateBtn {
+    width: 50px;
+    height: 30px;
+    font-size: 12px;
+    background-color: black;
+}
+
+.deleteBtn {
+    width: 60px;
+    height: 30px;
+    font-size: 12px;
+    background-color: #C22727;
+    margin-left: 10px;
+}
+
+.product-thumbnail {
+    width: 80px;
+    height: 80px;
+}
+
+.table-block {
+    width: 100%;
+    height: 60%;
+
+    & table {
+        width: 100%;
+
+        & thead {
+            font-size: 25px;
+            font-weight: bold;
+            border-top: black 2px solid;
+            border-bottom: black 1px solid;
+
+            & tr {
+                & th {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        & tbody {
+            & tr {
+                border-bottom: 1px solid #C6C6C6;
+
+                & td {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+}
+
+th:nth-child(1), td:nth-child(1),
+th:nth-child(7), td:nth-child(7) {
+    width: 5%
+}
+
+th:nth-child(2), td:nth-child(2),
+th:nth-child(4), td:nth-child(4),
+th:nth-child(5), td:nth-child(5),
+th:nth-child(6), td:nth-child(6) {
+    width: 10%;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 20%;
+}

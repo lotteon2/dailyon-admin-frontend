@@ -1,0 +1,83 @@
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 1000;
+
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #FFFFFF;
+    height: 20%;
+    width: 20%;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
+.modal-header {
+    display: flex;
+
+    justify-content: space-between;
+}
+
+.modal-name {
+    font-family: "The Jamsil 4 Medium";
+    font-size: 20px;
+}
+
+.modal-close {
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-main {
+    display: flex;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.modal-label {
+    font-size: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 40%;
+}
+
+.modal-input {
+    font-family: "The Jamsil 2 Light";
+    width: 40%;
+    border: none;
+    outline: none;
+    font-size: 20px;
+}
+
+.modal-button {
+    display: flex;
+
+    justify-content: center;
+}
+
+.checkBtn {
+    border: none;
+    width: 100px;
+    height: 40px;
+    font-size: 25px;
+    cursor: pointer;
+    color: white;
+    background-color: #808080;
+}
