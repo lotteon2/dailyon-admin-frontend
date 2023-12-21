@@ -75,6 +75,10 @@ const formatDate = (localDateTime: string) => {
   )
 }
 
+const formatRequiresConcurrencyControl = (requiresConcurrencyControl: boolean): string => {
+  return requiresConcurrencyControl ? "예" : "아니오"
+}
+
 const optionalValue = (value: number | undefined | null) => {
   return value ? value.toLocaleString("ko-KR") : "-"
 }
@@ -208,7 +212,9 @@ const onCancelAction = () => {
               {{ adminCouponInfo.appliesToType }}/{{ adminCouponInfo.appliesToId }}<br />
               {{ adminCouponInfo.appliesToName }}
             </td>
-            <td>{{ adminCouponInfo.requiresConcurrencyControl }}</td>
+            <td>
+              {{ formatRequiresConcurrencyControl(adminCouponInfo.requiresConcurrencyControl) }}
+            </td>
             <td>
               <img
                 :src="`${VITE_STATIC_IMG_URL}${adminCouponInfo.targetImgUrl}` || ''"
