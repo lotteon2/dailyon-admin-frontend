@@ -22,10 +22,10 @@ import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
-let size = ref<number>(10)
-let page = ref<number>(0)
-let list = ref<couponInfoReadItemResponse[]>([])
-let totalPages = ref<number>()
+const size = ref<number>(10)
+const page = ref<number>(0)
+const list = ref<couponInfoReadItemResponse[]>([])
+const totalPages = ref<number>(1)
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
 
@@ -35,18 +35,26 @@ const openUpdateModal = (coupon: couponInfoReadItemResponse) => {
   isUpdateModalVisible.value = true
 }
 
-const initData = async () => {
+const fetchData = async (pageNumber: number) => {
   try {
-    const data = await getCouponInfoPage(size.value, page.value)
+    const data = await getCouponInfoPage(size.value, pageNumber)
     list.value = data.couponInfoReadItemResponseList
-    totalPages.value = Math.ceil(data.totalCounts ? data.totalCounts / size.value : 1)
+    totalPages.value = Math.ceil(data.totalCounts / size.value)
   } catch (err) {
     console.error(err)
+    // Handle error appropriately
   }
 }
-onBeforeMount(initData)
-// watch(() => categoryId.value, setProductSizeByCategory)
-// watch(categoryId, setProductSizeByCategory)
+
+onBeforeMount(() => fetchData(page.value))
+
+watch(page, (newPage) => {
+  fetchData(newPage)
+})
+
+const onChangePage = (newPage: number) => {
+  page.value = newPage
+}
 
 const isCouponStartInFuture = (startAt: string): boolean => {
   const now = new Date()
@@ -251,7 +259,7 @@ const onCancelAction = () => {
         </tbody>
       </table>
     </div>
-    <PaginationComponent />
+    <PaginationComponent :requestPage="page" :totalPages="totalPages" @changePage="onChangePage" />
   </div>
 </template>
 
