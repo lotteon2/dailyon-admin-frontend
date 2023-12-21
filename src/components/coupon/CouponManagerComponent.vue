@@ -251,13 +251,20 @@ watch(page, (newPage) => {
             <td>
               <button class="updateBtn" @click="openUpdateModal(adminCouponInfo)">수정</button>
               <button
-                v-if="isCouponStartInFuture(adminCouponInfo.startAt)"
+                v-if="
+                  adminCouponInfo.remainingQuantity > 0 &&
+                  isCouponStartInFuture(adminCouponInfo.startAt)
+                "
                 @click="onInvalidateClick(adminCouponInfo.id)"
                 class="terminateBtn"
               >
                 종료
               </button>
-              <button v-else @click="onDeleteClick(adminCouponInfo.id)" class="deleteBtn">
+              <button
+                v-else-if="adminCouponInfo.remainingQuantity > 0"
+                @click="onDeleteClick(adminCouponInfo.id)"
+                class="deleteBtn"
+              >
                 삭제
               </button>
             </td>
