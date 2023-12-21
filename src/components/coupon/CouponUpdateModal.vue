@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, defineProps, watch } from "vue"
+import { ref, onMounted, defineEmits, defineProps, computed, watch } from "vue"
 import type { PropType } from "vue"
 import { updateCouponInfo, searchProducts, fetchCategories } from "@/apis/coupon/CouponClient"
 import type {
@@ -142,10 +142,11 @@ import type {
 import { convertToCouponUpdateRequest } from "@/apis/coupon/CouponDto"
 
 import axios from "axios" // assuming you are using axios for HTTP requests
+// import { emit } from "process"
 
 type PossiblyNull<T> = T | null
 
-const emits = defineEmits(["close-update-modal"])
+const emits = defineEmits(["close-update-modal", "updated-coupon"])
 const props = defineProps({
   showModal: Boolean,
   couponInfoId: Number,
@@ -218,6 +219,7 @@ const updateCoupon = async () => {
     if (response.status === 200) {
       // emits("coupon-modified");  // Emit an event to the parent component
       alert("쿠폰이 수정되었습니다.")
+      emits("updated-coupon")
       closeModal()
     }
     // Additional state updates
@@ -256,6 +258,34 @@ const selectCategory = (category: ReadChildrenCategoryResponse) => {
   couponUpdateData.value.appliesToName = category.name
   couponUpdateData.value.targetImgUrl = "" // Categories do not have images
 }
+
+const couponName = computed(() => {
+  let nameParts: string[] = []
+
+  if (couponUpdateData.value.requiresConcurrencyControl) {
+    nameParts.push("[특가 할인]")
+  }
+
+  if (couponUpdateData.value.appliesToName) {
+    nameParts.push(
+      couponUpdateData.value.appliesToType === "CATEGORY"
+        ? `${couponUpdateData.value.appliesToName} 카테고리`
+        : couponUpdateData.value.appliesToName
+    )
+  }
+
+  if (couponUpdateData.value.discountType === "PERCENTAGE") {
+    nameParts.push(`${couponUpdateData.value.discountValue}% 할인`)
+  } else if (couponUpdateData.value.discountType === "FIXED_AMOUNT") {
+    nameParts.push(`${new Intl.NumberFormat().format(couponUpdateData.value.discountValue)}원 할인`)
+  }
+
+  if (nameParts.length > 0) {
+    nameParts.push("쿠폰")
+  }
+
+  return nameParts.join(" ")
+})
 
 onMounted(() => {
   if (props.coupon) {
@@ -297,6 +327,10 @@ watch(
   },
   { immediate: true }
 )
+
+watch(couponName, (newName) => {
+  couponUpdateData.value.name = newName
+})
 </script>
 
 <style scoped>

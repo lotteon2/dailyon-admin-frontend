@@ -159,7 +159,7 @@ import type {
 } from "@/apis/coupon/CouponDto"
 import axios from "axios" // assuming you are using axios for HTTP requests
 
-const emits = defineEmits(["close-create-modal"])
+const emits = defineEmits(["close-create-modal", "created-coupon"])
 const props = defineProps({
   showModal: Boolean
 })
@@ -219,6 +219,7 @@ const createCoupon = async () => {
     if (response.status === 201) {
       // Ensure you have got the 201 status indicating a successful creation
       alert("쿠폰이 등록되었습니다.")
+      emits("created-coupon")
       closeModal()
     }
     // Additional state updates

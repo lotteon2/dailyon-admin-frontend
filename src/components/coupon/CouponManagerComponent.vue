@@ -46,12 +46,6 @@ const fetchData = async (pageNumber: number) => {
   }
 }
 
-onBeforeMount(() => fetchData(page.value))
-
-watch(page, (newPage) => {
-  fetchData(newPage)
-})
-
 const onChangePage = (newPage: number) => {
   page.value = newPage
 }
@@ -155,16 +149,28 @@ const onCancelAction = () => {
   // TODO: Simply close the dialog here, or you could also reset couponInfoIdToActOn if needed
   isConfirmDialogVisible.value = false
 }
+
+onBeforeMount(() => fetchData(page.value))
+
+watch(page, (newPage) => {
+  fetchData(newPage)
+})
 </script>
 
 <template>
   <div class="product-size-container">
-    <CouponCreateModal :show-modal="isCreateModalVisible" @close-create-modal="closeCreateModal" />
+    <!-- TODO: emit 이벤트를 새로 만들어서 현재 페이지 데이터를 다시 받아오는걸 만들자. -->
+    <CouponCreateModal
+      :show-modal="isCreateModalVisible"
+      @close-create-modal="closeCreateModal"
+      @created-coupon="fetchData(page)"
+    />
     <CouponUpdateModal
       :show-modal="isUpdateModalVisible"
       :couponInfoId="selectedCoupon ? selectedCoupon.id : undefined"
       :coupon="selectedCoupon"
       @close-update-modal="closeUpdateModal"
+      @updated-coupon="fetchData(page)"
     />
     <ConfirmDialogModal
       :title="confirmModalTitle"
