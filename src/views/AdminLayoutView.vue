@@ -5,7 +5,7 @@ import CategoryManageComponent from "@/components/category/CategoryManageCompone
 import CouponManagerComponent from "@/components/coupon/CouponManagerComponent.vue"
 import DashBoardComponent from "@/components/DashBoardComponent.vue"
 import ProductManageComponent from "@/components/product/ProductManageComponent.vue"
-import RaffleManageComponent from "@/components/RaffleManageComponent.vue"
+import AuctionManageComponent from "@/components/auction/AuctionManageComponent.vue"
 import ProductSizeManageComponent from "@/components/productsize/ProductSizeManageComponent.vue"
 import SideBarComponent from "@/components/SideBarComponent.vue"
 import HeaderComponent from "@/components/HeaderComponent.vue"
@@ -17,12 +17,11 @@ import HeaderComponent from "@/components/HeaderComponent.vue"
   </header>
   <div class="container">
     <SideBarComponent />
-    <DashBoardComponent v-if="$route.name === 'dashboard' || $route.name === 'main'" />
     <ProductManageComponent v-if="$route.name === 'manage-product'" />
     <BrandManageComponent v-if="$route.name === 'manage-brand'" />
     <BannerManageComponent v-if="$route.name === 'manage-banner'" />
     <CouponManagerComponent v-if="$route.name === 'manage-coupon'" />
-    <RaffleManageComponent v-if="$route.name === 'manage-raffle'" />
+    <AuctionManageComponent v-if="$route.name === 'manage-auction'" />
     <CategoryManageComponent v-if="$route.name === 'manage-category'" />
     <ProductSizeManageComponent v-if="$route.name === 'manage-product-size'" />
   </div>

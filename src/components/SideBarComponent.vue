@@ -4,12 +4,6 @@
   <div class="sidebar">
     <div class="sidebar-elements">
       <div class="sidebar-element">
-        <RouterLink to="/dashboard" class="sidebar-content">
-          <img src="@/assets/images/Dashboard_White.png" alt="dashboard" />
-          <p>대시보드</p>
-        </RouterLink>
-      </div>
-      <div class="sidebar-element">
         <RouterLink to="/manage-product" class="sidebar-content">
           <img src="@/assets/images/Product_White.png" alt="product" />
           <p>상품 관리</p>
@@ -28,9 +22,9 @@
         </RouterLink>
       </div>
       <div class="sidebar-element">
-        <RouterLink to="/manage-raffle" class="sidebar-content">
-          <img src="@/assets/images/Raffle_White.png" alt="raffle" />
-          <p>응모 관리</p>
+        <RouterLink to="/manage-auction" class="sidebar-content">
+          <img src="@/assets/images/Raffle_White.png" alt="auction" />
+          <p>경매 관리</p>
         </RouterLink>
       </div>
       <div class="sidebar-element">
