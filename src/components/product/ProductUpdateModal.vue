@@ -35,8 +35,7 @@ const isEnabled = ref<boolean>(true)
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
-const productSizesToUse = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
-const productSizeUsed = ref<boolean[]>([])
+const productSizes = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
 
 const requestCode = ref<string>("")
 const requestName = ref<string>("")
@@ -121,7 +120,7 @@ const closeModal = () => {
   requestGender.value = { name: "", value: "" }
   requestImage.value = ""
   requestDescribeImages.value = {}
-  requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
+  requestProductStocks.value = []
 
   inputImageFile.value = null
   imageFile.value = null
@@ -140,6 +139,12 @@ const executeUpdate = () => {
     const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
       (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
     )
+
+    if (productStocks.length === 0) {
+      alert("수량을 입력해주세요")
+      isEnabled.value = true
+      return
+    }
 
     const describeImagesToUpdate: Record<string, string> = Object.entries(
       requestDescribeImages.value
@@ -163,22 +168,16 @@ const executeUpdate = () => {
 
     updateProduct(props.productToUpdate!.id, request)
       .then((axiosResponse: AxiosResponse) => {
-        console.log("request body")
-        console.log(request)
         const response: UpdateProductResponse = axiosResponse.data
 
         if (response.imgPresignedUrl != null) {
-          console.log("uploading image file")
-          console.log(response.imgPresignedUrl, imageFile.value!)
           uploadImageToS3(response.imgPresignedUrl, imageFile.value!).catch((error: any) => {
             alert("상품 이미지 업로드 오류")
           })
         }
 
         if (response.describeImgPresignedUrl != null) {
-          console.log("uploading describe files")
           Object.entries(response.describeImgPresignedUrl).map(([key, value]) => {
-            console.log(value, describeFiles.value.find((file) => file.name === key)!)
             uploadImageToS3(value, describeFiles.value.find((file) => file.name === key)!).catch(
               (error: any) => {
                 alert("상품 설명 이미지 업로드 오류")
@@ -197,27 +196,6 @@ const executeUpdate = () => {
   }
 }
 
-const addProductStock = () => {
-  requestProductStocks.value.push({ productSizeId: 0, quantity: 0 })
-}
-
-const removeProductStock = (index: number) => {
-  requestProductStocks.value.splice(index, 1)
-}
-
-const filteredProductSizes = computed(() => {
-  return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
-})
-
-const selectProductSize = (selectedProductId: number) => {
-  const selectedIndex = productSizesToUse.value.findIndex(
-    (productSize) => productSize.id === selectedProductId
-  )
-
-  if (selectedIndex !== -1) {
-    productSizeUsed.value[selectedIndex] = false
-  }
-}
 watch(
   () => props.showModal,
   (newVal, oldVal) => {
@@ -246,10 +224,25 @@ watch(
             (category) => category.id === props.productToUpdate!.categoryId
           )!
 
-          requestProductStocks.value = props.productToUpdate!.productStocks.map((productStock) => ({
-            productSizeId: productStock.productSizeId,
-            quantity: productStock.quantity
-          }))
+          getProductSizesByCategory(requestCategory.value.id!)
+            .then((axiosResponse: AxiosResponse) => {
+              productSizes.value = axiosResponse.data.productSizes
+              requestProductStocks.value = productSizes.value.map((productSize) => ({
+                productSizeId: productSize.id,
+                quantity: 0
+              }))
+
+              requestProductStocks.value.forEach((productStock1) => {
+                props.productToUpdate!.productStocks.forEach((productStock2) => {
+                  if (productStock1.productSizeId === productStock2.productSizeId) {
+                    productStock1.quantity = productStock2.quantity
+                  }
+                })
+              })
+            })
+            .catch((error: any) => {
+              alert(error.response!.data!.message)
+            })
         })
         .catch((error: any) => {
           alert(error.response!.data!.message)
@@ -270,21 +263,14 @@ watch(
 )
 
 watch(requestCategory, (nv, ov) => {
-  if (ov.id == 0) {
+  if (ov.id !== 0) {
     getProductSizesByCategory(requestCategory.value!.id!)
       .then((axiosResponse: AxiosResponse) => {
-        productSizesToUse.value = axiosResponse.data.productSizes
-        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
-      })
-      .catch((error: any) => {
-        alert(error.response!.data!.message)
-      })
-  } else {
-    getProductSizesByCategory(requestCategory.value!.id!)
-      .then((axiosResponse: AxiosResponse) => {
-        productSizesToUse.value = axiosResponse.data.productSizes
-        requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
-        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
+        productSizes.value = axiosResponse.data.productSizes
+        requestProductStocks.value = productSizes.value.map((productSize) => ({
+          productSizeId: productSize.id,
+          quantity: 0
+        }))
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
@@ -386,34 +372,16 @@ watch(requestCategory, (nv, ov) => {
         <div class="modal-sub">
           <div class="modal-sub-header">
             <label class="modal-sub-label">치수별 수량</label>
-            <button
-              class="updateBtn"
-              @click="addProductStock"
-              v-if="filteredProductSizes.length > 0"
-            >
-              추가
-            </button>
           </div>
-          <div
-            v-for="(productStock, index) in requestProductStocks"
-            :key="index"
-            class="modal-sub-items"
-          >
-            <select
-              class="modal-select"
-              v-model.lazy="productStock.productSizeId"
-              @change="selectProductSize(productStock.productSizeId)"
-            >
-              <option
-                v-for="(productSize, productSizeIdx) in filteredProductSizes"
-                :key="productSizeIdx"
-                :value="productSize.id"
-              >
-                {{ productSize.name }}
-              </option>
-            </select>
-            <input class="modal-input" type="number" v-model="productStock.quantity" />
-            <button class="updateBtn" @click="removeProductStock(index)">삭제</button>
+          <div v-for="(productSize, index) in productSizes" :key="index" class="modal-sub-items">
+            <div class="modal-select">
+              {{ productSize.name }}
+            </div>
+            <input
+              class="modal-input"
+              type="number"
+              v-model="requestProductStocks[index].quantity"
+            />
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import type { AxiosResponse } from "axios"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import { deleteProducts, getProductPages } from "@/apis/product/ProductClient"
 import type {
+  ProductTypeEnum,
   ReadProductAdminResponse,
   ReadProductPageRequest,
   ReadProductPageResponse,
@@ -60,6 +61,13 @@ const initData = () => {
 const requestPage = ref<number>(0)
 const totalPages = ref<number>(0)
 const totalElements = ref<number>(0)
+
+const types = ref<ProductTypeEnum[]>([
+  { type: "NORMAL", name: "일반 상품" },
+  { type: "AUCTION", name: "경매 상품" }
+])
+
+const selectedType = ref<string>("NORMAL")
 
 const selectedProduct = ref<ReadProductAdminResponse>({
   id: 0,
@@ -166,7 +174,7 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
     const request: ReadProductPageRequest = {
       page: afterPage,
       size: pageSize,
-      type: "NORMAL",
+      type: selectedType.value,
       brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
       categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value
     }
@@ -190,7 +198,7 @@ watch(
     const request: ReadProductPageRequest = {
       page: requestPage.value,
       size: pageSize,
-      type: "NORMAL",
+      type: selectedType.value,
       brandId: newBrandId === 0 ? null : newBrandId,
       categoryId: newCategoryId === 0 ? null : newCategoryId
     }
@@ -206,6 +214,26 @@ watch(
       })
   }
 )
+watch(selectedType, async (newType, oldType) => {
+  const request: ReadProductPageRequest = {
+    page: 0,
+    size: pageSize,
+    type: newType,
+    brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value
+  }
+  getProductPages(request)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductPageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      products.value = response.productResponses
+      requestPage.value = 0
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
+})
 </script>
 
 <template>
@@ -240,8 +268,13 @@ watch(
             {{ brand.name }}
           </option>
         </select>
+        <select class="select-block-select" v-model="selectedType">
+          <option v-for="(type, index) in types" :key="index" :value="type.type">
+            {{ type.name }}
+          </option>
+        </select>
       </div>
-      <div class="button-block">
+      <div class="button-block" v-if="selectedType === 'NORMAL'">
         <button class="deleteBtn" @click="toggleAll">
           {{ allChecked ? "전체 해제" : "전체 선택" }}
         </button>
@@ -270,6 +303,7 @@ watch(
                 :id="`checkbox-${index}`"
                 :value="product.id"
                 v-model="checkedProducts"
+                v-if="selectedType === 'NORMAL'"
               />
             </td>
             <td>{{ product.id }}</td>
@@ -284,7 +318,13 @@ watch(
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
             <td>
-              <button class="updateBtn" @click="openUpdateModal(index)">수정</button>
+              <button
+                class="updateBtn"
+                v-if="selectedType === 'NORMAL'"
+                @click="openUpdateModal(index)"
+              >
+                수정
+              </button>
             </td>
           </tr>
         </tbody>
