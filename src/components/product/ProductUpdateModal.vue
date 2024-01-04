@@ -216,10 +216,6 @@ watch(
         },
         {}
       )
-      requestProductStocks.value = props.productToUpdate!.productStocks.map((productStock) => ({
-        productSizeId: productStock.productSizeId,
-        quantity: productStock.quantity
-      }))
 
       getLeafCategories()
         .then((axiosResponse: AxiosResponse) => {
@@ -231,6 +227,18 @@ watch(
           getProductSizesByCategory(requestCategory.value.id!)
             .then((axiosResponse: AxiosResponse) => {
               productSizes.value = axiosResponse.data.productSizes
+              requestProductStocks.value = productSizes.value.map((productSize) => ({
+                productSizeId: productSize.id,
+                quantity: 0
+              }))
+
+              requestProductStocks.value.forEach((productStock1) => {
+                props.productToUpdate!.productStocks.forEach((productStock2) => {
+                  if (productStock1.productSizeId === productStock2.productSizeId) {
+                    productStock1.quantity = productStock2.quantity
+                  }
+                })
+              })
             })
             .catch((error: any) => {
               alert(error.response!.data!.message)
@@ -255,15 +263,7 @@ watch(
 )
 
 watch(requestCategory, (nv, ov) => {
-  if (ov.id == 0) {
-    getProductSizesByCategory(requestCategory.value!.id!)
-      .then((axiosResponse: AxiosResponse) => {
-        productSizes.value = axiosResponse.data.productSizes
-      })
-      .catch((error: any) => {
-        alert(error.response!.data!.message)
-      })
-  } else {
+  if (ov.id !== 0) {
     getProductSizesByCategory(requestCategory.value!.id!)
       .then((axiosResponse: AxiosResponse) => {
         productSizes.value = axiosResponse.data.productSizes
