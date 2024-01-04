@@ -71,3 +71,8 @@ export interface ProductStockRequest {
   productSizeId: number
   quantity: number
 }
+
+export interface ProductTypeEnum {
+  type: string
+  name: string
+}

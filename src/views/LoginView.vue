@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import router from '@/router';
-import { defaultAxiosInstance } from '@/apis/utils';
-import qs from 'qs';
+import { ref } from "vue"
+import router from "@/router"
+import { defaultAxiosInstance } from "@/apis/utils"
+import qs from "qs"
 
-const username = ref('');
-const password = ref('');
-
-
+const username = ref("")
+const password = ref("")
 
 const login = async () => {
   const data = {
-  username: username.value,
-  password: password.value
-}
-
-defaultAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  },
-}).then(response => {
-  const token = response.data.token;
-  if (token) {
-    sessionStorage.setItem('accessToken', token);
-    router.push({ name: 'main' });
-  } else {
-    alert('로그인에 실패하였습니다. ID와 비밀번호를 확인해주세요!');
+    username: username.value,
+    password: password.value
   }
-}).catch(error => {
-  console.error('Login failed:', error);
-});
 
-
-};
+  defaultAxiosInstance
+    .post("auth-service/admin/login", qs.stringify(data), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+    .then((response) => {
+      const token = response.data.token
+      if (token) {
+        sessionStorage.setItem("accessToken", token)
+        router.push({ name: "manage-product" })
+      } else {
+        alert("로그인에 실패하였습니다. ID와 비밀번호를 확인해주세요!")
+      }
+    })
+    .catch((error) => {
+      console.error("Login failed:", error)
+    })
+}
 </script>
 
 <template>
@@ -40,16 +39,27 @@ defaultAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
     <h1 class="logo">Daily<span class="red">O</span>n</h1>
     <form @submit.prevent="login" class="login-form">
       <label for="username">Username:</label>
-      <input v-model="username" type="text" id="username" placeholder="Enter your username" required />
+      <input
+        v-model="username"
+        type="text"
+        id="username"
+        placeholder="Enter your username"
+        required
+      />
 
       <label for="password">Password:</label>
-      <input v-model="password" type="password" id="password" placeholder="Enter your password" required />
+      <input
+        v-model="password"
+        type="password"
+        id="password"
+        placeholder="Enter your password"
+        required
+      />
 
       <button type="submit">Login</button>
     </form>
   </div>
 </template>
-
 
 <style scoped>
 .login-container {
@@ -72,11 +82,11 @@ defaultAxiosInstance.post('auth-service/admin/login', qs.stringify(data), {
 }
 
 .login-form {
-  background-color: white; 
+  background-color: white;
   width: 400px;
-  padding: 40px; 
+  padding: 40px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 label {
@@ -85,7 +95,7 @@ label {
 }
 
 input {
-  width:  calc(100% - 30px);
+  width: calc(100% - 30px);
   padding: 12px;
   margin-bottom: 20px;
 }
