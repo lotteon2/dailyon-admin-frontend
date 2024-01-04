@@ -30,9 +30,8 @@ const onChangePage = async (page: number) => {
   }
 }
 
-const initData = () => {
-  const response: ReadAuctionPageResponse = readAuctions(requestPage.value, requestSize)
-
+const initData = async () => {
+  const response: ReadAuctionPageResponse = await readAuctions(requestPage.value, requestSize)
   totalElements.value = response.totalElements
   totalPages.value = response.totalPages
   auctions.value = response.responses
@@ -40,7 +39,7 @@ const initData = () => {
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
-    const response: ReadAuctionPageResponse = readAuctions(afterPage, requestSize)
+    const response: ReadAuctionPageResponse = await readAuctions(afterPage, requestSize)
 
     totalElements.value = response.totalElements
     totalPages.value = response.totalPages
@@ -71,7 +70,7 @@ onBeforeMount(initData)
           <tr v-for="(auction, index) in auctions" :key="index">
             <td>{{ auction.auctionName }}</td>
             <td>{{ auction.startBidPrice.toLocaleString() }}원</td>
-            <td>{{ auction.maximumWinner }}</td>
+            <td>{{ auction.maximumWinner }}명</td>
             <td>{{ formatDate(auction.startAt) }}</td>
             <td></td>
           </tr>

@@ -22,7 +22,7 @@ export const readAuctions = async (
   size: number
 ): Promise<ReadAuctionPageResponse> => {
   try {
-    const { data }: ReadAuctionPageResponse = authAxiosInstance.get(
+    const { data } = await authAxiosInstance.get(
       `${AUCTION_SERVICE_PREFIX}${AUCTION_ADMIN_PREFIX}${AUCTION_PREFIX}`,
       {
         params: { page: page, size: size }
