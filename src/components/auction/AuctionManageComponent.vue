@@ -3,6 +3,7 @@ import PaginationComponent from "@/components/PaginationComponent.vue"
 import { onBeforeMount, ref, watch } from "vue"
 import { readAuctions } from "@/apis/auction/AuctionClient"
 import type { ReadAuctionPageResponse, ReadAuctionResponse } from "@/apis/auction/AuctionDto"
+import AuctionCreateModal from "@/components/auction/AuctionCreateModal.vue"
 
 const requestSize: number = 5
 const requestPage = ref<number>(0)
@@ -13,7 +14,6 @@ const isCreateModalVisible = ref<boolean>(false)
 
 const openCreateModal = () => {
   isCreateModalVisible.value = true
-  alert("경매 등록")
 }
 
 const formatDate = (localDateTime: string) => {
@@ -37,6 +37,14 @@ const initData = async () => {
   auctions.value = response.responses
 }
 
+const closeCreateModal = () => {
+  isCreateModalVisible.value = false
+}
+
+const afterCreate = () => {
+  isCreateModalVisible.value = false
+}
+
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
     const response: ReadAuctionPageResponse = await readAuctions(afterPage, requestSize)
@@ -52,6 +60,11 @@ onBeforeMount(initData)
 
 <template>
   <div class="auction-container">
+    <AuctionCreateModal
+      :show-modal="isCreateModalVisible"
+      @close-create-modal="closeCreateModal"
+      @create-success="afterCreate"
+    />
     <div class="button-block">
       <button class="createBtn" @click="openCreateModal">경매 등록</button>
     </div>
