@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Category } from "@/apis/category/CategoryDto"
-import { computed, type Ref, ref, toRefs, watch } from "vue"
+import { type Ref, ref, watch } from "vue"
 import type { AxiosResponse } from "axios"
 import { getLeafCategories } from "@/apis/category/CategoryClient"
 import { getAllBrands } from "@/apis/brand/BrandClient"
@@ -28,8 +28,7 @@ const isEnabled = ref<boolean>(true)
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
-const productSizesToUse = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
-const productSizeUsed = ref<boolean[]>([])
+const productSizes = ref<Array<ReadProductSizeResponse>>(new Array<ReadProductSizeResponse>())
 
 const requestCode = ref<string>("")
 const requestName = ref<string>("")
@@ -40,9 +39,7 @@ const requestBrand = ref<ReadBrandResponse>({ id: 0, name: "" })
 const requestGender = ref<Gender>({ name: "", value: "" })
 const requestImage = ref<string>("")
 const requestDescribeImages = ref<Array<String>>(new Array<String>())
-const requestProductStocks = ref<Array<ProductStockRequest>>(
-  new Array<ProductStockRequest>({ productSizeId: 0, quantity: 0 })
-)
+const requestProductStocks = ref<Array<ProductStockRequest>>(new Array<ProductStockRequest>())
 
 const inputImageFile: Ref<HTMLInputElement | null> = ref(null)
 const imageFile: Ref<File | null> = ref(null)
@@ -114,7 +111,7 @@ const closeModal = () => {
   requestGender.value = { name: "", value: "" }
   requestImage.value = ""
   requestDescribeImages.value = []
-  requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
+  requestProductStocks.value = []
 
   inputImageFile.value = null
   imageFile.value = null
@@ -134,6 +131,12 @@ const executeCreate = () => {
     const productStocks: Array<ProductStockRequest> = requestProductStocks.value.filter(
       (productStock) => productStock.quantity > 0 && productStock.productSizeId !== 0
     )
+
+    if (productStocks.length === 0) {
+      alert("수량을 입력해주세요")
+      isEnabled.value = true
+      return
+    }
 
     const describeImages: Array<String> = requestDescribeImages.value.filter(
       (describeImage) => describeImage !== null
@@ -179,14 +182,6 @@ const executeCreate = () => {
   }
 }
 
-const addProductStock = () => {
-  requestProductStocks.value.push({ productSizeId: 0, quantity: 0 })
-}
-
-function removeProductStock(index: number) {
-  requestProductStocks.value.splice(index, 1)
-}
-
 watch(
   () => props.showModal,
   (newVal, oldVal) => {
@@ -214,30 +209,17 @@ watch(requestCategory, () => {
   if (requestCategory.value && requestCategory.value.id !== null) {
     getProductSizesByCategory(requestCategory.value.id)
       .then((axiosResponse: AxiosResponse) => {
-        productSizesToUse.value = axiosResponse.data.productSizes
-        requestProductStocks.value = [{ productSizeId: 0, quantity: 0 }]
-        productSizeUsed.value = Array(productSizesToUse.value.length).fill(false)
+        productSizes.value = axiosResponse.data.productSizes
+        requestProductStocks.value = productSizes.value.map((productSize) => ({
+          productSizeId: productSize.id,
+          quantity: 0
+        }))
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
       })
   }
 })
-
-// TODO : 선택한 치수 option에서 삭제, 선택 취소한 치수 다시 option에 추가
-const filteredProductSizes = computed(() => {
-  return productSizesToUse.value.filter((productSize, index) => !productSizeUsed.value[index])
-})
-
-const selectProductSize = (selectedProductId: number) => {
-  const selectedIndex = productSizesToUse.value.findIndex(
-    (productSize) => productSize.id === selectedProductId
-  )
-
-  if (selectedIndex !== -1) {
-    productSizeUsed.value[selectedIndex] = false
-  }
-}
 </script>
 
 <template>
@@ -324,34 +306,16 @@ const selectProductSize = (selectedProductId: number) => {
         <div class="modal-sub">
           <div class="modal-sub-header">
             <label class="modal-sub-label">치수별 수량</label>
-            <button
-              class="updateBtn"
-              @click="addProductStock"
-              v-if="filteredProductSizes.length > 0"
-            >
-              추가
-            </button>
           </div>
-          <div
-            v-for="(productStock, index) in requestProductStocks"
-            :key="index"
-            class="modal-sub-items"
-          >
-            <select
-              class="modal-select"
-              v-model.lazy="productStock.productSizeId"
-              @change="selectProductSize(productStock.productSizeId)"
-            >
-              <option
-                v-for="(productSize, productSizeIdx) in filteredProductSizes"
-                :key="productSizeIdx"
-                :value="productSize.id"
-              >
-                {{ productSize.name }}
-              </option>
-            </select>
-            <input class="modal-input" type="number" v-model="productStock.quantity" />
-            <button class="updateBtn" @click="removeProductStock(index)">삭제</button>
+          <div v-for="(productSize, index) in productSizes" :key="index" class="modal-sub-items">
+            <div class="modal-select">
+              {{ productSize.name }}
+            </div>
+            <input
+              class="modal-input"
+              type="number"
+              v-model="requestProductStocks[index].quantity"
+            />
           </div>
         </div>
       </div>
