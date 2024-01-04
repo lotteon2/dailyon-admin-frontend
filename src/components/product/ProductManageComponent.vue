@@ -274,7 +274,7 @@ watch(selectedType, async (newType, oldType) => {
           </option>
         </select>
       </div>
-      <div class="button-block">
+      <div class="button-block" v-if="selectedType === 'NORMAL'">
         <button class="deleteBtn" @click="toggleAll">
           {{ allChecked ? "전체 해제" : "전체 선택" }}
         </button>
@@ -303,6 +303,7 @@ watch(selectedType, async (newType, oldType) => {
                 :id="`checkbox-${index}`"
                 :value="product.id"
                 v-model="checkedProducts"
+                v-if="selectedType === 'NORMAL'"
               />
             </td>
             <td>{{ product.id }}</td>
