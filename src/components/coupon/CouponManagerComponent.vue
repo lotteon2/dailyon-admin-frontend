@@ -201,7 +201,7 @@ watch(page, (newPage) => {
             <th>이벤트 시작/종료일시</th>
             <th>잔여수량/총 발행개수</th>
             <th>적용 대상</th>
-            <th>동시성 체크</th>
+            <th>특가 여부</th>
             <th>할인대상 이미지</th>
             <th>조건</th>
           </tr>
