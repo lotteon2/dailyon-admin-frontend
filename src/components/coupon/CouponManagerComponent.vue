@@ -121,6 +121,7 @@ const onConfirmAction = async () => {
     try {
       const response = await deleteCouponInfo(couponInfoIdToActOn.value)
       if (response.status === 204) {
+        fetchData(page.value)
         alert("쿠폰이 삭제되었습니다.")
         isConfirmDialogVisible.value = false
       }
@@ -133,6 +134,7 @@ const onConfirmAction = async () => {
     try {
       const response = await invalidateCouponInfo(couponInfoIdToActOn.value)
       if (response.status === 200) {
+        fetchData(page.value)
         alert("쿠폰 이벤트가 종료되었습니다. 기존 발급 쿠폰은 삭제되지 않습니다.")
         isConfirmDialogVisible.value = false
       }
@@ -201,7 +203,7 @@ watch(page, (newPage) => {
             <th>이벤트 시작/종료일시</th>
             <th>잔여수량/총 발행개수</th>
             <th>적용 대상</th>
-            <th>동시성 체크</th>
+            <th>특가 여부</th>
             <th>할인대상 이미지</th>
             <th>조건</th>
           </tr>

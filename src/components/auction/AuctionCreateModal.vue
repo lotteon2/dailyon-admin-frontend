@@ -145,6 +145,12 @@ const executeCreate = () => {
       return
     }
 
+    if (requestProductQuantity.value < maximumWinner.value) {
+      alert("수량은 최대 낙찰자보다 크게 입력해주세요")
+      isEnabled.value = true
+      return
+    }
+
     if (auctionName.value === "") {
       alert("경매 이름을 입력해주세요")
       isEnabled.value = true

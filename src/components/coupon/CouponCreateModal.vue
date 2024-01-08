@@ -102,7 +102,7 @@
 
         <!-- requiresConcurrencyControl -->
         <div class="form-group">
-          <label for="requiresConcurrencyControl">동시성 관리 여부(특가 여부)</label>
+          <label for="requiresConcurrencyControl">특가 여부</label>
 
           <select
             id="requiresConcurrencyControl"
@@ -164,7 +164,7 @@ const props = defineProps({
   showModal: Boolean
 })
 
-const couponCreateRequest = ref<CouponCreateRequest>({
+const defaultCouponCreateRequest: CouponCreateRequest = {
   name: "",
   discountType: "PERCENTAGE",
   discountValue: 0,
@@ -183,7 +183,9 @@ const couponCreateRequest = ref<CouponCreateRequest>({
 
   minPurchaseAmount: 0,
   maxDiscountAmount: undefined
-})
+}
+
+const couponCreateRequest = ref<CouponCreateRequest>({ ...defaultCouponCreateRequest })
 
 const searchQuery = ref("")
 const searchResults = ref<ReadProductResponse[]>([])
@@ -191,7 +193,12 @@ const categories = ref<ReadChildrenCategoryResponse[]>([])
 const targetType = ref("PRODUCT") // Default to product
 const selectedCategoryId = ref(null)
 
+const resetCouponCreateRequest = () => {
+  couponCreateRequest.value = { ...defaultCouponCreateRequest }
+}
+
 const closeModal = () => {
+  resetCouponCreateRequest()
   emits("close-create-modal")
 }
 
@@ -228,6 +235,14 @@ const createCoupon = async () => {
     console.error("Failed to create coupon", error)
   }
 }
+
+watch(targetType, (newTargetType) => {
+  couponCreateRequest.value.appliesToType = newTargetType
+
+  couponCreateRequest.value.appliesToId = 0
+  couponCreateRequest.value.appliesToName = ""
+  couponCreateRequest.value.targetImgUrl = ""
+})
 
 const selectProduct = (result: ReadProductResponse) => {
   couponCreateRequest.value.appliesToType = "PRODUCT"

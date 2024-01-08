@@ -95,6 +95,21 @@
           <!-- <span>개</span> -->
         </div>
 
+        <!-- requiresConcurrencyControl -->
+        <div class="form-group">
+          <label for="requiresConcurrencyControl">특가 여부</label>
+
+          <select
+            id="requiresConcurrencyControl"
+            v-model="couponUpdateData.requiresConcurrencyControl"
+            required
+          >
+            <option value="false">아니오</option>
+            <option value="true">예</option>
+          </select>
+          <!-- <span>개</span> -->
+        </div>
+
         <!-- Optional Fields -->
         <div class="form-group">
           <label for="minPurchaseAmount">최소 구매금액</label>
