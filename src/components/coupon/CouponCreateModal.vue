@@ -102,7 +102,7 @@
 
         <!-- requiresConcurrencyControl -->
         <div class="form-group">
-          <label for="requiresConcurrencyControl">동시성 관리 여부(특가 여부)</label>
+          <label for="requiresConcurrencyControl">특가 여부</label>
 
           <select
             id="requiresConcurrencyControl"
