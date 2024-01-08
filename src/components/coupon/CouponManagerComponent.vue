@@ -121,6 +121,7 @@ const onConfirmAction = async () => {
     try {
       const response = await deleteCouponInfo(couponInfoIdToActOn.value)
       if (response.status === 204) {
+        fetchData(page.value)
         alert("쿠폰이 삭제되었습니다.")
         isConfirmDialogVisible.value = false
       }
@@ -133,6 +134,7 @@ const onConfirmAction = async () => {
     try {
       const response = await invalidateCouponInfo(couponInfoIdToActOn.value)
       if (response.status === 200) {
+        fetchData(page.value)
         alert("쿠폰 이벤트가 종료되었습니다. 기존 발급 쿠폰은 삭제되지 않습니다.")
         isConfirmDialogVisible.value = false
       }
