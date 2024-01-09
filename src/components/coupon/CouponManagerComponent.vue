@@ -160,7 +160,7 @@ watch(page, (newPage) => {
 </script>
 
 <template>
-  <div class="product-size-container">
+  <div class="product-size-container scroll-wrapper">
     <!-- TODO: emit 이벤트를 새로 만들어서 현재 페이지 데이터를 다시 받아오는걸 만들자. -->
     <CouponCreateModal
       :show-modal="isCreateModalVisible"
