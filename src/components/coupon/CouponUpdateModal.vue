@@ -202,6 +202,8 @@ const formatDateForInput = (dateTime: string) => {
 }
 
 const closeModal = () => {
+  searchQuery.value = ""
+  searchResults.value = []
   emits("close-update-modal")
 }
 

@@ -195,6 +195,8 @@ const selectedCategoryId = ref(null)
 
 const resetCouponCreateRequest = () => {
   couponCreateRequest.value = { ...defaultCouponCreateRequest }
+  searchQuery.value = ""
+  searchResults.value = []
 }
 
 const closeModal = () => {
