@@ -32,7 +32,7 @@
               type="text"
               id="productSearch"
               v-model="searchQuery"
-              @input="performSearchProducts"
+              @keyup.enter="performSearchProducts"
               placeholder="상품 검색"
               autocomplete="off"
             />
