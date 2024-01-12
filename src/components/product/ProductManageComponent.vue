@@ -289,6 +289,7 @@ watch(selectedType, async (newType, oldType) => {
             <th></th>
             <th>상품 id</th>
             <th>썸네일 이미지</th>
+            <th>재고</th>
             <th>상품 코드</th>
             <th>상품명</th>
             <th>상품 가격</th>
@@ -314,9 +315,18 @@ watch(selectedType, async (newType, oldType) => {
                 alt="product-img"
               />
             </td>
+            <td class="product-stocks">
+              <div
+                class="stock-quantity"
+                v-for="(productStock, index) in product.productStocks"
+                :key="index"
+              >
+                {{ `${productStock.productSizeName} : ${productStock.quantity}` }}
+              </div>
+            </td>
             <td>{{ product.code }}</td>
             <td>{{ product.name }}</td>
-            <td>{{ product.price }}</td>
+            <td>{{ product.price.toLocaleString() }}원</td>
             <td>
               <button
                 class="updateBtn"
