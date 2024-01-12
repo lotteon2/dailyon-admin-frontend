@@ -106,7 +106,8 @@
 
           <select
             id="requiresConcurrencyControl"
-            v-model="couponCreateRequest.requiresConcurrencyControl"
+            :value="couponCreateRequest.requiresConcurrencyControl.toString()"
+            @change="handleRequiresConcurrencyControlChange($event)"
             required
           >
             <option value="false">아니오</option>
@@ -238,6 +239,11 @@ const createCoupon = async () => {
   }
 }
 
+const handleRequiresConcurrencyControlChange = (event: Event) => {
+  const selectElement = event.target as HTMLSelectElement
+  couponCreateRequest.value.requiresConcurrencyControl = selectElement.value === "true"
+}
+
 watch(targetType, (newTargetType) => {
   couponCreateRequest.value.appliesToType = newTargetType
 
@@ -251,6 +257,7 @@ const selectProduct = (result: ReadProductResponse) => {
   couponCreateRequest.value.appliesToId = result.id
   couponCreateRequest.value.appliesToName = result.name
   couponCreateRequest.value.targetImgUrl = result.imgUrl
+  searchQuery.value = ""
   searchResults.value = []
   couponCreateRequest.value.name = couponName.value
 }
