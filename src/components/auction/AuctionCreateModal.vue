@@ -146,7 +146,7 @@ const executeCreate = () => {
     }
 
     if (requestProductQuantity.value < maximumWinner.value) {
-      alert("수량은 최대 낙찰자보다 크게 입력해주세요")
+      alert("수량은 최대 낙찰자 이상으로 입력해주세요")
       isEnabled.value = true
       return
     }
@@ -165,6 +165,54 @@ const executeCreate = () => {
 
     if (maximumWinner.value <= 0) {
       alert("최대 낙찰자를 입력해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestCode.value === "") {
+      alert("상품 코드를 입력해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (productName.value === "") {
+      alert("상품명을 입력해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestPrice.value <= 0) {
+      alert("상품 가격은 0보다 커야 합니다")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestProductQuantity.value <= 0) {
+      alert("상품 수량은 0보다 커야 합니다")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestBrand.value.id === 0) {
+      alert("브랜드를 지정해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestCategory.value.id === 0) {
+      alert("카테고리를 지정해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestGender.value.value === "") {
+      alert("성별을 지정해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (requestImage.value === "") {
+      alert("상품 이미지를 추가해주세요")
       isEnabled.value = true
       return
     }
