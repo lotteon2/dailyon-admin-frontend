@@ -74,6 +74,7 @@ button {
 
 /* scroll-wrapper 적용 후 안되면 위의 body 건드리는 로직 사용 예정 */
 .scroll-wrapper {
+  max-height: 63vh;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
