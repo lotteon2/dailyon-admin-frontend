@@ -43,6 +43,7 @@ const closeCreateModal = () => {
 
 const afterCreate = () => {
   isCreateModalVisible.value = false
+  initData()
 }
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
