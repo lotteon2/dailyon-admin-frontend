@@ -68,6 +68,18 @@ button {
     height: 80px;
 }
 
+.product-stocks {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.stock-quantity {
+    text-align: center;
+}
+
 .table-block {
     width: 100%;
     height: 60%;
@@ -104,20 +116,4 @@ button {
             }
         }
     }
-}
-
-th:nth-child(1), td:nth-child(1),
-th:nth-child(7), td:nth-child(7) {
-    width: 5%
-}
-
-th:nth-child(2), td:nth-child(2),
-th:nth-child(4), td:nth-child(4),
-th:nth-child(5), td:nth-child(5),
-th:nth-child(6), td:nth-child(6) {
-    width: 10%;
-}
-
-th:nth-child(3), td:nth-child(3) {
-    width: 20%;
 }
