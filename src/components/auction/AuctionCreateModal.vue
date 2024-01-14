@@ -169,6 +169,12 @@ const executeCreate = () => {
       return
     }
 
+    if (requestPrice.value <= 5 * startBidPrice.value) {
+      alert("시작 가격은 1라운드 최대 가능 입찰 금액 미만이어야 해요")
+      isEnabled.value = true
+      return
+    }
+
     const describeImages: Array<String> = requestDescribeImages.value.filter(
       (describeImage) => describeImage !== null
     )
