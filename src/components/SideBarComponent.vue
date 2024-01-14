@@ -10,12 +10,6 @@
         </RouterLink>
       </div>
       <div class="sidebar-element">
-        <RouterLink to="/manage-banner" class="sidebar-content">
-          <img src="@/assets/images/Banner_White.png" alt="banner" />
-          <p>배너 관리</p>
-        </RouterLink>
-      </div>
-      <div class="sidebar-element">
         <RouterLink to="/manage-coupon" class="sidebar-content">
           <img src="@/assets/images/Coupon_White.png" alt="coupon" />
           <p>쿠폰 관리</p>
