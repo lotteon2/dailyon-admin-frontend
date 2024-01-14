@@ -206,6 +206,12 @@ const executeCreate = () => {
       return
     }
 
+    if (requestPrice.value <= 5 * startBidPrice.value) {
+      alert("시작 가격은 1라운드 최대 가능 입찰 금액 미만이어야 해요")
+      isEnabled.value = true
+      return
+    }
+
     if (requestCode.value === "") {
       alert("상품 코드를 입력해주세요")
       isEnabled.value = true
