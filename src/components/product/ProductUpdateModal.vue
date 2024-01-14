@@ -188,6 +188,7 @@ const executeUpdate = () => {
       })
       .then(() => {
         alert("등록 성공")
+        emits("update-success")
         closeModal()
       })
       .catch((error: any) => {

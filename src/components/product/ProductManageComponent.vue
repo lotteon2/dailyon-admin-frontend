@@ -117,14 +117,44 @@ const closeUpdateModal = () => {
   isUpdateModalVisible.value = false
 }
 
-const afterUpdate = () => {
+const afterUpdate = async () => {
   isUpdateModalVisible.value = false
-  initData()
+  await getProductPages({
+    page: requestPage.value,
+    size: pageSize,
+    brandId: null,
+    categoryId: null,
+    type: "NORMAL"
+  })
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductPageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      products.value = response.productResponses
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 
-const afterCreate = () => {
+const afterCreate = async () => {
   isCreateModalVisible.value = false
-  initData()
+  await getProductPages({
+    page: requestPage.value,
+    size: pageSize,
+    brandId: null,
+    categoryId: null,
+    type: "NORMAL"
+  })
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductPageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      products.value = response.productResponses
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 
 const toggleAll = () => {

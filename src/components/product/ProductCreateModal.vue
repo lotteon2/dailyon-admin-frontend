@@ -120,7 +120,6 @@ const closeModal = () => {
   describeFiles.value = []
   previewDescribeFiles.value = []
 
-  isEnabled.value = true
   emits("close-create-modal")
 }
 
@@ -174,10 +173,14 @@ const executeCreate = () => {
       })
       .then(() => {
         alert("등록 성공")
+        emits("create-success")
         closeModal()
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
+      })
+      .finally(() => {
+        isEnabled.value = true
       })
   }
 }
