@@ -19,7 +19,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(["close-create-modal"])
+const emits = defineEmits(["close-create-modal", "create-success"])
 const isEnabled = ref<boolean>(true)
 
 const productSizeStore = useProductSizeStore()
@@ -42,6 +42,7 @@ const executeCreate = () => {
       })
       .then(() => {
         alert("등록 성공")
+        emits("create-success")
         closeModal()
       })
       .catch((error: any) => {

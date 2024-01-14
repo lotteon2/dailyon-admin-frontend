@@ -92,12 +92,40 @@ const closeUpdateModal = () => {
   isUpdateModalVisible.value = false
 }
 
+const afterUpdate = () => {
+  isUpdateModalVisible.value = false
+  getProductSizePagesByCategory(selectedCategory.value.id, requestPage.value)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductSizePageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      productSizeStore.setProductSizes(response.productSizes)
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
+}
+
 const openCreateModal = () => {
   isCreateModalVisible.value = true
 }
 
 const closeCreateModal = () => {
   isCreateModalVisible.value = false
+}
+
+const afterCreate = () => {
+  isCreateModalVisible.value = false
+  getProductSizePagesByCategory(selectedCategory.value.id, requestPage.value)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductSizePageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      productSizeStore.setProductSizes(response.productSizes)
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
 }
 </script>
 
@@ -108,6 +136,7 @@ const closeCreateModal = () => {
       :selected-category-id="selectedCategory.id"
       :selected-category-name="selectedCategory.name"
       @close-create-modal="closeCreateModal"
+      @create-success="afterCreate"
     />
     <ProductSizeUpdateModal
       :show-modal="isUpdateModalVisible"
@@ -117,6 +146,7 @@ const closeCreateModal = () => {
       :selected-category-id="selectedCategory.id"
       :selected-category-name="selectedCategory.name"
       @close-update-modal="closeUpdateModal"
+      @update-success="afterUpdate"
     />
     <div class="head-block">
       <select class="category-select" v-model.lazy="selectedCategory">
