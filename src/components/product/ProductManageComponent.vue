@@ -321,7 +321,7 @@ watch(selectedType, async (newType, oldType) => {
                 v-for="(productStock, index) in product.productStocks"
                 :key="index"
               >
-                {{ `${productStock.productSizeName} : ${productStock.quantity}` }}
+                {{ `${productStock.productSizeName} - ${productStock.quantity}개` }}
               </div>
             </td>
             <td>{{ product.code }}</td>
