@@ -9,7 +9,18 @@ const requestSize: number = 5
 const requestPage = ref<number>(0)
 const totalPages = ref<number>(0)
 const totalElements = ref<number>(0)
-const auctions = ref<ReadAuctionResponse[]>([])
+const auctions = ref<ReadAuctionResponse[]>([
+  {
+    auctionName: "",
+    auctionProductId: 0,
+    ended: false,
+    startAt: "",
+    id: "",
+    maximumWinner: 0,
+    startBidPrice: 0,
+    started: false
+  }
+])
 const isCreateModalVisible = ref<boolean>(false)
 
 const openCreateModal = () => {
@@ -41,9 +52,9 @@ const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
 
-const afterCreate = () => {
+const afterCreate = async () => {
   isCreateModalVisible.value = false
-  initData()
+  await initData()
 }
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {

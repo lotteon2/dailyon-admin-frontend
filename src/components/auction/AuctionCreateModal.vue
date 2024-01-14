@@ -135,6 +135,37 @@ const closeModal = () => {
   emits("close-create-modal")
 }
 
+const createSuccess = () => {
+  isEnabled.value = true
+
+  startAt.value = ""
+  auctionName.value = ""
+  startBidPrice.value = 0
+  maximumWinner.value = 0
+
+  brands.value = []
+  leafCategories.value = []
+  productSizes.value = []
+
+  requestCode.value = ""
+  productName.value = ""
+  requestPrice.value = 0
+
+  requestCategory.value = { id: 0, name: "" }
+  requestBrand.value = { id: 0, name: "" }
+  requestGender.value = { name: "", value: "" }
+  requestImage.value = ""
+  requestDescribeImages.value = []
+  requestProductSizeId.value = 0
+  requestProductQuantity.value = 0
+
+  inputImageFile.value = null
+  imageFile.value = null
+  previewImageFile.value = null
+
+  emits("create-success")
+}
+
 const executeCreate = () => {
   if (isEnabled.value === true) {
     isEnabled.value = false
@@ -159,6 +190,12 @@ const executeCreate = () => {
 
     if (startBidPrice.value <= 0) {
       alert("시작 가격을 입력해주세요")
+      isEnabled.value = true
+      return
+    }
+
+    if (startAt.value === "") {
+      alert("시작 날짜를 입력해주세요")
       isEnabled.value = true
       return
     }
@@ -261,7 +298,7 @@ const executeCreate = () => {
       })
       .then(() => {
         alert("등록 성공")
-        closeModal()
+        createSuccess()
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
