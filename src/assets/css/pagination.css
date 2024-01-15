@@ -2,17 +2,15 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    gap: 0.6875rem;
-    padding-top: 20px;
+    gap: 0.5vw;
 }
 
 .back-button-wrapper {
     display: flex;
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 1.8vw;
+    height: 3.5vh;
     justify-content: center;
     align-items: center;
-    gap: 0.625rem;
 
     border-radius: 0.3125rem;
     border: 1px solid #C6C6C6;
@@ -30,9 +28,7 @@
 }
 
 .back-button {
-    width: 0.44725rem;
-    height: 0.8125rem;
-    flex-shrink: 0;
+    width: 1vw;
 
     fill: var(--Grayscale7, #000);
 }
@@ -43,11 +39,10 @@
 
 .front-button-wrapper {
     display: flex;
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 1.8vw;
+    height: 3.5vh;
     justify-content: center;
     align-items: center;
-    gap: 0.625rem;
 
     border-radius: 0.3125rem;
     border: 1px solid #C6C6C6;
@@ -65,9 +60,7 @@
 }
 
 .front-button {
-    width: 0.44644rem;
-    height: 0.8125rem;
-    flex-shrink: 0;
+    width: 1vw;
 
     fill: var(--Grayscale7, #000);
 }
@@ -78,11 +71,10 @@
 
 .page-button-wrapper {
     display: flex;
-    width: 1.875rem;
-    height: 1.875rem;
+    width: 1.8vw;
+    height: 3.5vh;
     justify-content: center;
     align-items: center;
-    gap: 0.625rem;
 
     border-radius: 0.3125rem;
     border: 1px solid #C6C6C6;
@@ -100,8 +92,8 @@
 
 .page-button {
     color: #000;
-    font-family: "The Jamsil 2 Light";
-    font-size: 0.9375rem;
+    font-family: The Jamsil;
+    font-size: 0.9vw;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -109,8 +101,9 @@
 
 .page-button.selected {
     color: #FFF;
-    font-family: "The Jamsil 2 Light";
-    font-size: 0.9375rem;
+    font-family: The Jamsil;
+    font-size: 0.9vw;
+    font-style: normal;
     font-weight: 400;
     line-height: normal;
 }
