@@ -8,7 +8,7 @@ import type {
 
 const AUCTION_SERVICE_PREFIX: string = "/auction-service"
 const AUCTION_ADMIN_PREFIX: string = "/admin"
-const AUCTION_PREFIX: string = "/auction"
+const AUCTION_PREFIX: string = "/auctions"
 
 export const createAuction = async (request: CreateAuctionRequest): Promise<AxiosResponse> => {
   return await authAxiosInstance.post(

@@ -34,7 +34,7 @@ const name = ref<string>(props.productSizeName)
 
 const isEnabled = ref<boolean>(true)
 
-const emits = defineEmits(["close-update-modal"])
+const emits = defineEmits(["close-update-modal", "update-success"])
 
 const executeUpdate = () => {
   if (isEnabled.value === true) {
@@ -49,6 +49,7 @@ const executeUpdate = () => {
       })
       .then(() => {
         alert("수정 성공")
+        emits("update-success")
         closeModal()
       })
       .catch((error: any) => {
