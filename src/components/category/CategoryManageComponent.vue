@@ -10,20 +10,7 @@ import type { ReadCategoryPageResponse } from "@/apis/category/CategoryDto"
 
 const categoryStore = useCategoryStore()
 
-const initData = () => {
-  getCategoryPages(requestPage.value)
-    .then((axiosResponse: AxiosResponse) => {
-      const response: ReadCategoryPageResponse = axiosResponse.data
-      categoryStore.setCategories(response.responses)
-      totalPages.value = response.totalPages
-      totalElements.value = response.totalElements
-    })
-    .catch((error: any) => {
-      alert(error.response.data.message)
-    })
-}
-
-onBeforeMount(initData)
+const requestSize: number = 10
 
 const requestPage = ref<number>(0)
 const totalPages = ref<number>(0)
@@ -43,9 +30,24 @@ const onChangePage = async (page: number) => {
   }
 }
 
+const initData = () => {
+  getCategoryPages(requestPage.value, requestSize)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadCategoryPageResponse = axiosResponse.data
+      categoryStore.setCategories(response.responses)
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+    })
+    .catch((error: any) => {
+      alert(error.response.data.message)
+    })
+}
+
+onBeforeMount(initData)
+
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
-    getCategoryPages(afterPage)
+    getCategoryPages(afterPage, requestSize)
       .then((axiosResponse: AxiosResponse) => {
         const response: ReadCategoryPageResponse = axiosResponse.data
         categoryStore.setCategories(response.responses)
@@ -79,7 +81,7 @@ const closeCreateModal = () => {
 }
 
 const executeUpdate = () => {
-  getCategoryPages(0)
+  getCategoryPages(0, requestSize)
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadCategoryPageResponse = axiosResponse.data
       categoryStore.setCategories(response.responses)

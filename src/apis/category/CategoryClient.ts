@@ -18,11 +18,11 @@ export const getLeafCategories = async (): Promise<AxiosResponse> => {
   )
 }
 
-export const getCategoryPages = async (page: number): Promise<AxiosResponse> => {
+export const getCategoryPages = async (page: number, size: number): Promise<AxiosResponse> => {
   return await authAxiosInstance.get(
     `${PRODUCT_SERVICE_PREFIX}${PRODUCT_ADMIN_PREFIX}/page${PRODUCT_CATEGORY_PREFIX}`,
     {
-      params: { page: page }
+      params: { page: page, size: size }
     }
   )
 }
