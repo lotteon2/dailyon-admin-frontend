@@ -11,8 +11,10 @@ import type {
   UpdateBrandDto
 } from "@/apis/brand/BrandDto"
 
+const requestSize: number = 10
+
 const initData = () => {
-  getBrandPages(requestPage.value)
+  getBrandPages(requestPage.value, requestSize)
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadBrandPageResponse = axiosResponse.data
       totalElements.value = response.totalElements
@@ -44,7 +46,7 @@ const onChangePage = async (page: number) => {
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
-    getBrandPages(afterPage)
+    getBrandPages(afterPage, requestSize)
       .then((axiosResponse: AxiosResponse) => {
         const response: ReadBrandPageResponse = axiosResponse.data
         totalElements.value = response.totalElements
