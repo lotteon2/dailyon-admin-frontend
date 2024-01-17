@@ -8,6 +8,7 @@ import AuctionManageComponent from "@/components/auction/AuctionManageComponent.
 import ProductSizeManageComponent from "@/components/productsize/ProductSizeManageComponent.vue"
 import SideBarComponent from "@/components/SideBarComponent.vue"
 import HeaderComponent from "@/components/HeaderComponent.vue"
+import OOTDManageComponent from "@/components/ootd/OOTDManageComponent.vue";
 </script>
 
 <template>
@@ -23,6 +24,7 @@ import HeaderComponent from "@/components/HeaderComponent.vue"
     <AuctionManageComponent v-if="$route.name === 'manage-auction'" />
     <CategoryManageComponent v-if="$route.name === 'manage-category'" />
     <ProductSizeManageComponent v-if="$route.name === 'manage-product-size'" />
+    <OOTDManageComponent v-if="$route.name === 'manage-ootd'" />
   </div>
 </template>
 
