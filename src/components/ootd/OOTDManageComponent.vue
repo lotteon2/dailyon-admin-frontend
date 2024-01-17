@@ -2,7 +2,7 @@
 import {onBeforeMount, ref, watch} from "vue"
 import PaginationComponent from "@/components/PaginationComponent.vue";
 import type {PostAdminResponse} from "@/apis/ootd/PostDto";
-import {getPosts, softBulkDeletePosts} from "@/apis/ootd/PostClient";
+import {getPosts, searchPosts, softBulkDeletePosts} from "@/apis/ootd/PostClient";
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
@@ -33,10 +33,17 @@ const onChangePage = async (page: number) => {
 
 watch(requestPage, async (afterPage, beforePage) => {
   if (afterPage < totalPages.value!) {
-    const postPageAdminResponse = await getPosts(afterPage, 5, 'id,asc')
-    posts.value = postPageAdminResponse.posts
-    totalPages.value = postPageAdminResponse.totalPages
-    totalElements.value = postPageAdminResponse.totalElements
+    if(previousSearchQuery.value === '' && searchQuery.value === '') {
+      const postPageAdminResponse = await getPosts(afterPage, 5, 'id,asc')
+      posts.value = postPageAdminResponse.posts
+      totalPages.value = postPageAdminResponse.totalPages
+      totalElements.value = postPageAdminResponse.totalElements
+    } else {
+      const postPageAdminResponse = await searchPosts(previousSearchQuery.value, afterPage, 5, 'id,asc');
+      posts.value = postPageAdminResponse.posts
+      totalPages.value = postPageAdminResponse.totalPages
+      totalElements.value = postPageAdminResponse.totalElements
+    }
   }
 })
 
@@ -82,11 +89,52 @@ const deleteAll = () => {
         })
   }
 }
+
+const isCurrentlySearched = ref<boolean>(false)
+const previousSearchQuery = ref<string>('')
+const searchQuery = ref<string>('')
+const onSearchPosts = async () => {
+  if(searchQuery.value === '' && !isCurrentlySearched.value) {
+    alert('검색할 게시글을 입력해주세요.')
+    return
+  }
+
+  if (searchQuery.value !== '' && !isCurrentlySearched.value) {
+    isCurrentlySearched.value = true
+    previousSearchQuery.value = searchQuery.value
+
+    posts.value = new Array<PostAdminResponse>()
+
+    const postPageAdminResponse = await searchPosts(searchQuery.value, 0, 5, 'id,asc');
+    posts.value = postPageAdminResponse.posts
+    totalPages.value = postPageAdminResponse.totalPages
+    totalElements.value = postPageAdminResponse.totalElements
+
+    searchQuery.value = ''
+
+    if(posts.value.length === 0) {
+      alert('검색 결과가 없습니다.')
+    }
+  }
+
+  isCurrentlySearched.value = false
+}
 </script>
 
 <template>
   <div class="product-container">
     <div class="head-block">
+      <div class="search-wrapper">
+        <input
+            class="search-input"
+            type="text"
+            id="productSearch"
+            placeholder="게시글 검색"
+            autocomplete="off"
+            v-model="searchQuery"
+            @keyup.enter="onSearchPosts"
+        />
+      </div>
       <div class="button-block">
         <button class="deleteBtn" @click="toggleAll">
           {{ allChecked ? "전체 해제" : "전체 선택" }}

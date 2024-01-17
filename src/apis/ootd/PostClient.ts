@@ -19,6 +19,21 @@ export const getPosts = async (page: number, size: number, sort: string): Promis
     return response.data
 }
 
+export const searchPosts = async (query: string, page: number, size: number, sort: string): Promise<PostPageAdminResponse<PostAdminResponse>> => {
+    const response: AxiosResponse = await authAxiosInstance.get(
+        `${SNS_SERVICE_PREFIX}${SNS_ADMIN_PREFIX}/posts/search`,
+        {
+            params: {
+                query: query,
+                page: page,
+                size: size,
+                sort: sort
+            }
+        }
+    );
+    return response.data
+}
+
 export const softBulkDeletePosts = async (postIds: Array<number>): Promise<void> => {
     await authAxiosInstance.delete(`${SNS_SERVICE_PREFIX}${SNS_ADMIN_PREFIX}/posts`, {
         params: {
