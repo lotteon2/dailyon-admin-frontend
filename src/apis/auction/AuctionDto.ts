@@ -20,6 +20,7 @@ export interface ReadAuctionPageResponse {
 export interface CreateAuctionRequest {
   auctionName: string
   startBidPrice: number
+  askingPrice: number
   startAt: string
   maximumWinner: number
   productRequest: CreateProductRequest

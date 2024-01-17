@@ -25,6 +25,7 @@ const isEnabled = ref<boolean>(true)
 const startAt = ref<string>("")
 const auctionName = ref<string>("")
 const startBidPrice = ref<number>(0)
+const askingPrice = ref<number>(0)
 const maximumWinner = ref<number>(0)
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
@@ -110,6 +111,7 @@ const closeModal = () => {
   startAt.value = ""
   auctionName.value = ""
   startBidPrice.value = 0
+  askingPrice.value = 0
   maximumWinner.value = 0
 
   brands.value = []
@@ -141,6 +143,7 @@ const createSuccess = () => {
   startAt.value = ""
   auctionName.value = ""
   startBidPrice.value = 0
+  askingPrice.value = 0
   maximumWinner.value = 0
 
   brands.value = []
@@ -212,6 +215,12 @@ const executeCreate = () => {
       return
     }
 
+    if (5 * (startBidPrice.value + askingPrice.value) > requestPrice.value) {
+      alert("시작가와 호가의 합이 1라운드 최대 가능 입찰 금액 초과에요")
+      isEnabled.value = true
+      return
+    }
+
     if (requestCode.value === "") {
       alert("상품 코드를 입력해주세요")
       isEnabled.value = true
@@ -267,6 +276,7 @@ const executeCreate = () => {
     const auctionRequest: CreateAuctionRequest = {
       auctionName: auctionName.value,
       startBidPrice: startBidPrice.value,
+      askingPrice: askingPrice.value,
       startAt: startAt.value,
       maximumWinner: maximumWinner.value,
       productRequest: {
@@ -308,6 +318,9 @@ const executeCreate = () => {
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
+      })
+      .finally(() => {
+        isEnabled.value = true
       })
   }
 }
@@ -367,6 +380,10 @@ watch(requestCategory, () => {
             <div class="modal-sub-items">
               <label class="modal-label">입찰 시작가</label>
               <input class="modal-input" type="number" v-model="startBidPrice" required />
+            </div>
+            <div class="modal-sub-items">
+              <label class="modal-label">호가 단위</label>
+              <input class="modal-input" type="number" v-model="askingPrice" required />
             </div>
             <div class="modal-sub-items">
               <label class="modal-label">최대 낙찰자</label>
