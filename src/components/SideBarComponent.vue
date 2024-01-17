@@ -39,6 +39,12 @@
           <p>치수 관리</p>
         </RouterLink>
       </div>
+      <div class="sidebar-element">
+        <RouterLink to="/manage-ootd" class="sidebar-content">
+          <img src="@/assets/images/OOTD_White.png" alt="ootd" />
+          <p>OOTD 관리</p>
+        </RouterLink>
+      </div>
     </div>
   </div>
 </template>
