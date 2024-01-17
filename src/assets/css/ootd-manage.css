@@ -1,0 +1,120 @@
+.product-container {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+
+    font-family: "The Jamsil 2 Light";
+}
+
+.head-block {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.button-block {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.head-button-block {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.select-block-select {
+    width: 200px;
+    font-family: "The Jamsil 3 Regular";
+    font-size: 24px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 10px;
+}
+
+button {
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: "The Jamsil 3 Regular";
+}
+
+.createBtn {
+    width: 180px;
+    height: 60px;
+    font-size: 25px;
+    background-color: black;
+}
+
+.updateBtn {
+    width: 50px;
+    height: 30px;
+    font-size: 12px;
+    background-color: black;
+}
+
+.deleteBtn {
+    width: 60px;
+    height: 30px;
+    font-size: 12px;
+    background-color: #C22727;
+    margin-left: 10px;
+}
+
+.product-thumbnail {
+    width: 80px;
+    height: 80px;
+}
+
+.product-stocks {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.stock-quantity {
+    text-align: center;
+}
+
+.table-block {
+    width: 100%;
+    height: 60%;
+
+    & table {
+        width: 100%;
+
+        & thead {
+            font-size: 25px;
+            font-weight: bold;
+            border-top: black 2px solid;
+            border-bottom: black 1px solid;
+
+            & tr {
+                & th {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        & tbody {
+            & tr {
+                border-bottom: 1px solid #C6C6C6;
+
+                & td {
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    text-align: center;
+                    vertical-align: middle;
+                }
+            }
+        }
+    }
+}

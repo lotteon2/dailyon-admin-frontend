@@ -48,6 +48,11 @@ const router = createRouter({
           path: "/manage-auction",
           name: "manage-auction",
           component: () => import("@/components/auction/AuctionManageComponent.vue")
+        },
+        {
+          path: "/manage-ootd",
+          name: "manage-ootd",
+          component: () => import("@/components/ootd/OOTDManageComponent.vue")
         }
       ]
     },
