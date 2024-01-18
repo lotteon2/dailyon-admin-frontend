@@ -17,12 +17,12 @@
 .button-block {
     display: flex;
     justify-content: start;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .head-button-block {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .select-block-select {
@@ -55,6 +55,30 @@ button {
     background-color: black;
 }
 
+.select-block-input {
+    outline: none;
+    font-family: "The Jamsil 3 Regular";
+    font-size: 24px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.sortBtn {
+    width: 80px;
+    height: 30px;
+    font-size: 12px;
+    background-color: black;
+    margin-right: 10px;
+}
+
+.disabledBtn {
+    width: 80px;
+    height: 30px;
+    font-size: 12px;
+    background-color: #C7C7C7;
+    margin-right: 10px;
+}
+
 .deleteBtn {
     width: 60px;
     height: 30px;
@@ -69,7 +93,6 @@ button {
 }
 
 .product-stocks {
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;

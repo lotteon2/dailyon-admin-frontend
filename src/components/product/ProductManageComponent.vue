@@ -9,7 +9,7 @@ import type {
   ReadProductPageResponse,
   ReadProductStockAdminResponse
 } from "@/apis/product/ProductDto"
-import { onMounted, ref, watch } from "vue"
+import { onMounted, reactive, ref, watch } from "vue"
 import { getAllCategories } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
@@ -21,6 +21,21 @@ const categoryStore = useCategoryStore()
 
 const pageSize: number = 5
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
+
+const allChecked = ref<boolean>(false)
+
+const selectedBrandId = ref<number>(0)
+const selectedCategoryId = ref<number>(0)
+const checkedProducts = ref<Array<Number>>(new Array<Number>())
+const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
+const products = ref<Array<ReadProductAdminResponse>>(new Array<ReadProductAdminResponse>())
+
+const sort = ref<string>("updatedAt")
+const direction = ref<string>("desc")
+const query = ref<string | null>(null)
+
+const isUpdateModalVisible = ref(false)
+const isCreateModalVisible = ref(false)
 
 const initData = () => {
   getAllBrands()
@@ -46,7 +61,16 @@ const initData = () => {
       alert(error.response!.data!.message)
     })
 
-  getProductPages({ page: 0, size: pageSize, brandId: null, categoryId: null, type: "NORMAL" })
+  getProductPages({
+    page: 0,
+    size: pageSize,
+    brandId: null,
+    categoryId: null,
+    type: "NORMAL",
+    query: null,
+    sort: "updatedAt",
+    direction: "desc"
+  })
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadProductPageResponse = axiosResponse.data
       totalPages.value = response.totalPages
@@ -72,7 +96,9 @@ const selectedType = ref<string>("NORMAL")
 const selectedProduct = ref<ReadProductAdminResponse>({
   id: 0,
   brandId: 0,
+  brandName: "",
   categoryId: 0,
+  categoryName: "",
   price: 0,
   name: "",
   code: "",
@@ -81,17 +107,6 @@ const selectedProduct = ref<ReadProductAdminResponse>({
   describeImgUrls: new Array<string>(),
   productStocks: new Array<ReadProductStockAdminResponse>()
 })
-
-const allChecked = ref<boolean>(false)
-
-const selectedBrandId = ref<number>(0)
-const selectedCategoryId = ref<number>(0)
-const checkedProducts = ref<Array<Number>>(new Array<Number>())
-const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
-const products = ref<Array<ReadProductAdminResponse>>(new Array<ReadProductAdminResponse>())
-
-const isUpdateModalVisible = ref(false)
-const isCreateModalVisible = ref(false)
 const onChangePage = async (page: number) => {
   if (0 <= page && page < totalPages.value) {
     requestPage.value = page
@@ -119,12 +134,18 @@ const closeUpdateModal = () => {
 
 const afterUpdate = async () => {
   isUpdateModalVisible.value = false
+  sort.value = "updatedAt"
+  direction.value = "desc"
+  query.value = null
   await getProductPages({
     page: requestPage.value,
     size: pageSize,
     brandId: null,
     categoryId: null,
-    type: "NORMAL"
+    type: "NORMAL",
+    query: query.value,
+    sort: sort.value,
+    direction: direction.value
   })
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadProductPageResponse = axiosResponse.data
@@ -139,12 +160,18 @@ const afterUpdate = async () => {
 
 const afterCreate = async () => {
   isCreateModalVisible.value = false
+  sort.value = "updatedAt"
+  direction.value = "desc"
+  query.value = null
   await getProductPages({
     page: requestPage.value,
     size: pageSize,
     brandId: null,
     categoryId: null,
-    type: "NORMAL"
+    type: "NORMAL",
+    query: query.value,
+    sort: sort.value,
+    direction: direction.value
   })
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadProductPageResponse = axiosResponse.data
@@ -155,6 +182,19 @@ const afterCreate = async () => {
     .catch((error: any) => {
       alert(error.response!.data!.message)
     })
+}
+
+const changeSortAndDirection = (sortVal: string, dirVal: string) => {
+  sort.value = sortVal
+  direction.value = dirVal
+}
+
+const sorted = (
+  productStocks: Array<ReadProductStockAdminResponse>
+): Array<ReadProductStockAdminResponse> => {
+  return productStocks.sort(
+    (a: ReadProductStockAdminResponse, b: ReadProductStockAdminResponse) => b.quantity - a.quantity
+  )
 }
 
 const toggleAll = () => {
@@ -198,6 +238,31 @@ const deleteAll = () => {
   }
 }
 
+const searchProducts = () => {
+  const request: ReadProductPageRequest = {
+    page: (requestPage.value = 0),
+    size: pageSize,
+    type: selectedType.value,
+    brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+    query: query.value === "" ? null : query.value,
+    sort: sort.value,
+    direction: direction.value
+  }
+
+  getProductPages(request)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductPageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      products.value = response.productResponses
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
+}
+
+// 페이지 이동 watch
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   checkedProducts.value = []
   if (afterPage < totalPages.value) {
@@ -206,7 +271,10 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
       size: pageSize,
       type: selectedType.value,
       brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
-      categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value
+      categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+      query: query.value,
+      sort: sort.value,
+      direction: direction.value
     }
 
     getProductPages(request)
@@ -222,15 +290,19 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
   }
 })
 
+// 카테고리, 브랜드 watch
 watch(
   [selectedCategoryId, selectedBrandId],
   async ([newCategoryId, newBrandId], [oldCategoryId, oldBrandId]) => {
     const request: ReadProductPageRequest = {
-      page: requestPage.value,
+      page: (requestPage.value = 0),
       size: pageSize,
       type: selectedType.value,
       brandId: newBrandId === 0 ? null : newBrandId,
-      categoryId: newCategoryId === 0 ? null : newCategoryId
+      categoryId: newCategoryId === 0 ? null : newCategoryId,
+      query: query.value,
+      sort: sort.value,
+      direction: direction.value
     }
     getProductPages(request)
       .then((axiosResponse: AxiosResponse) => {
@@ -244,13 +316,18 @@ watch(
       })
   }
 )
+
+// 상품 타입 watch
 watch(selectedType, async (newType, oldType) => {
   const request: ReadProductPageRequest = {
-    page: 0,
+    page: (requestPage.value = 0),
     size: pageSize,
     type: newType,
     brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
-    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value
+    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+    query: null,
+    sort: sort.value,
+    direction: direction.value
   }
   getProductPages(request)
     .then((axiosResponse: AxiosResponse) => {
@@ -258,7 +335,30 @@ watch(selectedType, async (newType, oldType) => {
       totalPages.value = response.totalPages
       totalElements.value = response.totalElements
       products.value = response.productResponses
-      requestPage.value = 0
+    })
+    .catch((error: any) => {
+      alert(error.response!.data!.message)
+    })
+})
+
+//정렬 기준 watch
+watch(sort, async (newSort, oldSort) => {
+  const request: ReadProductPageRequest = {
+    page: (requestPage.value = 0),
+    size: pageSize,
+    type: selectedType.value,
+    brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+    query: null,
+    sort: newSort,
+    direction: direction.value
+  }
+  getProductPages(request)
+    .then((axiosResponse: AxiosResponse) => {
+      const response: ReadProductPageResponse = axiosResponse.data
+      totalPages.value = response.totalPages
+      totalElements.value = response.totalElements
+      products.value = response.productResponses
     })
     .catch((error: any) => {
       alert(error.response!.data!.message)
@@ -280,6 +380,25 @@ watch(selectedType, async (newType, oldType) => {
       @update-succes="afterUpdate"
     />
     <div class="head-button-block">
+      <div class="button-block">
+        <button class="sortBtn" v-if="sort === 'updatedAt' && direction === 'desc'">최신순</button>
+        <button class="disabledBtn" v-else @click="changeSortAndDirection('updatedAt', 'desc')">
+          최신순
+        </button>
+        <button class="sortBtn" v-if="sort === 'review' && direction === 'desc'">
+          리뷰 많은 순
+        </button>
+        <button class="disabledBtn" v-else @click="changeSortAndDirection('review', 'desc')">
+          리뷰 많은 순
+        </button>
+        <button class="sortBtn" v-if="sort === 'rating' && direction === 'desc'">
+          평점 높은 순
+        </button>
+        <button class="disabledBtn" v-else @click="changeSortAndDirection('rating', 'desc')">
+          평점 높은 순
+        </button>
+      </div>
+
       <button class="createBtn" @click="openCreateModal">상품 등록</button>
     </div>
     <div class="head-block">
@@ -303,6 +422,13 @@ watch(selectedType, async (newType, oldType) => {
             {{ type.name }}
           </option>
         </select>
+        <input
+          class="select-block-input"
+          type="text"
+          v-model.lazy="query"
+          placeholder="상품명 또는 코드로 검색"
+          @keyup.enter="searchProducts"
+        />
       </div>
       <div class="button-block" v-if="selectedType === 'NORMAL'">
         <button class="deleteBtn" @click="toggleAll">
@@ -317,11 +443,11 @@ watch(selectedType, async (newType, oldType) => {
         <thead>
           <tr>
             <th></th>
-            <th>상품 id</th>
             <th>썸네일 이미지</th>
-            <th>재고</th>
-            <th>상품 코드</th>
+            <th>카테고리</th>
+            <th>브랜드</th>
             <th>상품명</th>
+            <th>재고</th>
             <th>상품 가격</th>
             <th></th>
           </tr>
@@ -337,7 +463,6 @@ watch(selectedType, async (newType, oldType) => {
                 v-if="selectedType === 'NORMAL'"
               />
             </td>
-            <td>{{ product.id }}</td>
             <td>
               <img
                 class="product-thumbnail"
@@ -345,17 +470,20 @@ watch(selectedType, async (newType, oldType) => {
                 alt="product-img"
               />
             </td>
+            <td>{{ product.categoryName }}</td>
+            <td>{{ product.brandName }}</td>
+            <td>{{ product.name }}</td>
             <td class="product-stocks">
               <div
                 class="stock-quantity"
-                v-for="(productStock, index) in product.productStocks"
+                v-for="(productStock, index) in sorted(product.productStocks)"
                 :key="index"
               >
-                {{ `${productStock.productSizeName} - ${productStock.quantity}개` }}
+                {{
+                  `${productStock.productSizeName} - ${productStock.quantity.toLocaleString()}개`
+                }}
               </div>
             </td>
-            <td>{{ product.code }}</td>
-            <td>{{ product.name }}</td>
             <td>{{ product.price.toLocaleString() }}원</td>
             <td>
               <button
