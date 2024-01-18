@@ -2,8 +2,11 @@ export interface ReadProductPageRequest {
   brandId: number | null
   categoryId: number | null
   type: string
+  query: string | null
   page: number
   size: number
+  sort: string
+  direction: string
 }
 
 export interface ReadProductPageResponse {
@@ -15,7 +18,9 @@ export interface ReadProductPageResponse {
 export interface ReadProductAdminResponse {
   id: number
   brandId: number
+  brandName: string
   categoryId: number
+  categoryName: string
   price: number
   name: string
   gender: string
