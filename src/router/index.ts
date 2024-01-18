@@ -58,6 +58,11 @@ const router = createRouter({
           path: "/manage-order",
           name: "manage-order",
           component: () => import("@/components/order/OrderManageComponent.vue")
+        },
+        {
+          path: "/manage-delivery",
+          name: "manage-delivery",
+          component: () => import("@/components/delivery/DeliveryManageComponent.vue")
         }
       ]
     },
