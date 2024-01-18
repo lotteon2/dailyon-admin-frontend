@@ -10,6 +10,12 @@
         </RouterLink>
       </div>
       <div class="sidebar-element">
+        <RouterLink to="/manage-order" class="sidebar-content">
+          <img src="@/assets/images/Dashboard_White.png" alt="order" />
+          <p>주문 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
         <RouterLink to="/manage-coupon" class="sidebar-content">
           <img src="@/assets/images/Coupon_White.png" alt="coupon" />
           <p>쿠폰 관리</p>
@@ -51,4 +57,7 @@
 
 <style scoped>
 @import "@/assets/css/side-bar.css";
+.sidebar-content:hover {
+  color: #c22727;
+}
 </style>
