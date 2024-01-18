@@ -8,7 +8,8 @@ import AuctionManageComponent from "@/components/auction/AuctionManageComponent.
 import ProductSizeManageComponent from "@/components/productsize/ProductSizeManageComponent.vue"
 import SideBarComponent from "@/components/SideBarComponent.vue"
 import HeaderComponent from "@/components/HeaderComponent.vue"
-import OOTDManageComponent from "@/components/ootd/OOTDManageComponent.vue";
+import OOTDManageComponent from "@/components/ootd/OOTDManageComponent.vue"
+import OrderManageComponent from "@/components/order/OrderManageComponent.vue"
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import OOTDManageComponent from "@/components/ootd/OOTDManageComponent.vue";
   <div class="container">
     <SideBarComponent />
     <ProductManageComponent v-if="$route.name === 'manage-product'" />
+    <OrderManageComponent v-if="$route.name === 'manage-order'" />
     <BrandManageComponent v-if="$route.name === 'manage-brand'" />
     <BannerManageComponent v-if="$route.name === 'manage-banner'" />
     <CouponManagerComponent v-if="$route.name === 'manage-coupon'" />

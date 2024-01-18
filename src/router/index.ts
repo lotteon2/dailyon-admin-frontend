@@ -53,6 +53,11 @@ const router = createRouter({
           path: "/manage-ootd",
           name: "manage-ootd",
           component: () => import("@/components/ootd/OOTDManageComponent.vue")
+        },
+        {
+          path: "/manage-order",
+          name: "manage-order",
+          component: () => import("@/components/order/OrderManageComponent.vue")
         }
       ]
     },
