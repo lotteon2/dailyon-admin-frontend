@@ -1,6 +1,4 @@
-<script setup lang="ts">
-import { router } from "@/router"
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="sidebar">

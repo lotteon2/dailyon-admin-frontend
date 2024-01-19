@@ -12,20 +12,20 @@ const totalPages = ref<number>(0)
 const totalElements = ref<number>(0)
 const auctions = ref<ReadAuctionResponse[]>([
   {
-    auctionName: "",
-    auctionProductId: 0,
-    ended: false,
-    startAt: "",
     id: "",
+    auctionProductId: 0,
+    auctionName: "",
     maximumWinner: 0,
     startBidPrice: 0,
-    started: false
+    askingPrice: 0,
+    startAt: "",
+    started: false,
+    ended: false
   }
 ])
 const isCreateModalVisible = ref<boolean>(false)
 const isManageModalVisible = ref<boolean>(false)
 const selectedAuctionId = ref<string>("")
-const selectedPath = ref<string>("")
 
 const openManageModal = (auctionId: string) => {
   isManageModalVisible.value = true

@@ -5,6 +5,7 @@ export interface ReadAuctionResponse {
   auctionProductId: number
   auctionName: string
   startBidPrice: number
+  askingPrice: number
   maximumWinner: number
   startAt: string
   started: boolean
