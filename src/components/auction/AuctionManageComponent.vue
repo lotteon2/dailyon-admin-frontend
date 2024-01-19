@@ -4,6 +4,7 @@ import { onBeforeMount, ref, watch } from "vue"
 import { readAuctions } from "@/apis/auction/AuctionClient"
 import type { ReadAuctionPageResponse, ReadAuctionResponse } from "@/apis/auction/AuctionDto"
 import AuctionCreateModal from "@/components/auction/AuctionCreateModal.vue"
+import AuctionModal from "@/components/auction/AuctionManageModal.vue"
 
 const requestSize: number = 5
 const requestPage = ref<number>(0)
@@ -22,6 +23,18 @@ const auctions = ref<ReadAuctionResponse[]>([
   }
 ])
 const isCreateModalVisible = ref<boolean>(false)
+const isManageModalVisible = ref<boolean>(false)
+const selectedAuctionId = ref<string>("")
+const selectedPath = ref<string>("")
+
+const openManageModal = (auctionId: string) => {
+  isManageModalVisible.value = true
+  selectedAuctionId.value = auctionId
+}
+
+const closeManageModal = () => {
+  isManageModalVisible.value = false
+}
 
 const openCreateModal = () => {
   isCreateModalVisible.value = true
@@ -72,6 +85,11 @@ onBeforeMount(initData)
 
 <template>
   <div class="auction-container">
+    <AuctionModal
+      :auction-id="selectedAuctionId"
+      :show-modal="isManageModalVisible"
+      @close-manage-modal="closeManageModal"
+    />
     <AuctionCreateModal
       :show-modal="isCreateModalVisible"
       @close-create-modal="closeCreateModal"
@@ -92,7 +110,11 @@ onBeforeMount(initData)
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(auction, index) in auctions" :key="index">
+          <tr
+            v-for="(auction, index) in auctions"
+            @click="openManageModal(auction.id)"
+            :key="index"
+          >
             <td>{{ auction.auctionName }}</td>
             <td>{{ auction.startBidPrice.toLocaleString() }}원</td>
             <td>{{ auction.maximumWinner }}명</td>
