@@ -16,6 +16,12 @@
         </RouterLink>
       </div>
       <div class="sidebar-element">
+        <RouterLink to="/manage-delivery" class="sidebar-content">
+          <img src="@/assets/images/Product_White.png" alt="coupon" />
+          <p>배송 관리</p>
+        </RouterLink>
+      </div>
+      <div class="sidebar-element">
         <RouterLink to="/manage-coupon" class="sidebar-content">
           <img src="@/assets/images/Coupon_White.png" alt="coupon" />
           <p>쿠폰 관리</p>

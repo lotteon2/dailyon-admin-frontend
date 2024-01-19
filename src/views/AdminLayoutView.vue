@@ -10,6 +10,7 @@ import SideBarComponent from "@/components/SideBarComponent.vue"
 import HeaderComponent from "@/components/HeaderComponent.vue"
 import OOTDManageComponent from "@/components/ootd/OOTDManageComponent.vue"
 import OrderManageComponent from "@/components/order/OrderManageComponent.vue"
+import DeliveryManageComponent from "@/components/delivery/DeliveryManageComponent.vue"
 </script>
 
 <template>
@@ -20,6 +21,7 @@ import OrderManageComponent from "@/components/order/OrderManageComponent.vue"
     <SideBarComponent />
     <ProductManageComponent v-if="$route.name === 'manage-product'" />
     <OrderManageComponent v-if="$route.name === 'manage-order'" />
+    <DeliveryManageComponent v-if="$route.name === 'manage-delivery'" />
     <BrandManageComponent v-if="$route.name === 'manage-brand'" />
     <BannerManageComponent v-if="$route.name === 'manage-banner'" />
     <CouponManagerComponent v-if="$route.name === 'manage-coupon'" />
