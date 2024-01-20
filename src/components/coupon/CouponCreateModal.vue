@@ -157,7 +157,8 @@ import { createCouponInfo, searchProducts, fetchCategories } from "@/apis/coupon
 import type {
   CouponCreateRequest,
   ReadProductResponse,
-  ReadChildrenCategoryResponse
+  ReadChildrenCategoryResponse,
+  ReadOOTDSearchResponse
 } from "@/apis/coupon/CouponDto"
 import axios from "axios" // assuming you are using axios for HTTP requests
 
@@ -190,7 +191,7 @@ const defaultCouponCreateRequest: CouponCreateRequest = {
 const couponCreateRequest = ref<CouponCreateRequest>({ ...defaultCouponCreateRequest })
 
 const searchQuery = ref("")
-const searchResults = ref<ReadProductResponse[]>([])
+const searchResults = ref<ReadOOTDSearchResponse[]>([])
 const categories = ref<ReadChildrenCategoryResponse[]>([])
 const targetType = ref("PRODUCT") // Default to product
 const selectedCategoryId = ref(null)
