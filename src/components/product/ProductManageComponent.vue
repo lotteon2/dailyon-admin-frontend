@@ -23,10 +23,8 @@ const categoryStore = useCategoryStore()
 const pageSize: number = 5
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
-// const allChecked = ref<boolean>(false)
-
 const allChecked = computed(() => {
-  return checkedProducts.value.length === 5
+  return checkedProducts.value.length === Math.min(pageSize, products.value.length)
 })
 
 const selectedBrandId = ref<number>(0)
