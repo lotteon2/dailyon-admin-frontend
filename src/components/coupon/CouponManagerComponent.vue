@@ -26,7 +26,7 @@ const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 const size = ref<number>(7)
 const page = ref<number>(0)
 const list = ref<couponInfoReadItemResponse[]>([])
-const totalPages = ref<number>(1)
+const totalPages = ref<number>(0)
 const isCreateModalVisible = ref(false)
 const isUpdateModalVisible = ref(false)
 
@@ -48,7 +48,9 @@ const fetchData = async (pageNumber: number) => {
 }
 
 const onChangePage = (newPage: number) => {
-  page.value = newPage
+  if (0 <= newPage && newPage < totalPages.value) {
+    page.value = newPage
+  }
 }
 
 const isCouponStartInFuture = (startAt: string): boolean => {
@@ -286,7 +288,7 @@ watch(page, (newPage) => {
     <PaginationComponent
       :request-page="page"
       :total-pages="totalPages"
-      @change-page="onChangePage"
+      :on-change-page="onChangePage"
     />
   </div>
 </template>
