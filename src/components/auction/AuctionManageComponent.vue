@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import { onBeforeMount, ref, watch } from "vue"
-import { readAuctions } from "@/apis/auction/AuctionClient"
+import { deleteAuction, readAuctions } from "@/apis/auction/AuctionClient"
 import type { ReadAuctionPageResponse, ReadAuctionResponse } from "@/apis/auction/AuctionDto"
 import AuctionCreateModal from "@/components/auction/AuctionCreateModal.vue"
 import AuctionModal from "@/components/auction/AuctionManageModal.vue"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
 
 const requestSize: number = 5
 const requestPage = ref<number>(0)
@@ -65,9 +66,25 @@ const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
 
-const afterCreate = async () => {
+const afterCreate = () => {
   isCreateModalVisible.value = false
-  await initData()
+  initData()
+}
+
+const executeDelete = (index: number, event: any) => {
+  event.stopPropagation()
+
+  if (confirm("삭제하시겠습니까?")) {
+    deleteAuction(auctions.value[index].id)
+      .then(async () => {
+        alert("삭제 완료")
+        requestPage.value = 0
+        await initData()
+      })
+      .catch((error: any) => {
+        alert(error.response!.data!.message)
+      })
+  }
 }
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
@@ -98,7 +115,7 @@ onBeforeMount(initData)
     <div class="button-block">
       <button class="createBtn" @click="openCreateModal">경매 등록</button>
     </div>
-    <div class="table-block">
+    <div class="table-block" v-if="auctions.length > 0">
       <table>
         <thead>
           <tr>
@@ -119,10 +136,15 @@ onBeforeMount(initData)
             <td>{{ auction.startBidPrice.toLocaleString() }}원</td>
             <td>{{ auction.maximumWinner }}명</td>
             <td>{{ formatDate(auction.startAt) }}</td>
-            <td></td>
+            <td>
+              <button class="deleteBtn" @click="executeDelete(index, $event)">삭제</button>
+            </td>
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="table-block" v-else>
+      <WhitePageComponent message="경매가 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :on-change-page="onChangePage"
