@@ -125,6 +125,23 @@ button {
   }
 }
 
+.word-break-class {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+.abbr-txt {
+  text-overflow: ellipsis;
+}
+
+.vw-13 {
+  max-width: 13vw;
+}
+
+.vw-18 {
+  max-width: 18vw;
+}
+
 th:nth-child(1),
 td:nth-child(1),
 th:nth-child(2),
