@@ -141,7 +141,7 @@ const afterUpdate = () => {
     size: pageSize,
     brandId: selectedBrandId.value,
     categoryId: selectedCategoryId.value,
-    type: "NORMAL",
+    type: selectedType.value,
     query: query.value,
     sort: sort.value,
     direction: direction.value
@@ -163,9 +163,9 @@ const afterCreate = () => {
   getProductPages({
     page: requestPage.value,
     size: pageSize,
-    brandId: selectedBrandId.value,
-    categoryId: selectedCategoryId.value,
-    type: "NORMAL",
+    brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+    categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+    type: selectedType.value,
     query: query.value,
     sort: sort.value,
     direction: direction.value
@@ -216,11 +216,11 @@ const deleteChecked = () => {
       })
       .then(() =>
         getProductPages({
-          page: (requestPage.value = 0),
+          page: requestPage.value,
           size: pageSize,
-          brandId: selectedBrandId.value,
-          categoryId: selectedCategoryId.value,
-          type: "NORMAL",
+          brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+          categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+          type: selectedType.value,
           query: query.value,
           sort: sort.value,
           direction: direction.value
@@ -250,11 +250,11 @@ const deleteAll = () => {
       })
       .then(() =>
         getProductPages({
-          page: (requestPage.value = 0),
+          page: requestPage.value,
           size: pageSize,
-          brandId: selectedBrandId.value,
-          categoryId: selectedCategoryId.value,
-          type: "NORMAL",
+          brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+          categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
+          type: selectedType.value,
           query: query.value,
           sort: sort.value,
           direction: direction.value
