@@ -250,10 +250,10 @@ const deleteAll = () => {
       })
       .then(() =>
         getProductPages({
-          page: (requestPage.value = 0),
+          page: requestPage.value,
           size: pageSize,
-          brandId: selectedBrandId.value,
-          categoryId: selectedCategoryId.value,
+          brandId: selectedBrandId.value === 0 ? null : selectedBrandId.value,
+          categoryId: selectedCategoryId.value === 0 ? null : selectedCategoryId.value,
           type: selectedType.value,
           query: query.value,
           sort: sort.value,
