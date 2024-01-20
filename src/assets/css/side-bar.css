@@ -31,6 +31,14 @@
     }
 }
 
+.sidebar-content:hover {
+    color: #c22727;
+}
+
+.sidebar-content.selected {
+    color: #c22727;
+}
+
 .sidebar-element {
     padding-top: 30px;
     padding-bottom: 30px;

@@ -8,7 +8,7 @@
     </div>
     <div class="header-divider"></div>
     <div class="admin-info">
-      USERNAME
+      관리자
       <img src="@/assets/images/default-profile-image.png" alt="defaultImg" />
     </div>
   </div>
