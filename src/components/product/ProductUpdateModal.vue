@@ -187,7 +187,7 @@ const executeUpdate = () => {
         }
       })
       .then(() => {
-        alert("등록 성공")
+        alert("수정 성공")
         emits("update-success")
         closeModal()
       })
