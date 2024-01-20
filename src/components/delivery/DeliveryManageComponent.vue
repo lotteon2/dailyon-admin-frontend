@@ -56,7 +56,8 @@ watch(requestPage, (afterPage, beforePage) => {
 })
 
 watch(defaultStatus.value, (newType, oldType) => {
-  fetchDefaultData(0, pageSize, newType.type), requestPage.value
+  requestPage.value = 0
+  fetchDefaultData(0, pageSize, newType.type)
 })
 
 const selectedDelivery = ref()
