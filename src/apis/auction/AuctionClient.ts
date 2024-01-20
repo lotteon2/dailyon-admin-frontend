@@ -2,7 +2,6 @@ import { authAxiosInstance } from "@/apis/utils"
 import { AxiosError, type AxiosResponse } from "axios"
 import type {
   CreateAuctionRequest,
-  CreateAuctionResponse,
   ReadAuctionDetailResponse,
   ReadAuctionPageResponse
 } from "@/apis/auction/AuctionDto"
@@ -34,11 +33,11 @@ export const readAuctions = async (
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response) {
-        if (error.response.status >= 400) {
+        if (error.response.status >= 400 && error.response.status < 500) {
           alert(error.response.data.message)
           console.error(`Client Error=${error.response.data.message}`)
-        } else if (error.response.status < 500) {
-          alert("서버 내부 오류")
+        } else if (error.response.status >= 500) {
+          alert(error.response.data.message)
           console.error("Internal Server Error")
         }
       }
@@ -78,5 +77,14 @@ export const startAuctionBid = async (auctionId: string): Promise<AxiosResponse>
 export const endAuctionBid = async (auctionId: string): Promise<AxiosResponse> => {
   return await authAxiosInstance.patch(
     `${AUCTION_SERVICE_PREFIX}${AUCTION_ADMIN_PREFIX}${BID_PREFIX}/end/${auctionId}`
+  )
+}
+
+export const deleteAuction = async (auctionId: string): Promise<AxiosResponse> => {
+  return await authAxiosInstance.delete(
+    `${AUCTION_SERVICE_PREFIX}${AUCTION_ADMIN_PREFIX}${AUCTION_PREFIX}`,
+    {
+      params: { auctionId: auctionId }
+    }
   )
 }

@@ -16,6 +16,7 @@ import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
 import { getAllBrands } from "@/apis/brand/BrandClient"
 import ProductCreateModal from "@/components/product/ProductCreateModal.vue"
 import ProductUpdateModal from "@/components/product/ProductUpdateModal.vue"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
 
 const categoryStore = useCategoryStore()
 
@@ -132,16 +133,14 @@ const closeUpdateModal = () => {
   isUpdateModalVisible.value = false
 }
 
-const afterUpdate = async () => {
+const afterUpdate = () => {
+  console.log("after update")
   isUpdateModalVisible.value = false
-  sort.value = "updatedAt"
-  direction.value = "desc"
-  query.value = null
-  await getProductPages({
-    page: requestPage.value,
+  getProductPages({
+    page: (requestPage.value = 0),
     size: pageSize,
-    brandId: null,
-    categoryId: null,
+    brandId: selectedBrandId.value,
+    categoryId: selectedCategoryId.value,
     type: "NORMAL",
     query: query.value,
     sort: sort.value,
@@ -158,16 +157,14 @@ const afterUpdate = async () => {
     })
 }
 
-const afterCreate = async () => {
+const afterCreate = () => {
+  console.log("after create")
   isCreateModalVisible.value = false
-  sort.value = "updatedAt"
-  direction.value = "desc"
-  query.value = null
-  await getProductPages({
+  getProductPages({
     page: requestPage.value,
     size: pageSize,
-    brandId: null,
-    categoryId: null,
+    brandId: selectedBrandId.value,
+    categoryId: selectedCategoryId.value,
     type: "NORMAL",
     query: query.value,
     sort: sort.value,
@@ -217,7 +214,27 @@ const deleteChecked = () => {
         checkedProducts.value = []
         alert("삭제 성공")
       })
-      .then(initData)
+      .then(() =>
+        getProductPages({
+          page: (requestPage.value = 0),
+          size: pageSize,
+          brandId: selectedBrandId.value,
+          categoryId: selectedCategoryId.value,
+          type: "NORMAL",
+          query: query.value,
+          sort: sort.value,
+          direction: direction.value
+        })
+          .then((axiosResponse: AxiosResponse) => {
+            const response: ReadProductPageResponse = axiosResponse.data
+            totalPages.value = response.totalPages
+            totalElements.value = response.totalElements
+            products.value = response.productResponses
+          })
+          .catch((error: any) => {
+            alert(error.response!.data!.message)
+          })
+      )
       .catch((error: any) => {
         alert(error.response!.data!.message)
       })
@@ -231,7 +248,27 @@ const deleteAll = () => {
         checkedProducts.value = []
         alert("삭제 성공")
       })
-      .then(initData)
+      .then(() =>
+        getProductPages({
+          page: (requestPage.value = 0),
+          size: pageSize,
+          brandId: selectedBrandId.value,
+          categoryId: selectedCategoryId.value,
+          type: "NORMAL",
+          query: query.value,
+          sort: sort.value,
+          direction: direction.value
+        })
+          .then((axiosResponse: AxiosResponse) => {
+            const response: ReadProductPageResponse = axiosResponse.data
+            totalPages.value = response.totalPages
+            totalElements.value = response.totalElements
+            products.value = response.productResponses
+          })
+          .catch((error: any) => {
+            alert(error.response!.data!.message)
+          })
+      )
       .catch((error: any) => {
         alert(error.response!.data!.message)
       })
@@ -263,7 +300,7 @@ const searchProducts = () => {
 }
 
 // 페이지 이동 watch
-watch(requestPage, async (afterPage: number, beforePage: number) => {
+watch(requestPage, (afterPage: number, beforePage: number) => {
   checkedProducts.value = []
   if (afterPage < totalPages.value) {
     const request: ReadProductPageRequest = {
@@ -293,7 +330,7 @@ watch(requestPage, async (afterPage: number, beforePage: number) => {
 // 카테고리, 브랜드 watch
 watch(
   [selectedCategoryId, selectedBrandId],
-  async ([newCategoryId, newBrandId], [oldCategoryId, oldBrandId]) => {
+  ([newCategoryId, newBrandId], [oldCategoryId, oldBrandId]) => {
     const request: ReadProductPageRequest = {
       page: (requestPage.value = 0),
       size: pageSize,
@@ -342,7 +379,7 @@ watch(selectedType, async (newType, oldType) => {
 })
 
 //정렬 기준 watch
-watch(sort, async (newSort, oldSort) => {
+watch(sort, (newSort, oldSort) => {
   const request: ReadProductPageRequest = {
     page: (requestPage.value = 0),
     size: pageSize,
@@ -438,7 +475,7 @@ watch(sort, async (newSort, oldSort) => {
         <button class="deleteBtn" @click="deleteAll">전체 삭제</button>
       </div>
     </div>
-    <div class="table-block">
+    <div class="table-block" v-if="products.length > 0">
       <table>
         <thead>
           <tr>
@@ -497,6 +534,9 @@ watch(sort, async (newSort, oldSort) => {
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="table-block" v-else>
+      <WhitePageComponent message="상품이 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :on-change-page="onChangePage"
