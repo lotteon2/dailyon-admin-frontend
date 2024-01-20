@@ -155,7 +155,7 @@ watch(
           <div class="modal-button">
             <button
               class="createBtn"
-              v-if="auctionDetail.auctionResponse.ended === true"
+              v-if="auctionDetail.auctionResponse.ended === false"
               @click="endAuction"
             >
               경매 종료
