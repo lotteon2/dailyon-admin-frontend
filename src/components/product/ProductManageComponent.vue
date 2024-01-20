@@ -9,7 +9,7 @@ import type {
   ReadProductPageResponse,
   ReadProductStockAdminResponse
 } from "@/apis/product/ProductDto"
-import { onMounted, reactive, ref, watch } from "vue"
+import { onMounted, reactive, ref, watch, computed } from "vue"
 import { getAllCategories } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadBrandResponse } from "@/apis/brand/BrandDto"
@@ -23,7 +23,11 @@ const categoryStore = useCategoryStore()
 const pageSize: number = 5
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
-const allChecked = ref<boolean>(false)
+// const allChecked = ref<boolean>(false)
+
+const allChecked = computed(() => {
+  return checkedProducts.value.length === 5
+})
 
 const selectedBrandId = ref<number>(0)
 const selectedCategoryId = ref<number>(0)
@@ -111,6 +115,7 @@ const selectedProduct = ref<ReadProductAdminResponse>({
 const onChangePage = async (page: number) => {
   if (0 <= page && page < totalPages.value) {
     requestPage.value = page
+    checkedProducts.value = []
   }
 }
 
@@ -200,7 +205,6 @@ const toggleAll = () => {
   } else {
     checkedProducts.value = products.value.map((product) => product.id)
   }
-  allChecked.value = !allChecked.value
 }
 
 const deleteChecked = () => {
