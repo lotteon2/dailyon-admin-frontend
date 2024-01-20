@@ -25,7 +25,7 @@ const initData = async (orderNo: string) => {
 
 const cancel = async (orderDetail: OrderDetailResponse) => {
   if (confirm("취소하시겠습니까?")) {
-    await cancelOrderDetail(orderDetail.orderNo)
+    await cancelOrderDetail(orderDetail.orderDetailNo)
     orderDetail.status = "취소완료"
     alert("취소 되었습니다.")
     return
