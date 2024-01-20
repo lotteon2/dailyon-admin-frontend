@@ -53,7 +53,7 @@ watch(requestPage, (afterPage, beforePage) => {
 
 watch(defaultOption.value, (newType, oldType) => {
   requestPage.value = 0
-  fetchDefaultData(0, pageSize, newType.type), requestPage.value
+  fetchDefaultData(0, pageSize, newType.type)
 })
 // modal
 const selectedOrder = ref<OrderResponse>()
