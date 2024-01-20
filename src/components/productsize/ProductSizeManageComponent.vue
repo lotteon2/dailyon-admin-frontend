@@ -10,6 +10,7 @@ import { getProductSizePagesByCategory } from "@/apis/productsize/ProductSizeCli
 import type { ReadCategoryResponse } from "@/apis/category/CategoryDto"
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import type { ReadProductSizePageResponse } from "@/apis/productsize/ProductSizeDto"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
 
 const categoryStore = useCategoryStore()
 const productSizeStore = useProductSizeStore()
@@ -160,7 +161,7 @@ const afterCreate = () => {
       </select>
       <button class="createBtn" @click="openCreateModal">치수 등록</button>
     </div>
-    <div class="table-block">
+    <div v-if="productSizeStore.productSizes.length > 0" class="table-block">
       <table>
         <thead>
           <tr>
@@ -184,6 +185,9 @@ const afterCreate = () => {
           </tr>
         </tbody>
       </table>
+    </div>
+    <div v-else>
+      <WhitePageComponent message="치수가 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :on-change-page="onChangePage"

@@ -56,6 +56,7 @@ const closeModal = () => {
 const startAuction = () => {
   startAuctionBid(props.auctionId)
     .then(() => {
+      alert("경매 시작")
       auctionDetail.value.auctionResponse.started = true
     })
     .catch((error: any) => {
@@ -69,6 +70,7 @@ const startAuction = () => {
 const endAuction = () => {
   endAuctionBid(props.auctionId)
     .then(() => {
+      alert("경매 종료")
       auctionDetail.value.auctionResponse.started = true
     })
     .catch((error: any) => {

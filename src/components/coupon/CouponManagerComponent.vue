@@ -19,6 +19,7 @@ import type {
   CouponInfoPageResponse
 } from "@/apis/coupon/CouponDto"
 import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/CouponDto"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
@@ -193,7 +194,7 @@ watch(page, (newPage) => {
       <button class="createBtn" @click="isCreateModalVisible = true">쿠폰 등록</button>
     </div>
 
-    <div class="table-block">
+    <div v-if="list.length > 0" class="table-block">
       <table>
         <thead>
           <tr>
@@ -232,8 +233,8 @@ watch(page, (newPage) => {
               {{ adminCouponInfo.appliesToName }}
             </td>
             <!-- <td>
-              {{ formatRequiresConcurrencyControl(adminCouponInfo.requiresConcurrencyControl) }}
-            </td> -->
+            {{ formatRequiresConcurrencyControl(adminCouponInfo.requiresConcurrencyControl) }}
+          </td> -->
             <td>
               <img
                 v-if="adminCouponInfo.targetImgUrl"
@@ -278,6 +279,9 @@ watch(page, (newPage) => {
           </tr>
         </tbody>
       </table>
+    </div>
+    <div v-else>
+      <WhitePageComponent message="쿠폰이 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :request-page="page"

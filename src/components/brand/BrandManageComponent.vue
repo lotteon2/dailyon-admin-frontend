@@ -78,14 +78,14 @@ const closeCreateModal = () => {
   isCreateModalVisible.value = false
 }
 
-const createBrand = (data: ReadBrandResponse) => {
-  brands.value.unshift(data)
+const createBrand = () => {
   isCreateModalVisible.value = false
+  initData()
 }
 
-const updateBrand = (data: UpdateBrandDto) => {
-  brands.value[data.index].name = data.name
+const updateBrand = () => {
   isUpdateModalVisible.value = false
+  initData()
 }
 
 const executeDelete = (brandId: number, index: number) => {
@@ -93,7 +93,7 @@ const executeDelete = (brandId: number, index: number) => {
     deleteBrand(brandId)
       .then(() => {
         alert("삭제 성공")
-        brands!.value.splice(index, 1)
+        initData()
       })
       .catch((error: any) => {
         alert(error.response!.data!.message)
@@ -109,7 +109,7 @@ const executeDelete = (brandId: number, index: number) => {
       :brand-name="selectedBrandName"
       :show-modal="isUpdateModalVisible"
       :index="brandIndex"
-      @update-brand="(data: any) => updateBrand(data)"
+      @update-brand="updateBrand"
       @close-update-modal="closeUpdateModal"
     />
     <BrandCreateModal
