@@ -22,7 +22,7 @@ import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
-const size = ref<number>(10)
+const size = ref<number>(7)
 const page = ref<number>(0)
 const list = ref<couponInfoReadItemResponse[]>([])
 const totalPages = ref<number>(1)
@@ -203,7 +203,7 @@ watch(page, (newPage) => {
             <th>이벤트 시작/종료일시</th>
             <th>잔여수량/총 발행개수</th>
             <th>적용 대상</th>
-            <th>특가 여부</th>
+            <!-- <th>특가 여부</th> -->
             <th>할인대상 이미지</th>
             <th>조건</th>
           </tr>
@@ -228,9 +228,9 @@ watch(page, (newPage) => {
               {{ adminCouponInfo.appliesToType }}/{{ adminCouponInfo.appliesToId }}<br />
               {{ adminCouponInfo.appliesToName }}
             </td>
-            <td>
+            <!-- <td>
               {{ formatRequiresConcurrencyControl(adminCouponInfo.requiresConcurrencyControl) }}
-            </td>
+            </td> -->
             <td>
               <img
                 :src="`${VITE_STATIC_IMG_URL}${adminCouponInfo.targetImgUrl}` || ''"
