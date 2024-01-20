@@ -279,7 +279,11 @@ watch(page, (newPage) => {
         </tbody>
       </table>
     </div>
-    <PaginationComponent :requestPage="page" :totalPages="totalPages" @changePage="onChangePage" />
+    <PaginationComponent
+      :request-page="page"
+      :total-pages="totalPages"
+      @change-page="onChangePage"
+    />
   </div>
 </template>
 
