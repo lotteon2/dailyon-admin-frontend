@@ -6,6 +6,8 @@ import { getOrders } from "@/apis/order/OrderClient"
 import { onBeforeMount, ref, watch } from "vue"
 import type { OrderResponse, OrderTypeEnum } from "@/apis/order/OrderDto"
 import { Modal, Descriptions, DescriptionsItem, Button } from "ant-design-vue"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
+
 const pageSize: number = 8
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 const orders = ref<Array<OrderResponse>>([])
@@ -81,7 +83,7 @@ const handleOk = (e: MouseEvent) => {
         </select>
       </div>
     </div>
-    <div class="table-block">
+    <div class="table-block" v-if="orders.length > 0">
       <table>
         <thead>
           <tr>
@@ -121,20 +123,20 @@ const handleOk = (e: MouseEvent) => {
           bordered
           :column="{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
         >
-          <DescriptionsItem label="주문 상품이름">{{
-            selectedOrder?.productsName
-          }}</DescriptionsItem>
+          <DescriptionsItem label="주문 상품이름"
+            >{{ selectedOrder?.productsName }}
+          </DescriptionsItem>
           <DescriptionsItem label="결제수단">카카오페이</DescriptionsItem>
           <DescriptionsItem label="주문시간">{{ selectedOrder?.createdAt }}</DescriptionsItem>
           <DescriptionsItem label="쿠폰 할인금액"
-            >{{ selectedOrder?.totalCouponDiscountPrice.toLocaleString() }} 원</DescriptionsItem
-          >
+            >{{ selectedOrder?.totalCouponDiscountPrice.toLocaleString() }} 원
+          </DescriptionsItem>
           <DescriptionsItem label="포인트 사용금액"
-            >{{ selectedOrder?.usedPoints.toLocaleString() }} 원</DescriptionsItem
-          >
+            >{{ selectedOrder?.usedPoints.toLocaleString() }} 원
+          </DescriptionsItem>
           <DescriptionsItem label="결제 금액"
-            >{{ selectedOrder?.totalAmount.toLocaleString() }} 원</DescriptionsItem
-          >
+            >{{ selectedOrder?.totalAmount.toLocaleString() }} 원
+          </DescriptionsItem>
           <DescriptionsItem label="">
             <div v-if="selectedOrder">
               <OrderDetailComponent :orderNo="selectedOrder.orderNo" @close="open = false" />
@@ -142,6 +144,9 @@ const handleOk = (e: MouseEvent) => {
           </DescriptionsItem>
         </Descriptions>
       </Modal>
+    </div>
+    <div class="table-block" v-else>
+      <WhitePageComponent message="주문이 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :on-change-page="onChangePage"
@@ -153,6 +158,7 @@ const handleOk = (e: MouseEvent) => {
 
 <style scoped>
 @import url("@/assets/css/product-manage.css");
+
 .ok-button {
   width: 50px;
   height: 30px;

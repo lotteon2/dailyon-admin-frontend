@@ -7,6 +7,7 @@ import type { AxiosResponse } from "axios"
 import { deleteCategory, getCategoryPages } from "@/apis/category/CategoryClient"
 import { useCategoryStore } from "@/stores/CategoryStore"
 import type { ReadCategoryPageResponse } from "@/apis/category/CategoryDto"
+import WhitePageComponent from "@/components/WhitePageComponent.vue"
 
 const categoryStore = useCategoryStore()
 
@@ -81,7 +82,7 @@ const closeCreateModal = () => {
 }
 
 const executeUpdate = () => {
-  getCategoryPages(0, requestSize)
+  getCategoryPages(requestPage.value, requestSize)
     .then((axiosResponse: AxiosResponse) => {
       const response: ReadCategoryPageResponse = axiosResponse.data
       categoryStore.setCategories(response.responses)
@@ -98,8 +99,8 @@ const executeDelete = (categoryId: number) => {
     deleteCategory(categoryId)
       .then(() => {
         alert("삭제 성공")
+        initData()
       })
-      .then(initData)
       .catch((error: any) => {
         alert(error.response!.data!.message)
       })
@@ -124,7 +125,7 @@ const executeDelete = (categoryId: number) => {
     <div class="button-block">
       <button class="createBtn" @click="openCreateModal">카테고리 등록</button>
     </div>
-    <div class="table-block">
+    <div class="table-block" v-if="categoryStore.categories.length > 0">
       <table>
         <thead>
           <tr>
@@ -153,6 +154,9 @@ const executeDelete = (categoryId: number) => {
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="table-block" v-else>
+      <WhitePageComponent message="카테고리가 존재하지 않습니다" />
     </div>
     <PaginationComponent
       :request-page="requestPage"

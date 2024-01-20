@@ -170,12 +170,11 @@ const executeCreate = () => {
             alert("상품 설명 이미지 업로드 오류")
           })
         }
-      })
-      .then(() => {
+
         alert("등록 성공")
         emits("create-success")
-        closeModal()
       })
+      .then(closeModal)
       .catch((error: any) => {
         alert(error.response!.data!.message)
       })
