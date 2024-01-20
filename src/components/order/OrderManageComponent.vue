@@ -49,12 +49,13 @@ onBeforeMount(() => {
 
 watch(requestPage, (afterPage, beforePage) => {
   if (afterPage < totalPages.value!) {
-    fetchDefaultData(requestPage.value, pageSize, defaultOption.value.type), requestPage.value
+    fetchDefaultData(afterPage, pageSize, defaultOption.value.type), requestPage.value
   }
 })
 
 watch(defaultOption.value, (newType, oldType) => {
-  fetchDefaultData(0, pageSize, newType.type), requestPage.value
+  requestPage.value = 0
+  fetchDefaultData(0, pageSize, newType.type)
 })
 // modal
 const selectedOrder = ref<OrderResponse>()

@@ -283,7 +283,11 @@ watch(page, (newPage) => {
     <div v-else>
       <WhitePageComponent message="쿠폰이 존재하지 않습니다" />
     </div>
-    <PaginationComponent :requestPage="page" :totalPages="totalPages" @changePage="onChangePage" />
+    <PaginationComponent
+      :request-page="page"
+      :total-pages="totalPages"
+      @change-page="onChangePage"
+    />
   </div>
 </template>
 
