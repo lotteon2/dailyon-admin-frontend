@@ -22,7 +22,7 @@ import { getDiscountTypeDisplayValue, formatDiscountValue } from "@/apis/coupon/
 
 const VITE_STATIC_IMG_URL = ref<string>(import.meta.env.VITE_STATIC_IMG_URL)
 
-const size = ref<number>(10)
+const size = ref<number>(7)
 const page = ref<number>(0)
 const list = ref<couponInfoReadItemResponse[]>([])
 const totalPages = ref<number>(1)
@@ -203,7 +203,7 @@ watch(page, (newPage) => {
             <th>이벤트 시작/종료일시</th>
             <th>잔여수량/총 발행개수</th>
             <th>적용 대상</th>
-            <th>특가 여부</th>
+            <!-- <th>특가 여부</th> -->
             <th>할인대상 이미지</th>
             <th>조건</th>
           </tr>
@@ -211,7 +211,10 @@ watch(page, (newPage) => {
         <tbody>
           <tr v-for="(adminCouponInfo, index) in list" :key="index">
             <td>{{ adminCouponInfo.id }}</td>
-            <td v-html="formatName(adminCouponInfo.name)"></td>
+            <td
+              class="word-break-class abbr-txt vw-18"
+              v-html="formatName(adminCouponInfo.name)"
+            ></td>
             <!-- br을 넣기 위해 v-html 사용 -->
             <td>
               {{ getDiscountTypeDisplayValue(adminCouponInfo.discountType) }}/{{
@@ -224,18 +227,20 @@ watch(page, (newPage) => {
             </td>
             <!-- LocalDateTime으로 들어오는값을 0000년 00월 00일 00:00 형식으로 -->
             <td>{{ adminCouponInfo.remainingQuantity }}/{{ adminCouponInfo.issuedQuantity }}</td>
-            <td>
+            <td class="word-break-class vw-13">
               {{ adminCouponInfo.appliesToType }}/{{ adminCouponInfo.appliesToId }}<br />
               {{ adminCouponInfo.appliesToName }}
             </td>
-            <td>
+            <!-- <td>
               {{ formatRequiresConcurrencyControl(adminCouponInfo.requiresConcurrencyControl) }}
-            </td>
+            </td> -->
             <td>
               <img
+                v-if="adminCouponInfo.targetImgUrl"
                 :src="`${VITE_STATIC_IMG_URL}${adminCouponInfo.targetImgUrl}` || ''"
                 alt="이미지 없음"
               />
+              <span v-else>이미지 없음</span>
             </td>
             <td>
               {{

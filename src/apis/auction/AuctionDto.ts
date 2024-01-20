@@ -5,10 +5,35 @@ export interface ReadAuctionResponse {
   auctionProductId: number
   auctionName: string
   startBidPrice: number
+  askingPrice: number
   maximumWinner: number
   startAt: string
   started: boolean
   ended: boolean
+}
+
+export interface ReadAuctionDetailResponse {
+  auctionResponse: ReadAuctionResponse
+  productDetailResponse: ReadProductDetailResponse
+}
+
+export interface ReadProductDetailResponse {
+  categoryId: number
+  brandName: string
+  name: string
+  imgUrl: string
+  price: number
+  gender: string
+  avgRating: number
+  reviewCount: number
+  productStocks: ReadProductStockResponse[]
+  describeImgUrls: String[]
+}
+
+export interface ReadProductStockResponse {
+  productSizeId: number
+  productSizeName: string
+  quantity: number
 }
 
 export interface ReadAuctionPageResponse {

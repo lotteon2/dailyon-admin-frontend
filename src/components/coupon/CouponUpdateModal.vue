@@ -154,7 +154,8 @@ import type {
   CouponUpdateRequest,
   couponInfoReadItemResponse,
   ReadProductResponse,
-  ReadChildrenCategoryResponse
+  ReadChildrenCategoryResponse,
+  ReadOOTDSearchResponse
 } from "@/apis/coupon/CouponDto"
 import { convertToCouponUpdateRequest } from "@/apis/coupon/CouponDto"
 
@@ -171,7 +172,7 @@ const props = defineProps({
 })
 
 const searchQuery = ref("")
-const searchResults = ref<ReadProductResponse[]>([])
+const searchResults = ref<ReadOOTDSearchResponse[]>([])
 const categories = ref<ReadChildrenCategoryResponse[]>([])
 const targetType = ref("PRODUCT") // Default to product
 const selectedCategoryId = ref(null)
