@@ -57,3 +57,8 @@ export interface CreateAuctionResponse {
   imgPresignedUrl: string
   describeImgPresignedUrl: Record<string, string>
 }
+
+export interface AuctionFilterEnum {
+  value: string
+  name: string
+}

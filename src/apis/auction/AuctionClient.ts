@@ -20,15 +20,13 @@ export const createAuction = async (request: CreateAuctionRequest): Promise<Axio
 
 export const readAuctions = async (
   page: number,
-  size: number
+  size: number,
+  path: string
 ): Promise<ReadAuctionPageResponse> => {
   try {
-    const { data } = await authAxiosInstance.get(
-      `${AUCTION_SERVICE_PREFIX}${AUCTION_ADMIN_PREFIX}${AUCTION_PREFIX}`,
-      {
-        params: { page: page, size: size }
-      }
-    )
+    const { data } = await authAxiosInstance.get(`${AUCTION_SERVICE_PREFIX}/${path}`, {
+      params: { page: page, size: size }
+    })
     return data
   } catch (error) {
     if (error instanceof AxiosError) {
