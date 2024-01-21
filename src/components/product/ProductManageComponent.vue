@@ -137,10 +137,9 @@ const closeUpdateModal = () => {
 }
 
 const afterUpdate = () => {
-  console.log("after update")
   isUpdateModalVisible.value = false
   getProductPages({
-    page: (requestPage.value = 0),
+    page: requestPage.value,
     size: pageSize,
     brandId: selectedBrandId.value,
     categoryId: selectedCategoryId.value,
@@ -416,7 +415,7 @@ watch(sort, (newSort, oldSort) => {
       :show-modal="isUpdateModalVisible"
       :product-to-update="selectedProduct"
       @close-update-modal="closeUpdateModal"
-      @update-succes="afterUpdate"
+      @update-success="afterUpdate"
     />
     <div class="head-button-block">
       <div class="button-block">
