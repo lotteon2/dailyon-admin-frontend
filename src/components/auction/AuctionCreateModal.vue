@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, ref, watch } from "vue"
+import { computed, type Ref, ref, watch } from "vue"
 import { type Gender, genders } from "@/apis/utils/CommonDto"
 import { type ReadBrandResponse } from "@/apis/brand/BrandDto"
 import { type Category } from "@/apis/category/CategoryDto"
@@ -24,9 +24,15 @@ const isEnabled = ref<boolean>(true)
 
 const startAt = ref<string>("")
 const auctionName = ref<string>("")
-const startBidPrice = ref<number>(0)
 const askingPrice = ref<number>(0)
-const maximumWinner = ref<number>(0)
+
+const startBidPrice = computed(() => {
+  return Math.floor(requestPrice.value * 0.05)
+})
+
+const maximumWinner = computed(() => {
+  return requestProductQuantity.value
+})
 
 const brands = ref<Array<ReadBrandResponse>>(new Array<ReadBrandResponse>())
 const leafCategories = ref<Array<Category>>(new Array<Category>())
@@ -110,9 +116,7 @@ const closeModal = () => {
 
   startAt.value = ""
   auctionName.value = ""
-  startBidPrice.value = 0
   askingPrice.value = 0
-  maximumWinner.value = 0
 
   brands.value = []
   leafCategories.value = []
@@ -142,9 +146,7 @@ const createSuccess = () => {
 
   startAt.value = ""
   auctionName.value = ""
-  startBidPrice.value = 0
   askingPrice.value = 0
-  maximumWinner.value = 0
 
   brands.value = []
   leafCategories.value = []
@@ -366,20 +368,20 @@ watch(requestCategory, () => {
               <input class="modal-input" type="text" v-model="auctionName" required />
             </div>
             <div class="modal-sub-items">
-              <label class="modal-label">입찰 시작가</label>
-              <input class="modal-input" type="number" v-model="startBidPrice" required />
-            </div>
-            <div class="modal-sub-items">
               <label class="modal-label">호가 단위</label>
               <input class="modal-input" type="number" v-model="askingPrice" required />
             </div>
             <div class="modal-sub-items">
-              <label class="modal-label">최대 낙찰자</label>
-              <input class="modal-input" type="number" v-model="maximumWinner" required />
-            </div>
-            <div class="modal-sub-items">
               <label class="modal-label">경매 시작 시각</label>
               <input class="modal-input" type="datetime-local" v-model="startAt" required />
+            </div>
+            <div class="modal-sub-items">
+              <label class="modal-label">입찰 시작가</label>
+              <input class="modal-input" type="number" v-model="startBidPrice" required readonly />
+            </div>
+            <div class="modal-sub-items">
+              <label class="modal-label">최대 낙찰자</label>
+              <input class="modal-input" type="number" v-model="maximumWinner" required readonly />
             </div>
           </div>
           <div class="modal-button">
@@ -442,7 +444,7 @@ watch(requestCategory, () => {
               </div>
               <div class="modal-sub-items">
                 <label class="modal-label">상품 가격</label>
-                <input class="modal-input" type="number" v-model="requestPrice" />
+                <input class="modal-input" type="number" v-model.number.lazy="requestPrice" />
               </div>
               <div class="modal-sub-items">
                 <label class="modal-label">카테고리</label>
