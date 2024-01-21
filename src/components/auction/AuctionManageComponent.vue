@@ -2,7 +2,11 @@
 import PaginationComponent from "@/components/PaginationComponent.vue"
 import { onBeforeMount, ref, watch } from "vue"
 import { deleteAuction, readAuctions } from "@/apis/auction/AuctionClient"
-import type { ReadAuctionPageResponse, ReadAuctionResponse } from "@/apis/auction/AuctionDto"
+import type {
+  AuctionFilterEnum,
+  ReadAuctionPageResponse,
+  ReadAuctionResponse
+} from "@/apis/auction/AuctionDto"
 import AuctionCreateModal from "@/components/auction/AuctionCreateModal.vue"
 import AuctionModal from "@/components/auction/AuctionManageModal.vue"
 import WhitePageComponent from "@/components/WhitePageComponent.vue"
@@ -27,6 +31,14 @@ const auctions = ref<ReadAuctionResponse[]>([
 const isCreateModalVisible = ref<boolean>(false)
 const isManageModalVisible = ref<boolean>(false)
 const selectedAuctionId = ref<string>("")
+
+const auctionTypes = ref<AuctionFilterEnum[]>([
+  { value: "/admin/auctions", name: "전체" },
+  { value: "/auctions/current", name: "진행 중" },
+  { value: "/auctions/future", name: "진행 예정" },
+  { value: "/auctions/past", name: "진행 완료" }
+])
+const selectedAuctionType = ref<string>("/admin/auctions")
 
 const openManageModal = (auctionId: string) => {
   isManageModalVisible.value = true
@@ -56,7 +68,11 @@ const onChangePage = async (page: number) => {
 }
 
 const initData = async () => {
-  const response: ReadAuctionPageResponse = await readAuctions(requestPage.value, requestSize)
+  const response: ReadAuctionPageResponse = await readAuctions(
+    requestPage.value,
+    requestSize,
+    selectedAuctionType.value
+  )
   totalElements.value = response.totalElements
   totalPages.value = response.totalPages
   auctions.value = response.responses
@@ -89,7 +105,25 @@ const executeDelete = (index: number, event: any) => {
 
 watch(requestPage, async (afterPage: number, beforePage: number) => {
   if (afterPage < totalPages.value) {
-    const response: ReadAuctionPageResponse = await readAuctions(afterPage, requestSize)
+    const response: ReadAuctionPageResponse = await readAuctions(
+      afterPage,
+      requestSize,
+      selectedAuctionType.value
+    )
+
+    totalElements.value = response.totalElements
+    totalPages.value = response.totalPages
+    auctions.value = response.responses
+  }
+})
+
+watch(selectedAuctionType, async (afterType: string, beforeType: string) => {
+  if (afterType !== beforeType) {
+    const response: ReadAuctionPageResponse = await readAuctions(
+      requestPage.value,
+      requestSize,
+      afterType
+    )
 
     totalElements.value = response.totalElements
     totalPages.value = response.totalPages
@@ -113,6 +147,15 @@ onBeforeMount(initData)
       @create-success="afterCreate"
     />
     <div class="button-block">
+      <select class="select-block-select" v-model.lazy.number="selectedAuctionType">
+        <option
+          v-for="(auctionType, index) in auctionTypes"
+          :key="index"
+          :value="auctionType.value"
+        >
+          {{ auctionType.name }}
+        </option>
+      </select>
       <button class="createBtn" @click="openCreateModal">경매 등록</button>
     </div>
     <div class="table-block" v-if="auctions.length > 0">
@@ -137,7 +180,13 @@ onBeforeMount(initData)
             <td>{{ auction.maximumWinner }}명</td>
             <td>{{ formatDate(auction.startAt) }}</td>
             <td>
-              <button class="deleteBtn" @click="executeDelete(index, $event)">삭제</button>
+              <button
+                class="deleteBtn"
+                v-if="!auction.started"
+                @click="executeDelete(index, $event)"
+              >
+                삭제
+              </button>
             </td>
           </tr>
         </tbody>
