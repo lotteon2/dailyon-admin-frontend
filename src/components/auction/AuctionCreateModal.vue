@@ -117,7 +117,6 @@ const closeModal = () => {
   startAt.value = ""
   auctionName.value = ""
   askingPrice.value = 0
-  maximumWinner.value = 0
 
   brands.value = []
   leafCategories.value = []
@@ -148,7 +147,6 @@ const createSuccess = () => {
   startAt.value = ""
   auctionName.value = ""
   askingPrice.value = 0
-  maximumWinner.value = 0
 
   brands.value = []
   leafCategories.value = []
@@ -446,7 +444,7 @@ watch(requestCategory, () => {
               </div>
               <div class="modal-sub-items">
                 <label class="modal-label">상품 가격</label>
-                <input class="modal-input" type="number" v-model="requestPrice" />
+                <input class="modal-input" type="number" v-model.number.lazy="requestPrice" />
               </div>
               <div class="modal-sub-items">
                 <label class="modal-label">카테고리</label>
