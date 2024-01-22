@@ -98,7 +98,6 @@ const handleOk = (e: MouseEvent) => {
             <th>휴대폰번호</th>
             <th>배송상태</th>
             <th>배송등록일</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -112,17 +111,9 @@ const handleOk = (e: MouseEvent) => {
             <td>{{ delivery.phoneNumber }}</td>
             <td>{{ delivery.status }}</td>
             <td>{{ delivery.createdAt }}</td>
-            <td>
-              <button class="updateBtn" @click="showModal(delivery)">변경</button>
-            </td>
           </tr>
         </tbody>
       </table>
-      <Modal v-model:open="open" width="1000px">
-        <template #footer>
-          <button class="ok-button" @click="handleOk">확인</button>
-        </template>
-      </Modal>
     </div>
     <PaginationComponent
       :on-change-page="onChangePage"
